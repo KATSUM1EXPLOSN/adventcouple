@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Запрет сохранения устаревшего кэша в PWA -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>Интимный Календарь</title>
 
     <!-- PWA & iOS Meta -->
@@ -327,6 +333,7 @@
         <div class="dash-top">
             <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
             <div class="dash-actions">
+                <button class="btn-secondary" onclick="forceRefreshData()" title="Принудительно обновить данные">🔄 Обновить</button>
                 <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
                 <button class="btn-secondary" onclick="openLingerieModal()">👙 Белье</button>
                 <button class="btn-secondary" onclick="openToysModal()">🧸 Игрушки</button>
@@ -768,16 +775,15 @@
         function saveSettings() {
             const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
             
-            // ВАЛИДАЦИЯ КОДА ПАРЫ ПРИ ПУБЛИЧНОМ ТЕСТИРОВАНИИ
             if (!rawCode || rawCode.length < 4) {
-                alert("❌ Код пары слишком короткий! Введите уникальный код минимум из 4 символов (например: ALEX_NIKA2026).");
+                alert("❌ Код пары слишком короткий! Введите уникальный код минимум из 4 символов.");
                 document.getElementById('pairCodeInput').focus();
                 return;
             }
 
             const sanitizedCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
             if (sanitizedCode === '1234' || sanitizedCode === 'LOVE' || sanitizedCode === 'PAIR123' || sanitizedCode === 'TEST') {
-                if (!confirm("⚠️ Вы ввели слишком простой/популярный код. Если его использует другая пара, ваши данные могут пересечься. Вы уверены, что хотите продолжить с этим кодом?")) {
+                if (!confirm("⚠️ Вы ввели слишком простой/популярный код. Если его использует другая пара, ваши данные могут пересечься. Вы уверены?")) {
                     return;
                 }
             }
@@ -806,26 +812,50 @@
             if (!db || !pairCode) return;
             document.getElementById('syncBadgeText').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
             
+            // Принудительное подключение слушателей Firebase
+            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).off();
             db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
                 p1Completed = snapshot.val() || [];
                 renderGrid();
             });
 
+            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).off();
             db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).on('value', (snapshot) => {
                 p2Completed = snapshot.val() || [];
                 renderGrid();
             });
 
+            db.ref(`pairs/${pairCode}/fav/p1`).off();
             db.ref(`pairs/${pairCode}/fav/p1`).on('value', (snapshot) => {
                 p1Fav = snapshot.val() || [];
                 renderGrid();
             });
 
+            db.ref(`pairs/${pairCode}/fav/p2`).off();
             db.ref(`pairs/${pairCode}/fav/p2`).on('value', (snapshot) => {
                 p2Fav = snapshot.val() || [];
                 renderGrid();
             });
         }
+
+        // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ ДАННЫХ ПРИ ОТКРЫТИИ/СВОРАЧИВАНИИ PWA
+        function forceRefreshData() {
+            if (pairCode) {
+                initSync();
+                monthTasks = getTasksForMonth(selectedCategory, pairCode);
+                renderGrid();
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                forceRefreshData();
+            }
+        });
+
+        window.addEventListener('pageshow', (event) => {
+            forceRefreshData();
+        });
 
         function renderGrid() {
             const grid = document.getElementById('grid');
