@@ -182,22 +182,21 @@
     </header>
 
     <div class="setup-card" id="setupCard">
-        <h2>✨ Настройка пары и Синхронизация</h2>
+        <h2>✨ Настройка пары</h2>
         <div class="form-group">
-            <label>Общий Код Пара (одинаковый на обоих телефонах):</label>
+            <label>Общий Код Пара (одинаковый у обоих):</label>
             <input type="text" class="form-control" placeholder="Например: LOVE2026" id="pairCodeInput">
         </div>
         <div class="form-group">
             <label>Основной акцент на месяц:</label>
             <select class="form-control" id="preferenceSelect">
-                <option value="female_lead">Женское Доминирование (Она Ведёт)</option>
-                <option value="balanced">Микс (Разнообразие всех направлений)</option>
-                <option value="kamasutra">Камасутра и Позы</option>
-                <option value="bdsm">BDSM и Контроль</option>
-                <option value="classic">Классика и Нежность</option>
+                <option value="balanced">Нежный Микс (Классика + Романтика + Позы)</option>
+                <option value="classic">Классика, Поцелуи и Нежность</option>
+                <option value="female_lead">Женское Лидерство (Она Ведёт)</option>
+                <option value="kamasutra">Камасутра и Сложные Позы</option>
             </select>
         </div>
-        <button class="btn-primary" onclick="saveSettings()">Подключить и Запустить 🔥</button>
+        <button class="btn-primary" onclick="saveSettings()">Запустить Программу 🔥</button>
     </div>
 
     <div class="dashboard" id="dashboard" style="display:none;">
@@ -226,7 +225,6 @@
     </div>
 
     <script>
-        // Конфигурация публичной БД для синхронизации
         const firebaseConfig = {
             databaseURL: "https://calendar-pair-default-rtdb.europe-west1.firebasedatabase.app"
         };
@@ -235,7 +233,7 @@
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch(e) { console.log("Синхронизация в автономном режиме"); }
+        } catch(e) {}
 
         const now = new Date();
         const currentYear = now.getFullYear();
@@ -247,34 +245,44 @@
         document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
 
         const imgPool = [
-            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
+            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80"
         ];
 
+        // БАЗА ЗНАЧИТЕЛЬНО ПОПОЛНЕНА КЛАССИКОЙ И НЕЖНОСТЬЮ
         const database = {
+            classic: [
+                { title: "Техника CAT (Коитальное Выравнивание)", category: "Нежность", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите валики под крестец.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
+                { title: "Правило 20 Минут Поцелуев", category: "Романтика", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" },
+                { title: "Миссионерская с Валиком (Точка G)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Плотная подушка под крестцом изменяет угол вхождения и задействует переднюю стенку влагалища.", tip: "Совет: Держите планомерный средний темп.", video: "https://www.youtube.com/results?search_query=pillow+support+sex" },
+                { title: "Синхронное Дыхание Глаза-в-Глаза", category: "Нежность", lead: "🤝 Оба на равных", task: "Медленный секс лицом к лицу. Дышите строго одновременно, не размыкая зрительного контакта.", tip: "Совет: Забудьте про скорость, сфокусируйтесь на чувствах.", video: "https://www.youtube.com/results?search_query=tantric+breathwork" },
+                { title: "Секс при Свечах в Темноте", category: "Романтика", lead: "🤝 Оба на равных", task: "Полное отключение света и гаджетов. Ориентируйтесь только на слух, шепот и осязание.", tip: "Совет: Описывайте свои чувства вслух.", video: "https://www.youtube.com/results?search_query=sensory+romantic+sex" },
+                { title: "Медленный Тантрический Замок", category: "Нежность", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он сидит, Девушка сверху обнимает его ногами за талию. Минимальные движения, фокус на объятиях и глубоких поцелуях.", tip: "Совет: Чувствуйте каждый миллиметр движения.", video: "https://www.youtube.com/results?search_query=tantric+hugging+sex" },
+                { title: "Массаж Теплым Маслом (Sensate Focus)", category: "Нежность", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "20-минутный расслабляющий массаж спины, стоп и бедер без цели обязательно перейти к финишу.", tip: "Совет: Снимает напряжение после рабочего дня.", video: "https://www.youtube.com/results?search_query=sensate+focus+massage" },
+                { title: "Замедленные 'Ложки'", category: "Классика", lead: "🤝 Оба на равных", task: "Оба на боку сзади. Очень уютная и интимная поза для длинного неспешного вечера с доступом к груди.", tip: "Совет: Идеально под расслабляющую музыку.", video: "https://www.youtube.com/results?search_query=spooning+sex+guide" },
+                { title: "Ласки по Правилам Девушки", category: "Романтика", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка говорит Мужчине, куда именно положить руки и с какой силой и темпом делать ласки.", tip: "Совет: Полная адаптация под её желания.", video: "https://www.youtube.com/results?search_query=guided+touch+romance" }
+            ],
             female_lead: [
-                { title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Делайте паузы на пике его возбуждения.", video: "https://www.youtube.com/results?search_query=cowgirl+position+guide" },
-                { title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт.", video: "https://www.youtube.com/results?search_query=edging+and+denial+guide" },
-                { title: "Управление Руками Партнера", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она берет его запястья и сама двигает его руками по своему телу, задавая силу сжатия.", tip: "Совет: Ему запрещено проявление инициативы без команды.", video: "https://www.youtube.com/results?search_query=guided+touch+intimacy" }
+                { title: "Нежная Наездница", category: "Нежность", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сверху контролирует глубину и задает плавный круговой ритм бёдрами.", tip: "Совет: Вы можете делать остановки, прижимаясь к его груди.", video: "https://www.youtube.com/results?search_query=slow+cowgirl+guide" },
+                { title: "Замедленный Кунилингус", category: "Нежность", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сидит на возвышении, Мужчина снизу. Она прижимает его голову, регулируя интенсивность ласк.", tip: "Совет: Направляйте его движения пальцами.", video: "https://www.youtube.com/results?search_query=oral+intimacy+female+lead" }
             ],
             kamasutra: [
-                { title: "Поза 'Раковина'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Девушка на спине с ногами на его плечах. Максимально глубокое проникновение.", tip: "Совет: Движения короткие и ритмичные.", video: "https://www.youtube.com/results?search_query=kamasutra+sankha+pose" },
-                { title: "Поза 'Бабочка'", category: "Камасутра", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Партнерша на краю высокой кровати, Он стоит перед ней. Удобный угол для ласк.", tip: "Совет: Подложите подушку под поясницу.", video: "https://www.youtube.com/results?search_query=butterfly+kamasutra" }
-            ],
-            bdsm: [
-                { title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи.", video: "https://www.youtube.com/results?search_query=silk+bondage+tutorial" },
-                { title: "Маска и Изоляция", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Полная изоляция слуха и зрения. Ведущая производит неожиданные касания.", tip: "Совет: Контраст льда и горячего дыхания.", video: "https://www.youtube.com/results?search_query=sensory+deprivation+bdsm" }
-            ],
-            classic: [
-                { title: "Техника CAT", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор.", tip: "Совет: Нажимайте плавно и ритмично.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
-                { title: "Правило 20 минут", category: "Классика", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа бедер без касания гениталий.", tip: "Совет: Создает сильный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" }
+                { title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею.", video: "https://www.youtube.com/results?search_query=lotus+pose+couples" },
+                { title: "Поза 'Раковина' (Спина и Ноги)", category: "Камасутра", lead: "🤝 Оба на равных", task: "Девушка на спине с ногами на его плечах. Удобный угол для совмещения проникновения и ласк клитора.", tip: "Совет: Плавный ритм.", video: "https://www.youtube.com/results?search_query=sankha+position" }
             ]
         };
 
         function getTasksForMonth(category) {
-            let pool = database[category] || database.female_lead;
+            let pool = [];
+            if (category === 'balanced') {
+                // В МИКСЕ ТЕПЕРЬ ПРЕОБЛАДАЕТ КЛАССИКА И НЕЖНОСТЬ
+                pool = [...database.classic, ...database.classic, ...database.female_lead, ...database.kamasutra];
+            } else {
+                pool = database[category] || database.classic;
+            }
+
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
                 const base = pool[(day - 1) % pool.length];
@@ -294,7 +302,7 @@
         }
 
         let pairCode = localStorage.getItem('pairCode') || '';
-        let selectedCategory = localStorage.getItem('userCat') || 'female_lead';
+        let selectedCategory = localStorage.getItem('userCat') || 'balanced';
         let monthTasks = getTasksForMonth(selectedCategory);
         let completedDays = JSON.parse(localStorage.getItem(`completed_${monthKey}`) || '[]');
         let currentDay = null;
@@ -327,12 +335,10 @@
             document.getElementById('dashboard').style.display = 'none';
         }
 
-        // Подключение синхронизации между смартфонами
         function initSync() {
             if (!db || !pairCode) return;
             document.getElementById('syncBadge').innerText = `🟢 Синхронно: Код [ ${pairCode} ]`;
             
-            // Слушаем изменения партнерского телефона в реальном времени
             db.ref(`pairs/${pairCode}/${monthKey}`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -382,10 +388,8 @@
                 completedDays.push(currentDay);
             }
             
-            // Локальное сохранение
             localStorage.setItem(`completed_${monthKey}`, JSON.stringify(completedDays));
             
-            // Облачная отправка на телефон партнера
             if (db && pairCode) {
                 db.ref(`pairs/${pairCode}/${monthKey}`).set(completedDays);
             }
