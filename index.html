@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>30 Дней Чувственности</title>
+    <title>Интимный Календарь</title>
 
     <!-- PWA & iOS Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Календарь30">
+    <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
     <!-- Web App Icons -->
@@ -16,7 +16,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔥</text></svg>">
 
     <!-- Manifest -->
-    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%2230%20%D0%94%D0%BD%D0%B5%D0%B9%20%D0%A7%D1%83%D0%B2%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D0%B8%22%2C%22short_name%22%3A%22%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C30%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0d13%22%2C%22theme_color%22%3A%22%230f0d13%22%7D">
+    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%98%D0%BD%D1%82%D0%B8%D0%BC%D0%BD%D1%8B%D0%B9%20%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C%22%2C%22short_name%22%3A%22%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0d13%22%2C%22theme_color%22%3A%22%230f0d13%22%7D">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,53 +53,25 @@
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
         header { text-align: center; max-width: 700px; margin-bottom: 15px; }
-        h1 { color: var(--accent-gold); font-size: 2rem; margin: 0 0 8px 0; }
-        p.subtitle { color: var(--text-sub); font-size: 0.9rem; line-height: 1.4; margin: 0; }
+        h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
+        .month-title { color: var(--accent-rose); font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
+        p.subtitle { color: var(--text-sub); font-size: 0.85rem; line-height: 1.4; margin: 0; }
 
-        /* Инструкция установки PWA */
         .install-guide {
             background: linear-gradient(135deg, rgba(24, 20, 32, 0.9), rgba(35, 28, 48, 0.9));
             border: 1px solid var(--accent-gold);
             border-radius: 16px;
-            padding: 18px 20px;
-            margin-bottom: 25px;
+            padding: 15px 18px;
+            margin-bottom: 20px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             position: relative;
         }
 
-        .install-guide h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.1rem;
-            color: var(--accent-gold);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .install-guide h3 { margin: 0 0 8px 0; font-size: 1rem; color: var(--accent-gold); }
+        .install-steps { font-size: 0.8rem; line-height: 1.5; color: var(--text-main); margin: 0; padding-left: 18px; }
+        .hide-guide-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text-sub); font-size: 1.2rem; cursor: pointer; }
 
-        .install-steps {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .install-steps li { margin-bottom: 6px; }
-
-        .hide-guide-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: none;
-            border: none;
-            color: var(--text-sub);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        /* Форма настройки */
         .setup-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -108,7 +80,6 @@
             max-width: 500px;
             width: 100%;
             margin-bottom: 25px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
 
         .form-group { margin-bottom: 15px; text-align: left; }
@@ -122,7 +93,6 @@
             border-radius: 10px;
             color: #fff;
             font-family: inherit;
-            font-size: 0.95rem;
         }
 
         .btn-primary {
@@ -136,9 +106,7 @@
             cursor: pointer;
             margin-top: 10px;
             font-size: 1rem;
-            transition: opacity 0.2s;
         }
-        .btn-primary:active { opacity: 0.8; }
 
         .dashboard {
             width: 100%;
@@ -182,7 +150,6 @@
             min-height: 120px;
             position: relative;
         }
-        .day-card:active { transform: scale(0.97); }
         .day-card.completed { border-color: #4caf50; opacity: 0.75; }
         .day-card.completed::after { content: '✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
 
@@ -214,22 +181,19 @@
 <body>
 
     <header>
-        <h1>🔥 30 Дней Чувственности</h1>
-        <p class="subtitle">Интерактивный календарь под ваши параметры</p>
+        <h1>🔥 Чувственный Календарь</h1>
+        <div class="month-title" id="monthTitle">Август 2026</div>
+        <p class="subtitle">Персональная программа на текущий месяц</p>
     </header>
 
-    <!-- Блок инструкции -->
     <div class="install-guide" id="installGuide">
         <button class="hide-guide-btn" onclick="dismissGuide()">&times;</button>
         <h3>📱 Установите как приложение:</h3>
-        <ol class="install-steps" id="installSteps">
-            <!-- Текст меняется скриптом под устройство -->
-        </ol>
+        <ol class="install-steps" id="installSteps"></ol>
     </div>
 
-    <!-- Анкета настройки -->
     <div class="setup-card" id="setupCard">
-        <h2>✨ Настройка программы</h2>
+        <h2>✨ Настройка пары</h2>
         <div class="form-row">
             <div class="form-group" style="flex:1">
                 <label>Рост (М / Ж)</label>
@@ -249,22 +213,19 @@
                 <option value="bdsm">Психология и Контроль (BDSM)</option>
             </select>
         </div>
-        <button class="btn-primary" onclick="saveSettings()">Сформировать Календарь 🔥</button>
+        <button class="btn-primary" onclick="saveSettings()">Сформировать на этот месяц 🔥</button>
     </div>
 
-    <!-- Панель управления -->
     <div class="dashboard" id="dashboard" style="display:none;">
         <div class="progress-bar-container">
-            <div class="progress-text" id="progressText">Прогресс: 0 / 30 дней</div>
+            <div class="progress-text" id="progressText">Прогресс: 0 / 31 дней</div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
         <button class="btn-primary" style="width:auto; padding: 8px 15px; margin:0; font-size:0.8rem;" onclick="resetProgress()">Сброс</button>
     </div>
 
-    <!-- Сетка дней -->
     <div class="calendar-grid" id="grid"></div>
 
-    <!-- Модальное окно -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -273,13 +234,26 @@
             <img id="modalImg" class="modal-img" src="" alt="Иллюстрация">
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            <a id="modalVideo" class="video-link" href="#" target="_blank">🎬 Смотреть видеоурок / гайд</a>
+            <a id="modalVideo" class="video-link" href="#" target="_blank">🎬 Смотреть обучающий гайд</a>
             <button class="btn-primary" style="margin-top:20px;" onclick="toggleComplete()">Отметить пройденным ✓</button>
         </div>
     </div>
 
     <script>
-        // Детект устройства и показ инструкции
+        // Работа с датами
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth(); // 0-11
+        
+        // Автоматически определяем количество дней в текущем месяце
+        const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+        const monthKey = `${currentYear}_${currentMonth}`; // Ключ для хранения прогресса текущего месяца
+
+        document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
+
+        // PWA Инструкция
         const stepsContainer = document.getElementById('installSteps');
         const guideBlock = document.getElementById('installGuide');
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -289,15 +263,13 @@
             guideBlock.style.display = 'none';
         } else if (isIOS) {
             stepsContainer.innerHTML = `
-                <li>Нажмите кнопку <b>«Поделиться»</b> (квадрат со стрелкой внизу экрана Safari).</li>
-                <li>Прокрутите вниз и выберите <b>«На экран "Домой"»</b>.</li>
-                <li>Нажмите <b>«Добавить»</b> в правом верхнем углу.</li>
+                <li>Нажмите <b>«Поделиться»</b> (квадрат со стрелкой в Safari).</li>
+                <li>Выберите <b>«На экран "Домой"»</b> и нажмите <b>«Добавить»</b>.</li>
             `;
         } else {
             stepsContainer.innerHTML = `
-                <li>Нажмите на <b>три точки (меню)</b> в углу браузера (Chrome / Yandex).</li>
-                <li>Выберите пункт <b>«Установить приложение»</b> или <b>«На экран "Домой"»</b>.</li>
-                <li>Подтвердите установку.</li>
+                <li>Нажмите <b>меню (3 точки)</b> в браузере.</li>
+                <li>Выберите <b>«Установить приложение»</b> или <b>«На экран "Домой"»</b>.</li>
             `;
         }
 
@@ -306,33 +278,43 @@
             localStorage.setItem('hideGuide', 'true');
         }
 
-        // Данные календаря
-        const tasks = [
-            { day: 1, title: "01. Сенсорная пауза 🧊", category: "Сенсорика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Он завязывает ей глаза и проводит 20-минутный контрастный массаж льдом и горячим маслом без касания паха.", tip: "Совет: Ей разрешено только чувствовать.", video: "https://www.youtube.com/results?search_query=sensate+focus+massage+tutorial" },
-            { day: 2, title: "02. Цветок Лотоса 🧘‍♀️", category: "Камасутра", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Он сидит скрестив ноги, Она садится сверху, обнимая за шею. Минимальные фрикции, глубокие поцелуи и синхронное дыхание.", tip: "Совет: Поза для глубокой эмоциональной связи.", video: "https://www.youtube.com/results?search_query=lotus+position+couples" },
-            { day: 3, title: "03. Контроль Финиша ⏳", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Она полностью управляет процессом. Он не имеет права кончать без разрешения. Используйте 3 остановки на самом пике (Edging).", tip: "Совет: Выдерживайте длительные паузы.", video: "https://www.youtube.com/results?search_query=edging+technique+guide" },
-            { day: 4, title: "04. Техника CAT 💋", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "Миссионерская поза, где Мужчина смещается чуть выше. Движения скользящие, создающие непрерывное трение о клитор.", tip: "Совет: Подушка под крестец улучшит угол.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
-            { day: 5, title: "05. Шелковая Фиксация 🎀", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Нежная фиксация рук над головой шелковым шарфом. Полная отдача контроля и медленные ласки всего тела.", tip: "Совет: Действуйте плавно и нежно.", video: "https://www.youtube.com/results?search_query=soft+bondage+for+beginners" },
-            { day: 6, title: "06. Поза 'Раковина' 🌊", category: "Камасутра", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Она лежит на спине, закинув ноги на его плечи. Задавайте ритм движениями бедер и добавляйте стимуляцию пальцами.", tip: "Совет: Глубокий контакт и полный контроль темпа.", video: "https://www.youtube.com/results?search_query=kamasutra+positions+guide" },
-            { day: 7, title: "07. Экспресс-Страсть 🔥", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "Быстрый, спонтанный секс вне спальни (гостиная или ванная). Минимум длинных прелюдий, максимум страсти.", tip: "Совет: Выплесните накопленную за неделю энергию.", video: "https://www.youtube.com/results?search_query=spontaneous+intimacy+tips" }
+        // Базовая база заданий
+        const rawTasks = [
+            { title: "Сенсорная пауза 🧊", category: "Сенсорика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Он завязывает ей глаза и проводит 20-минутный контрастный массаж льдом и горячим маслом без касания паха.", tip: "Совет: Ей разрешено только чувствовать.", video: "https://www.youtube.com/results?search_query=sensate+focus+massage+tutorial" },
+            { title: "Цветок Лотоса 🧘‍♀️", category: "Камасутра", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Он сидит скрестив ноги, Она садится сверху, обнимая за шею. Минимальные фрикции, глубокие поцелуи и синхронное дыхание.", tip: "Совет: Поза для глубокой эмоциональной связи.", video: "https://www.youtube.com/results?search_query=lotus+position+couples" },
+            { title: "Контроль Финиша ⏳", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Она полностью управляет процессом. Он не имеет права кончать без разрешения. Используйте 3 остановки на самом пике (Edging).", tip: "Совет: Выдерживайте длительные паузы.", video: "https://www.youtube.com/results?search_query=edging+technique+guide" },
+            { title: "Техника CAT 💋", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "Миссионерская поза, где Мужчина смещается чуть выше. Движения скользящие, создающие непрерывное трение о клитор.", tip: "Совет: Подушка под крестец улучшит угол.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
+            { title: "Шелковая Фиксация 🎀", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Нежная фиксация рук над головой шелковым шарфом. Полная отдача контроля и медленные ласки всего тела.", tip: "Совет: Действуйте плавно и нежно.", video: "https://www.youtube.com/results?search_query=soft+bondage+for+beginners" },
+            { title: "Поза 'Раковина' 🌊", category: "Камасутра", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Она лежит на спине, закинув ноги на его плечи. Задавайте ритм движениями бедер и добавляйте стимуляцию пальцами.", tip: "Совет: Глубокий контакт и полный контроль темпа.", video: "https://www.youtube.com/results?search_query=kamasutra+positions+guide" },
+            { title: "Экспресс-Страсть 🔥", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "Быстрый, спонтанный секс вне спальни (гостиная или ванная). Минимум длинных прелюдий, максимум страсти.", tip: "Совет: Выплесните накопленную за неделю энергию.", video: "https://www.youtube.com/results?search_query=spontaneous+intimacy+tips" }
         ];
 
-        for (let i = 8; i <= 30; i++) {
-            const base = tasks[(i - 1) % 7];
-            tasks.push({
-                day: i,
-                title: `${i < 10 ? '0' + i : i}. ${base.title.split('. ')[1]}`,
-                category: base.category,
-                lead: base.lead,
-                roleClass: base.roleClass,
-                img: base.img,
-                task: base.task,
-                tip: base.tip,
-                video: base.video
-            });
+        // Генератор под текущий месяц
+        function generateMonthTasks() {
+            const result = [];
+            for (let day = 1; day <= daysInCurrentMonth; day++) {
+                // Вычисляем индекс карточки на основе дня и месяца
+                const index = (day + currentMonth * 3) % rawTasks.length;
+                const base = rawTasks[index];
+                result.push({
+                    day: day,
+                    title: `${day < 10 ? '0' + day : day}. ${base.title}`,
+                    category: base.category,
+                    lead: base.lead,
+                    roleClass: base.roleClass,
+                    img: base.img,
+                    task: base.task,
+                    tip: base.tip,
+                    video: base.video
+                });
+            }
+            return result;
         }
 
-        let completedDays = JSON.parse(localStorage.getItem('completedDays') || '[]');
+        const monthTasks = generateMonthTasks();
+
+        // Загрузка прогресса именно для ЭТОГО месяца
+        let completedDays = JSON.parse(localStorage.getItem(`completedDays_${monthKey}`) || '[]');
         let currentDay = null;
 
         function saveSettings() {
@@ -345,7 +327,7 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
             
-            tasks.forEach(task => {
+            monthTasks.forEach(task => {
                 const isCompleted = completedDays.includes(task.day);
                 const card = document.createElement('div');
                 card.className = `day-card ${isCompleted ? 'completed' : ''}`;
@@ -379,21 +361,21 @@
             } else {
                 completedDays.push(currentDay);
             }
-            localStorage.setItem('completedDays', JSON.stringify(completedDays));
+            localStorage.setItem(`completedDays_${monthKey}`, JSON.stringify(completedDays));
             renderGrid();
             closeModal();
         }
 
         function updateProgress() {
             const count = completedDays.length;
-            document.getElementById('progressText').innerText = `Прогресс: ${count} / 30 дней`;
-            document.getElementById('progressFill').style.width = `${(count / 30) * 100}%`;
+            document.getElementById('progressText').innerText = `Прогресс: ${count} / ${daysInCurrentMonth} дней`;
+            document.getElementById('progressFill').style.width = `${(count / daysInCurrentMonth) * 100}%`;
         }
 
         function resetProgress() {
-            if (confirm("Точно сбросить весь прогресс?")) {
+            if (confirm("Сбросить прогресс за текущий месяц?")) {
                 completedDays = [];
-                localStorage.removeItem('completedDays');
+                localStorage.removeItem(`completedDays_${monthKey}`);
                 renderGrid();
             }
         }
