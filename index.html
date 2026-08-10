@@ -47,7 +47,7 @@
             user-select: none;
         }
 
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
         header { text-align: center; max-width: 700px; margin-bottom: 10px; }
         h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
@@ -168,7 +168,6 @@
             transition: transform 0.2s;
         }
 
-        /* Статусы прохождения */
         .day-card.completed-both { border-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
         .day-card.completed-both::after { content: '✓✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
 
@@ -205,11 +204,17 @@
         .fav-toggle-btn { position: absolute; top: 18px; right: 50px; background: none; border: none; font-size: 1.3rem; cursor: pointer; }
         .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
         .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .video-link { display: inline-block; margin-top: 12px; color: var(--accent-gold); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
 
         .vote-options { display: flex; gap: 8px; margin-top: 10px; }
         .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
         .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
+
+        /* Стили для шпоры */
+        .cheat-tab-btn { flex: 1; padding: 8px; background: #0d0a12; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .cheat-tab-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 176, 126, 0.15); }
+        .cheat-item { background: #120f1a; border-left: 3px solid var(--accent-gold); padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0; text-align: left; }
+        .cheat-item h4 { margin: 0 0 6px 0; color: var(--accent-gold); font-size: 0.95rem; }
+        .cheat-item p { margin: 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
     </style>
 </head>
 <body>
@@ -236,10 +241,10 @@
         <div class="form-group">
             <label>Основной акцент на месяц:</label>
             <select class="form-control" id="preferenceSelect">
-                <option value="balanced">Микс (Полное разнообразие + Классика)</option>
+                <option value="balanced">Микс (Разнообразие поз, классики и BDSM)</option>
                 <option value="female_lead">Женское Доминирование (Она Ведёт)</option>
-                <option value="classic">Классика и Нежность</option>
-                <option value="kamasutra">Камасутра и Сложные Позы</option>
+                <option value="classic">Классика, Нежность и Поцелуи</option>
+                <option value="kamasutra">Камасутра и Акробатика</option>
                 <option value="bdsm">BDSM и Контроль</option>
             </select>
         </div>
@@ -250,6 +255,7 @@
         <div class="dash-top">
             <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
             <div class="dash-actions">
+                <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалки</button>
                 <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
                 <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
                 <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
@@ -267,6 +273,7 @@
 
     <div class="calendar-grid" id="grid"></div>
 
+    <!-- Модалка задания -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -282,6 +289,7 @@
         </div>
     </div>
 
+    <!-- Модалка Генератора совпадений -->
     <div class="modal-overlay" id="generatorModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeGeneratorModal()">&times;</button>
@@ -289,6 +297,61 @@
             <p style="font-size:0.85rem; color:var(--text-sub);">Отметьте желания анонимно. Приложение откроет только те практики, где ваши ответы совпадут!</p>
             <div id="surveyContainer" style="max-height: 50vh; overflow-y: auto;"></div>
             <button class="btn-primary" style="margin-top:15px;" onclick="checkMatches()">Найти Совпадения ✨</button>
+        </div>
+    </div>
+
+    <!-- Модалка Шпаргалок по оральному сексу -->
+    <div class="modal-overlay" id="cheatSheetModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeCheatSheetModal()">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Шпаргалка по Оральным Ласкам</h3>
+            
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="cheat-tab-btn active" id="btnKun" onclick="switchCheatTab('kun')">🌹 Для Неё (Кунилингус)</button>
+                <button class="cheat-tab-btn" id="btnMin" onclick="switchCheatTab('min')">👑 Для Него (Минет)</button>
+            </div>
+
+            <!-- Раздел Для Неё -->
+            <div id="cheatKunBlock">
+                <div class="cheat-item">
+                    <h4>1. Правило Треугольника 📐</h4>
+                    <p>Не начинайте сразу с клитора! Сначала ласкайте внутреннюю сторону бёдер, низ живота и половые губы, постепенно сужая круг к центру.</p>
+                </div>
+                <div class="cheat-item">
+                    <h4>2. Техника «Восьмерка» ♾️</h4>
+                    <p>Описывайте кончиком широкого и мягкого языка плавные восьмерки вокруг клитора, сочетая лёгкое всасывание и тёплое дыхание.</p>
+                </div>
+                <div class="cheat-item">
+                    <h4>3. Ручная поддержка 🖐️</h4>
+                    <p>Всегда используйте свободную руку: мягко расправляйте складки капюшона клитора или ласкайте точку G двумя пальцами изнутри.</p>
+                </div>
+                <div class="cheat-item">
+                    <h4>4. Стабильный ритм ⏱️</h4>
+                    <p>Когда она начинает приближаться к оргазму — НЕ меняйте темп и силу нажатия! Сохраняйте ровно тот ритм, на котором её накрыло.</p>
+                </div>
+            </div>
+
+            <!-- Раздел Для Него -->
+            <div id="cheatMinBlock" style="display:none;">
+                <div class="cheat-item">
+                    <h4>1. Скольжение и Смазка 💦</h4>
+                    <p>Главная ошибка — сухость. Используйте достаточное количество слюны или лубриканта на водной основе. Рука и губы должны скользить без трения.</p>
+                </div>
+                <div class="cheat-item">
+                    <h4>2. Техника «Твист» 🌀</h4>
+                    <p>Обхватите ствол рукой у основания и совершайте мягкие прокручивающие движения ладонью противоположно движению губ на головке.</p>
+                </div>
+                <div class="cheat-item">
+                    <h4>3. Внимание к Уздечке 🎯</h4>
+                    <p>Уздечка (нижняя сторона головки) — самая чувствительная зона. Уделяйте ей особое внимание кончиком языка с нежными поглаживаниями.</p>
+                </div>
+                <div class="cheat-item">
+                    <h4>4. Защита Зубов 👄</h4>
+                    <p>Всегда подворачивайте губы за зубы, создавая мягкий барьер. Варьируйте глубину только до комфортного для вас уровня.</p>
+                </div>
+            </div>
+
+            <button class="btn-primary" style="margin-top:10px;" onclick="closeCheatSheetModal()">Понятно, применяем! 🔥</button>
         </div>
     </div>
 
@@ -322,39 +385,55 @@
             "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
+            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
         ];
 
-        const database = {
-            female_lead: [
-                { id: "fl1", title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Вы можете делать паузы на пике его возбуждения." },
-                { id: "fl2", title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт." }
-            ],
-            classic: [
-                { id: "cl1", title: "Техника CAT (Коитальное Выравнивание)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец." },
-                { id: "cl2", title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту." }
-            ],
-            kamasutra: [
-                { id: "km1", title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею." }
-            ],
-            bdsm: [
-                { id: "bd1", title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи." }
-            ]
-        };
+        const masterDatabase = [
+            { id: "u01", cat: "classic", title: "Техника CAT (Коитальное Выравнивание)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Скользящие движения давят основания членов на клитор.", tip: "Совет: Подложите подушку под крестец." },
+            { id: "u02", cat: "classic", title: "Правило 20 Минут Поцелуев", lead: "🤝 Оба на равных", task: "20 минут непрерывных поцелуев губ, шеи и плеч без касания паховой зоны.", tip: "Совет: Создает огромный физический голод." },
+            { id: "u03", cat: "classic", title: "Миссионерская с Валиком (Точка G)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Плотная подушка под тазом девушки изменяет угол вхождения и задействует переднюю стенку.", tip: "Совет: Держите планомерный средний темп." },
+            { id: "u04", cat: "classic", title: "Синхронное Дыхание Глаза-в-Глаза", lead: "🤝 Оба на равных", task: "Медленный секс лицом к лицу. Дышите строго одновременно, не размыкая зрительного контакта.", tip: "Совет: Забудьте про скорость." },
+            { id: "u05", cat: "classic", title: "Секс при Свечах в Темноте", lead: "🤝 Оба на равных", task: "Полное отключение света. Ориентируйтесь только на слух, шепот и осязание.", tip: "Совет: Шепчите партнерше на ухо эмоции." },
+            { id: "u11", cat: "female_lead", title: "Классическая Наездница", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол.", tip: "Совет: Делайте паузы на пике его возбуждения." },
+            { id: "u12", cat: "female_lead", title: "Обратная Наездница с Наклоном", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сверху спиной к нему, отклоняясь назад. Полный контроль глубины и эстетичный вид.", tip: "Совет: Вращайте тазом по кругу." },
+            { id: "u21", cat: "kamasutra", title: "Поза 'Цветок Лотоса'", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка сверху. Поза для глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею." },
+            { id: "u31", cat: "bdsm", title: "Шелковая Фиксация Рук", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи." }
+        ];
+
+        for (let i = masterDatabase.length + 1; i <= 120; i++) {
+            const sample = masterDatabase[i % masterDatabase.length];
+            masterDatabase.push({
+                id: `u${i}`,
+                cat: sample.cat,
+                title: `${sample.title} (Практика ${i})`,
+                lead: sample.lead,
+                task: sample.task,
+                tip: sample.tip
+            });
+        }
 
         function getTasksForMonth(category) {
             let pool = (category === 'balanced') 
-                ? [...database.classic, ...database.female_lead, ...database.kamasutra, ...database.bdsm]
-                : (database[category] || database.classic);
+                ? [...masterDatabase]
+                : masterDatabase.filter(item => item.cat === category);
+
+            if (pool.length < daysInCurrentMonth) pool = [...masterDatabase];
+
+            const shuffled = [...pool].sort((a, b) => {
+                const hashA = (a.id.charCodeAt(1) * 31 + currentMonth * 17) % 100;
+                const hashB = (b.id.charCodeAt(1) * 31 + currentMonth * 17) % 100;
+                return hashA - hashB;
+            });
 
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
-                const base = pool[(day - 1) % pool.length];
+                const base = shuffled[day - 1];
                 result.push({
                     day: day,
-                    id: base.id || `item_${day}`,
+                    id: base.id,
                     title: `${day < 10 ? '0' + day : day}. ${base.title}`,
-                    category: base.category,
+                    category: base.cat === 'classic' ? 'Классика' : (base.cat === 'female_lead' ? 'Доминирование' : (base.cat === 'kamasutra' ? 'Камасутра' : 'BDSM')),
                     lead: base.lead,
                     roleClass: base.lead.includes("Она — Ведущая") ? "role-f" : (base.lead.includes("Он — Ведущий") ? "role-m" : "role-both"),
                     img: imgPool[(day - 1) % imgPool.length],
@@ -410,19 +489,16 @@
             if (!db || !pairCode) return;
             document.getElementById('syncBadge').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
             
-            // Синхронизация отметок Мужчины
             db.ref(`pairs/${pairCode}/${monthKey}/p1`).on('value', (snapshot) => {
                 p1Completed = snapshot.val() || [];
                 renderGrid();
             });
 
-            // Синхронизация отметок Женщины
             db.ref(`pairs/${pairCode}/${monthKey}/p2`).on('value', (snapshot) => {
                 p2Completed = snapshot.val() || [];
                 renderGrid();
             });
 
-            // Синхронизация Избранного
             db.ref(`pairs/${pairCode}/favDays`).on('value', (snapshot) => {
                 favDays = snapshot.val() || [];
                 renderGrid();
@@ -543,7 +619,6 @@
         }
 
         function updateProgress() {
-            // Считаем дни, выполненные ОБOИМИ партнерами
             const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
             const percent = Math.round((bothCount / daysInCurrentMonth) * 100);
             
@@ -560,6 +635,25 @@
             document.getElementById('achievement').innerText = badge;
         }
 
+        /* ЛОГИКА ШПАРАГАЛОК */
+        function openCheatSheetModal() { document.getElementById('cheatSheetModal').style.display = 'flex'; }
+        function closeCheatSheetModal() { document.getElementById('cheatSheetModal').style.display = 'none'; }
+        
+        function switchCheatTab(tab) {
+            if (tab === 'kun') {
+                document.getElementById('cheatKunBlock').style.display = 'block';
+                document.getElementById('cheatMinBlock').style.display = 'none';
+                document.getElementById('btnKun').classList.add('active');
+                document.getElementById('btnMin').classList.remove('active');
+            } else {
+                document.getElementById('cheatKunBlock').style.display = 'none';
+                document.getElementById('cheatMinBlock').style.display = 'block';
+                document.getElementById('btnMin').classList.add('active');
+                document.getElementById('btnKun').classList.remove('active');
+            }
+        }
+
+        /* ЛОГИКА СОВПАДЕНИЙ */
         let myVotes = {};
 
         function openGeneratorModal() {
