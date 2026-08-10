@@ -49,7 +49,7 @@
 
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
-        header { text-align: center; max-width: 700px; margin-bottom: 15px; }
+        header { text-align: center; max-width: 700px; margin-bottom: 10px; }
         h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
         .month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
 
@@ -78,7 +78,6 @@
 
         .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 6px; }
-        .form-row { display: flex; gap: 10px; }
         .form-control {
             width: 100%;
             padding: 12px;
@@ -102,25 +101,48 @@
             font-size: 1rem;
         }
 
+        .btn-secondary {
+            background: rgba(226, 176, 126, 0.15);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
         .dashboard {
             width: 100%;
             max-width: 900px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            flex-direction: column;
+            gap: 12px;
             background: var(--card-bg);
             padding: 15px 20px;
             border-radius: 14px;
             border: 1px solid var(--border);
+            margin-bottom: 20px;
         }
 
-        .progress-bar-container { flex: 1; min-width: 200px; }
-        .progress-text { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; }
+        .dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .progress-bar-container { width: 100%; }
+        .progress-text { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
         .progress-bar { height: 8px; background: #0d0a12; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent-gold); transition: width 0.3s; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); transition: width 0.3s; }
+
+        .achievement-badge {
+            background: rgba(163, 116, 219, 0.2);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 600;
+        }
 
         .calendar-grid {
             display: grid;
@@ -143,9 +165,12 @@
             justify-content: space-between;
             min-height: 120px;
             position: relative;
+            transition: transform 0.2s;
         }
         .day-card.completed { border-color: #4caf50; opacity: 0.75; }
         .day-card.completed::after { content: '✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
+        .day-card.fav::before { content: '⭐'; position: absolute; top: 8px; left: 10px; font-size: 0.8rem; }
+        .day-card.highlight { transform: scale(1.08); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); }
 
         .day-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-gold); }
         .day-category { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; margin-top: 4px; }
@@ -168,6 +193,7 @@
         }
 
         .close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-sub); font-size: 1.8rem; cursor: pointer; }
+        .fav-toggle-btn { position: absolute; top: 18px; right: 50px; background: none; border: none; font-size: 1.3rem; cursor: pointer; }
         .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
         .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .video-link { display: inline-block; margin-top: 12px; color: var(--accent-gold); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
@@ -184,7 +210,7 @@
     <div class="setup-card" id="setupCard">
         <h2>✨ Настройка пары</h2>
         <div class="form-group">
-            <label>Общий Код Пара (одинаковый у обоих):</label>
+            <label>Общий Код Пары (одинаковый у обоих):</label>
             <input type="text" class="form-control" placeholder="Например: LOVE2026" id="pairCodeInput">
         </div>
         <div class="form-group">
@@ -201,11 +227,21 @@
     </div>
 
     <div class="dashboard" id="dashboard" style="display:none;">
+        <div class="dash-top">
+            <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
+            <div class="dash-actions">
+                <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка дня</button>
+                <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐ Избранное</button>
+                <button class="btn-secondary" onclick="resetSettings()">⚙️</button>
+            </div>
+        </div>
         <div class="progress-bar-container">
-            <div class="progress-text" id="progressText"></div>
+            <div class="progress-text">
+                <span id="progressText">Прогресс: 0 / 30</span>
+                <span id="progressPercent">0%</span>
+            </div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
-        <button class="btn-primary" style="width:auto; padding: 8px 15px; margin:0; font-size:0.8rem;" onclick="resetSettings()">Настройки</button>
     </div>
 
     <div class="calendar-grid" id="grid"></div>
@@ -213,6 +249,7 @@
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
+            <button class="fav-toggle-btn" id="modalFavBtn" onclick="toggleCurrentFav()">☆</button>
             <h3 id="modalTitle" style="color:var(--accent-gold); margin-top:0;"></h3>
             <div id="modalRole" style="font-size:0.85rem; margin-bottom:10px;"></div>
             <div class="modal-img-container">
@@ -249,43 +286,30 @@
             "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
+            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
         ];
 
-        // БАЗА ДАННЫХ ДЛЯ РАЗНЫХ КАТЕГОРИЙ
         const database = {
             female_lead: [
-                { title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Вы можете делать паузы на пике его возбуждения.", video: "https://www.youtube.com/results?search_query=cowgirl+position+guide" },
-                { title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт.", video: "https://www.youtube.com/results?search_query=edging+and+denial+guide" },
-                { title: "Управление Руками Партнера", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она берет его запястья и сама двигает его руками по своему телу, задавая силу сжатия.", tip: "Совет: Ему запрещено проявление инициативы без команды.", video: "https://www.youtube.com/results?search_query=guided+touch+intimacy" }
+                { title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Делайте паузы на пике его возбуждения.", video: "https://www.youtube.com/results?search_query=cowgirl+position+guide" },
+                { title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт.", video: "https://www.youtube.com/results?search_query=edging+and+denial+guide" }
             ],
             classic: [
                 { title: "Техника CAT (Коитальное Выравнивание)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
-                { title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" },
-                { title: "Миссионерская с Валиком (Точка G)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Плотная подушка под крестцом изменяет угол вхождения и задействует переднюю стенку влагалища.", tip: "Совет: Держите планомерный средний темп.", video: "https://www.youtube.com/results?search_query=pillow+support+sex" },
-                { title: "Синхронное Дыхание Глаза-в-Глаза", category: "Нежность", lead: "🤝 Оба на равных", task: "Медленный секс лицом к лицу. Дышите строго одновременно, не размыкая зрительного контакта.", tip: "Совет: Забудьте про скорость, сфокусируйтесь на чувствах.", video: "https://www.youtube.com/results?search_query=tantric+breathwork" },
-                { title: "Секс при Свечах в Темноте", category: "Романтика", lead: "🤝 Оба на равных", task: "Полное отключение света и гаджетов. Ориентируйтесь только на слух, шепот и осязание.", tip: "Совет: Описывайте свои чувства вслух.", video: "https://www.youtube.com/results?search_query=sensory+romantic+sex" },
-                { title: "Замедленные 'Ложки'", category: "Классика", lead: "🤝 Оба на равных", task: "Оба на боку сзади. Очень уютная и интимная поза для длинного неспешного вечера с доступом к груди.", tip: "Совет: Идеально под расслабляющую музыку.", video: "https://www.youtube.com/results?search_query=spooning+sex+guide" }
+                { title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" }
             ],
             kamasutra: [
-                { title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею.", video: "https://www.youtube.com/results?search_query=lotus+pose+couples" },
-                { title: "Поза 'Раковина'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Девушка на спине с ногами на его плечах. Удобный угол для совмещения проникновения и ласк клитора.", tip: "Совет: Плавный ритм.", video: "https://www.youtube.com/results?search_query=sankha+position" }
+                { title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею.", video: "https://www.youtube.com/results?search_query=lotus+pose+couples" }
             ],
             bdsm: [
-                { title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи.", video: "https://www.youtube.com/results?search_query=silk+bondage+tutorial" },
-                { title: "Маска и Изоляция", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Полная изоляция слуха и зрения. Ведущая производит неожиданные касания.", tip: "Совет: Контраст льда и горячего дыхания.", video: "https://www.youtube.com/results?search_query=sensory+deprivation+bdsm" }
+                { title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи.", video: "https://www.youtube.com/results?search_query=silk+bondage+tutorial" }
             ]
         };
 
         function getTasksForMonth(category) {
-            let pool = [];
-            if (category === 'balanced') {
-                // В МИКС ВХОДЯТ ВСЕ КАТЕГОРИИ С ХОРОШЕЙ ДОЛЕЙ КЛАССИКИ
-                pool = [...database.classic, ...database.classic, ...database.female_lead, ...database.kamasutra, ...database.bdsm];
-            } else {
-                pool = database[category] || database.female_lead;
-            }
+            let pool = (category === 'balanced') 
+                ? [...database.classic, ...database.female_lead, ...database.kamasutra, ...database.bdsm]
+                : (database[category] || database.classic);
 
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
@@ -309,7 +333,9 @@
         let selectedCategory = localStorage.getItem('userCat') || 'balanced';
         let monthTasks = getTasksForMonth(selectedCategory);
         let completedDays = JSON.parse(localStorage.getItem(`completed_${monthKey}`) || '[]');
+        let favDays = JSON.parse(localStorage.getItem(`favDays`) || '[]');
         let currentDay = null;
+        let onlyFavFilter = false;
 
         if (pairCode) {
             document.getElementById('pairCodeInput').value = pairCode;
@@ -322,14 +348,11 @@
         function saveSettings() {
             pairCode = document.getElementById('pairCodeInput').value.trim().toUpperCase() || 'PAIR123';
             selectedCategory = document.getElementById('preferenceSelect').value;
-            
             localStorage.setItem('pairCode', pairCode);
             localStorage.setItem('userCat', selectedCategory);
-            
             monthTasks = getTasksForMonth(selectedCategory);
             document.getElementById('setupCard').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
-            
             initSync();
             renderGrid();
         }
@@ -342,7 +365,6 @@
         function initSync() {
             if (!db || !pairCode) return;
             document.getElementById('syncBadge').innerText = `🟢 Синхронно: Код [ ${pairCode} ]`;
-            
             db.ref(`pairs/${pairCode}/${monthKey}`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -357,10 +379,16 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
             
-            monthTasks.forEach(task => {
+            const tasksToRender = onlyFavFilter 
+                ? monthTasks.filter(t => favDays.includes(t.day)) 
+                : monthTasks;
+
+            tasksToRender.forEach(task => {
                 const isCompleted = completedDays.includes(task.day);
+                const isFav = favDays.includes(task.day);
                 const card = document.createElement('div');
-                card.className = `day-card ${isCompleted ? 'completed' : ''}`;
+                card.id = `card-day-${task.day}`;
+                card.className = `day-card ${isCompleted ? 'completed' : ''} ${isFav ? 'fav' : ''}`;
                 card.innerHTML = `
                     <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
                     <div class="day-category">${task.category}</div>
@@ -380,6 +408,9 @@
             document.getElementById('modalTask').innerText = task.task;
             document.getElementById('modalTip').innerText = task.tip;
             document.getElementById('modalVideo').href = task.video;
+            
+            const isFav = favDays.includes(task.day);
+            document.getElementById('modalFavBtn').innerText = isFav ? '⭐' : '☆';
             document.getElementById('modal').style.display = 'flex';
         }
 
@@ -391,21 +422,69 @@
             } else {
                 completedDays.push(currentDay);
             }
-            
             localStorage.setItem(`completed_${monthKey}`, JSON.stringify(completedDays));
-            
-            if (db && pairCode) {
-                db.ref(`pairs/${pairCode}/${monthKey}`).set(completedDays);
-            }
-            
+            if (db && pairCode) db.ref(`pairs/${pairCode}/${monthKey}`).set(completedDays);
             renderGrid();
             closeModal();
         }
 
+        function toggleCurrentFav() {
+            if (favDays.includes(currentDay)) {
+                favDays = favDays.filter(d => d !== currentDay);
+            } else {
+                favDays.push(currentDay);
+            }
+            localStorage.setItem('favDays', JSON.stringify(favDays));
+            document.getElementById('modalFavBtn').innerText = favDays.includes(currentDay) ? '⭐' : '☆';
+            renderGrid();
+        }
+
+        function toggleFavFilter() {
+            onlyFavFilter = !onlyFavFilter;
+            const btn = document.getElementById('favFilterBtn');
+            btn.style.background = onlyFavFilter ? 'var(--accent-gold)' : 'rgba(226, 176, 126, 0.15)';
+            btn.style.color = onlyFavFilter ? '#0f0d13' : 'var(--accent-gold)';
+            renderGrid();
+        }
+
+        // РУЛЕТКА ВЫБОРА ДНЯ
+        function spinRoulette() {
+            const available = monthTasks.filter(t => !completedDays.includes(t.day));
+            if (available.length === 0) {
+                alert("Все дни уже пройдены!");
+                return;
+            }
+            let count = 0;
+            const maxSpins = 12;
+            const interval = setInterval(() => {
+                const randomTask = available[Math.floor(Math.random() * available.length)];
+                document.querySelectorAll('.day-card').forEach(c => c.classList.remove('highlight'));
+                const el = document.getElementById(`card-day-${randomTask.day}`);
+                if (el) el.classList.add('highlight');
+                count++;
+                if (count >= maxSpins) {
+                    clearInterval(interval);
+                    setTimeout(() => openModal(randomTask), 300);
+                }
+            }, 100);
+        }
+
+        // ГЕЙМИФИКАЦИЯ И НАГРАДЫ
         function updateProgress() {
             const count = completedDays.length;
+            const percent = Math.round((count / daysInCurrentMonth) * 100);
+            
             document.getElementById('progressText').innerText = `Прогресс пары: ${count} / ${daysInCurrentMonth} дней`;
-            document.getElementById('progressFill').style.width = `${(count / daysInCurrentMonth) * 100}%`;
+            document.getElementById('progressPercent').innerText = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+
+            let badge = "🏆 Статус: Новички";
+            if (count >= 25) badge = "👑 Статус: Мастера Интимности";
+            else if (count >= 18) badge = "🔥 Статус: Огненный Союз";
+            else if (count >= 10) badge = "🧘‍♀️ Статус: Исследователи";
+            else if (count >= 3) badge = "✨ Статус: Первый Шаг";
+
+            document.getElementById('achievement').innerText = badge;
         }
     </script>
 </body>
