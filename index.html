@@ -145,6 +145,23 @@
             box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3);
         }
 
+        .btn-faceid {
+            background: rgba(163, 116, 219, 0.2);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 14px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
         .btn-secondary {
             background: rgba(226, 176, 126, 0.15);
             border: 1px solid var(--accent-gold);
@@ -320,10 +337,14 @@
         <div class="welcome-card">
             <h2 style="color: var(--accent-gold); margin-top: 0; font-size: 1.4rem;">✨ Добро пожаловать!</h2>
             <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 20px;">
-                Ваш персональный пространство для романтики, экспериментов и взаимного сближения.
+                Ваше персональное пространство для романтики, экспериментов и взаимного сближения.
             </p>
 
-            <div class="info-box">
+            <button class="btn-faceid" id="faceIdBtn" onclick="authenticateBiometrics()" style="display: none;">
+                👤 Войти по Face ID / Touch ID
+            </button>
+
+            <div class="info-box" style="margin-top: 15px;">
                 <b style="color: var(--accent-gold);">🔑 Инструкция по Коду Пары:</b><br>
                 1. Придумайте один <b>уникальный секретный код</b> только для вашей пары (например: <code>ALEX_NIKA2026</code>).<br>
                 2. Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне.<br>
@@ -355,6 +376,9 @@
             </div>
 
             <button class="btn-primary" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
+            <button class="btn-secondary" id="enableBiometricBtn" onclick="registerBiometrics()" style="margin-top: 12px; width: 100%; display: none;">
+                🔒 Включить Face ID / Touch ID для входа
+            </button>
         </div>
     </div>
 
@@ -794,16 +818,26 @@
         let currentDay = null;
         let onlyFavFilter = false;
 
-        // ПРОВЕРКА: ЕСЛИ УЖЕ ВХОДИЛИ РАНЕЕ - СРАЗУ ПОКАЗЫВАЕМ КАЛЕНДАРЬ
-        if (pairCode) {
-            document.getElementById('pairCodeInput').value = pairCode;
-            document.getElementById('userRoleSelect').value = userRole;
-            document.getElementById('preferenceSelect').value = selectedCategory;
-            
-            showCalendarScreen();
-        } else {
-            showLandingScreen();
-        }
+        // ПРОВЕРКА WEBAUTHN / FACE ID ПРИ ЗАГРУЗКЕ
+        window.onload = function() {
+            checkBiometricSupport();
+            if (pairCode) {
+                document.getElementById('pairCodeInput').value = pairCode;
+                document.getElementById('userRoleSelect').value = userRole;
+                document.getElementById('preferenceSelect').value = selectedCategory;
+                
+                // Если включена биометрия - запрашиваем вход по Face ID
+                if (localStorage.getItem('biometricsEnabled') === 'true') {
+                    document.getElementById('faceIdBtn').style.display = 'flex';
+                    showLandingScreen();
+                    authenticateBiometrics();
+                } else {
+                    showCalendarScreen();
+                }
+            } else {
+                showLandingScreen();
+            }
+        };
 
         function showLandingScreen() {
             document.getElementById('landingScreen').style.display = 'flex';
@@ -847,6 +881,70 @@
 
         function resetSettings() {
             showLandingScreen();
+        }
+
+        /* ЛОГИКА WEBAUTHN / FACE ID / TOUCH ID */
+        function checkBiometricSupport() {
+            if (window.PublicKeyCredential) {
+                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+                    .then(available => {
+                        if (available) {
+                            if (localStorage.getItem('biometricsEnabled') === 'true') {
+                                document.getElementById('faceIdBtn').style.display = 'flex';
+                            } else {
+                                document.getElementById('enableBiometricBtn').style.display = 'block';
+                            }
+                        }
+                    });
+            }
+        }
+
+        function registerBiometrics() {
+            if (!window.PublicKeyCredential) {
+                alert("Ваше устройство или браузер не поддерживают биометрию.");
+                return;
+            }
+
+            const publicKeyCredentialCreationOptions = {
+                challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+                rp: { name: "Чувственный Календарь" },
+                user: {
+                    id: new Uint8Array([1, 2, 3, 4]),
+                    name: pairCode || "User",
+                    displayName: userRole === 'p1' ? "Партнер 1" : "Партнер 2"
+                },
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                authenticatorSelection: { authenticatorAttachment: "platform" },
+                timeout: 60000
+            };
+
+            navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions })
+                .then(() => {
+                    localStorage.setItem('biometricsEnabled', 'true');
+                    alert("🎉 Вход по Face ID / Touch ID успешно подключен!");
+                    document.getElementById('enableBiometricBtn').style.display = 'none';
+                    document.getElementById('faceIdBtn').style.display = 'flex';
+                })
+                .catch(err => {
+                    console.log(err);
+                    alert("Биометрия не активирована или была отменена.");
+                });
+        }
+
+        function authenticateBiometrics() {
+            const publicKeyCredentialRequestOptions = {
+                challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+                timeout: 60000,
+                userVerification: "required"
+            };
+
+            navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions })
+                .then(assertion => {
+                    showCalendarScreen();
+                })
+                .catch(err => {
+                    console.log("Ошибка проверки Face ID:", err);
+                });
         }
 
         function initSync() {
