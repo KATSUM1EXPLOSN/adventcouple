@@ -383,7 +383,6 @@
             "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
         ];
 
-        // ЧЕТКАЯ БАЗА ЗАДАНИЙ С РАЗДЕЛЕНИЕМ ПО КАТЕГОРИЯМ
         const database = {
             classic: [
                 { id: "c1", title: "Техника CAT (Коитальное Выравнивание)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец." },
@@ -424,24 +423,28 @@
             ]
         };
 
-        // ТОЧНЫЙ ВЫБОР ДНЕЙ ДЛЯ ВЫБРАННОЙ КАТЕГОРИИ
-        function getTasksForMonth(category) {
+        // ДЕТЕРМИНИРОВАННЫЙ АЛГОРИТМ: ОДИНАКОВЫЙ ПОРЯДОК НА ВСЕХ УСТРОЙСТВАХ В ПАРЕ
+        function getTasksForMonth(category, code) {
             let pool = [];
-            
             if (category === 'balanced') {
                 pool = [...database.classic, ...database.female_lead, ...database.kamasutra, ...database.bdsm];
             } else {
                 pool = database[category] || database.classic;
             }
 
+            // Хэш-функция из Кода Пары для 100% совпадения карточек у двоих
+            let seed = 0;
+            for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
+
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
-                const base = pool[(day - 1) % pool.length];
+                const index = (day + currentMonth * 7 + seed) % pool.length;
+                const base = pool[index];
                 
                 let catLabel = 'Классика';
-                if (category === 'female_lead' || base.id.startsWith('f')) catLabel = 'Доминирование';
-                else if (category === 'kamasutra' || base.id.startsWith('k')) catLabel = 'Камасутра';
-                else if (category === 'bdsm' || base.id.startsWith('b')) catLabel = 'BDSM';
+                if (base.id.startsWith('f')) catLabel = 'Доминирование';
+                else if (base.id.startsWith('k')) catLabel = 'Камасутра';
+                else if (base.id.startsWith('b')) catLabel = 'BDSM';
 
                 result.push({
                     day: day,
@@ -461,7 +464,7 @@
         let pairCode = localStorage.getItem('pairCode') || '';
         let userRole = localStorage.getItem('userRole') || 'p1';
         let selectedCategory = localStorage.getItem('userCat') || 'balanced';
-        let monthTasks = getTasksForMonth(selectedCategory);
+        let monthTasks = getTasksForMonth(selectedCategory, pairCode);
         
         let p1Completed = [];
         let p2Completed = [];
@@ -488,7 +491,7 @@
             localStorage.setItem('userRole', userRole);
             localStorage.setItem('userCat', selectedCategory);
             
-            monthTasks = getTasksForMonth(selectedCategory);
+            monthTasks = getTasksForMonth(selectedCategory, pairCode);
             document.getElementById('setupCard').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
             initSync();
@@ -504,12 +507,13 @@
             if (!db || !pairCode) return;
             document.getElementById('syncBadge').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
             
-            db.ref(`pairs/${pairCode}/${monthKey}/p1`).on('value', (snapshot) => {
+            // Загружаем прогресс СТРОГО для текущей категории
+            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
                 p1Completed = snapshot.val() || [];
                 renderGrid();
             });
 
-            db.ref(`pairs/${pairCode}/${monthKey}/p2`).on('value', (snapshot) => {
+            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).on('value', (snapshot) => {
                 p2Completed = snapshot.val() || [];
                 renderGrid();
             });
@@ -584,8 +588,9 @@
             if (userRole === 'p1') p1Completed = myCompleted;
             else p2Completed = myCompleted;
 
+            // Запись в Firebase раздельно под категорию
             if (db && pairCode) {
-                db.ref(`pairs/${pairCode}/${monthKey}/${userRole}`).set(myCompleted);
+                db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(myCompleted);
             }
             
             renderGrid();
