@@ -197,6 +197,11 @@
         .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
         .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .video-link { display: inline-block; margin-top: 12px; color: var(--accent-gold); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+
+        /* Стиль для генератора совпадений */
+        .vote-options { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
+        .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -212,6 +217,13 @@
         <div class="form-group">
             <label>Общий Код Пары (одинаковый у обоих):</label>
             <input type="text" class="form-control" placeholder="Например: LOVE2026" id="pairCodeInput">
+        </div>
+        <div class="form-group">
+            <label>Ваш профиль в паре:</label>
+            <select class="form-control" id="userRoleSelect">
+                <option value="p1">Мужчина (Партнер 1)</option>
+                <option value="p2">Женщина (Партнер 2)</option>
+            </select>
         </div>
         <div class="form-group">
             <label>Основной акцент на месяц:</label>
@@ -230,14 +242,15 @@
         <div class="dash-top">
             <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
             <div class="dash-actions">
-                <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка дня</button>
-                <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐ Избранное</button>
+                <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Генератор Совпадений</button>
+                <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
+                <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
                 <button class="btn-secondary" onclick="resetSettings()">⚙️</button>
             </div>
         </div>
         <div class="progress-bar-container">
             <div class="progress-text">
-                <span id="progressText">Прогресс: 0 / 30</span>
+                <span id="progressText">Прогресс пары: 0 / 30</span>
                 <span id="progressPercent">0%</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -246,6 +259,7 @@
 
     <div class="calendar-grid" id="grid"></div>
 
+    <!-- Модальное окно дня -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -259,6 +273,17 @@
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
             <a id="modalVideo" class="video-link" href="#" target="_blank">🎬 Обучающий материал / гайд</a>
             <button class="btn-primary" style="margin-top:20px;" onclick="toggleComplete()">Отметить пройденным ✓</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно Генератора Совпадений (Yes/No/Maybe) -->
+    <div class="modal-overlay" id="generatorModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeGeneratorModal()">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0;">🔮 Генератор Совпадений</h3>
+            <p style="font-size:0.85rem; color:var(--text-sub);">Отметьте желания анонимно. Приложение откроет только те практики, где ваши ответы совпадут!</p>
+            <div id="surveyContainer" style="max-height: 50vh; overflow-y: auto;"></div>
+            <button class="btn-primary" style="margin-top:15px;" onclick="checkMatches()">Найти Совпадения ✨</button>
         </div>
     </div>
 
@@ -286,23 +311,24 @@
             "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
+            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
         ];
 
         const database = {
             female_lead: [
-                { title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Делайте паузы на пике его возбуждения.", video: "https://www.youtube.com/results?search_query=cowgirl+position+guide" },
-                { title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт.", video: "https://www.youtube.com/results?search_query=edging+and+denial+guide" }
+                { id: "fl1", title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Вы можете делать паузы на пике его возбуждения.", video: "https://www.youtube.com/results?search_query=cowgirl+position+guide" },
+                { id: "fl2", title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт.", video: "https://www.youtube.com/results?search_query=edging+and+denial+guide" }
             ],
             classic: [
-                { title: "Техника CAT (Коитальное Выравнивание)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
-                { title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" }
+                { id: "cl1", title: "Техника CAT (Коитальное Выравнивание)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
+                { id: "cl2", title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" }
             ],
             kamasutra: [
-                { title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею.", video: "https://www.youtube.com/results?search_query=lotus+pose+couples" }
+                { id: "km1", title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею.", video: "https://www.youtube.com/results?search_query=lotus+pose+couples" }
             ],
             bdsm: [
-                { title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи.", video: "https://www.youtube.com/results?search_query=silk+bondage+tutorial" }
+                { id: "bd1", title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи.", video: "https://www.youtube.com/results?search_query=silk+bondage+tutorial" }
             ]
         };
 
@@ -316,6 +342,7 @@
                 const base = pool[(day - 1) % pool.length];
                 result.push({
                     day: day,
+                    id: base.id || `item_${day}`,
                     title: `${day < 10 ? '0' + day : day}. ${base.title}`,
                     category: base.category,
                     lead: base.lead,
@@ -330,6 +357,7 @@
         }
 
         let pairCode = localStorage.getItem('pairCode') || '';
+        let userRole = localStorage.getItem('userRole') || 'p1';
         let selectedCategory = localStorage.getItem('userCat') || 'balanced';
         let monthTasks = getTasksForMonth(selectedCategory);
         let completedDays = JSON.parse(localStorage.getItem(`completed_${monthKey}`) || '[]');
@@ -339,6 +367,7 @@
 
         if (pairCode) {
             document.getElementById('pairCodeInput').value = pairCode;
+            document.getElementById('userRoleSelect').value = userRole;
             document.getElementById('setupCard').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
             initSync();
@@ -347,9 +376,13 @@
 
         function saveSettings() {
             pairCode = document.getElementById('pairCodeInput').value.trim().toUpperCase() || 'PAIR123';
+            userRole = document.getElementById('userRoleSelect').value;
             selectedCategory = document.getElementById('preferenceSelect').value;
+            
             localStorage.setItem('pairCode', pairCode);
+            localStorage.setItem('userRole', userRole);
             localStorage.setItem('userCat', selectedCategory);
+            
             monthTasks = getTasksForMonth(selectedCategory);
             document.getElementById('setupCard').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
@@ -364,7 +397,7 @@
 
         function initSync() {
             if (!db || !pairCode) return;
-            document.getElementById('syncBadge').innerText = `🟢 Синхронно: Код [ ${pairCode} ]`;
+            document.getElementById('syncBadge').innerText = `🟢 Синхронно: Код [ ${pairCode} ] (${userRole === 'p1' ? 'Он' : 'Она'})`;
             db.ref(`pairs/${pairCode}/${monthKey}`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -447,29 +480,26 @@
             renderGrid();
         }
 
-        // РУЛЕТКА ВЫБОРА ДНЯ
         function spinRoulette() {
             const available = monthTasks.filter(t => !completedDays.includes(t.day));
             if (available.length === 0) {
-                alert("Все дни уже пройдены!");
+                alert("Все дни пройдены!");
                 return;
             }
             let count = 0;
-            const maxSpins = 12;
             const interval = setInterval(() => {
                 const randomTask = available[Math.floor(Math.random() * available.length)];
                 document.querySelectorAll('.day-card').forEach(c => c.classList.remove('highlight'));
                 const el = document.getElementById(`card-day-${randomTask.day}`);
                 if (el) el.classList.add('highlight');
                 count++;
-                if (count >= maxSpins) {
+                if (count >= 12) {
                     clearInterval(interval);
                     setTimeout(() => openModal(randomTask), 300);
                 }
             }, 100);
         }
 
-        // ГЕЙМИФИКАЦИЯ И НАГРАДЫ
         function updateProgress() {
             const count = completedDays.length;
             const percent = Math.round((count / daysInCurrentMonth) * 100);
@@ -485,6 +515,80 @@
             else if (count >= 3) badge = "✨ Статус: Первый Шаг";
 
             document.getElementById('achievement').innerText = badge;
+        }
+
+        /* ЛОГИКА ГЕНЕРАТОРА СОВПАДЕНИЙ (YES/NO/MAYBE) */
+        let myVotes = {};
+
+        function openGeneratorModal() {
+            const container = document.getElementById('surveyContainer');
+            container.innerHTML = '';
+            
+            monthTasks.forEach(task => {
+                const div = document.createElement('div');
+                div.style.marginBottom = "15px";
+                div.style.background = "#120f1a";
+                div.style.padding = "10px";
+                div.style.borderRadius = "10px";
+                div.innerHTML = `
+                    <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold);">${task.title}</div>
+                    <div class="vote-options">
+                        <button class="btn-vote" onclick="setVote('${task.id}', 'yes', this)">Да 🔥</button>
+                        <button class="btn-vote" onclick="setVote('${task.id}', 'maybe', this)">Возможно 💭</button>
+                        <button class="btn-vote" onclick="setVote('${task.id}', 'no', this)">Нет ❌</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('generatorModal').style.display = 'flex';
+        }
+
+        function closeGeneratorModal() { document.getElementById('generatorModal').style.display = 'none'; }
+
+        function setVote(taskId, voteVal, btnEl) {
+            myVotes[taskId] = voteVal;
+            const parent = btnEl.parentElement;
+            parent.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('selected'));
+            btnEl.classList.add('selected');
+        }
+
+        function checkMatches() {
+            if (!db || !pairCode) {
+                alert("Для работы генератора совпадений включите код пары!");
+                return;
+            }
+
+            // Сохраняем свои голоса в Firebase
+            db.ref(`votes/${pairCode}/${userRole}`).set(myVotes);
+
+            // Получаем голоса партнера
+            const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+            db.ref(`votes/${pairCode}/${partnerRole}`).once('value', (snapshot) => {
+                const partnerVotes = snapshot.val() || {};
+                
+                let matchesCount = 0;
+                monthTasks.forEach(task => {
+                    const myV = myVotes[task.id];
+                    const pV = partnerVotes[task.id];
+                    
+                    // Совпадение: оба "yes" или ("yes" + "maybe")
+                    if ((myV === 'yes' && pV === 'yes') || (myV === 'yes' && pV === 'maybe') || (myV === 'maybe' && pV === 'yes')) {
+                        if (!favDays.includes(task.day)) favDays.push(task.day);
+                        matchesCount++;
+                    }
+                });
+
+                localStorage.setItem('favDays', JSON.stringify(favDays));
+                renderGrid();
+                closeGeneratorModal();
+
+                if (matchesCount > 0) {
+                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они автоматически добавлены в вашу папку Избранного ⭐`);
+                } else {
+                    alert("Партнер еще не прошел опрос или нет полных совпадений. Данные обновятся, когда партнер закончит!");
+                }
+            });
         }
     </script>
 </body>
