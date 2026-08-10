@@ -177,7 +177,11 @@
         .day-card.completed-p2 { border-color: var(--accent-purple); }
         .day-card.completed-p2::after { content: 'Ж'; position: absolute; top: 8px; right: 10px; color: var(--accent-purple); font-size: 0.75rem; font-weight: bold; }
 
-        .day-card.fav::before { content: '⭐'; position: absolute; top: 8px; left: 10px; font-size: 0.8rem; }
+        .fav-tag { position: absolute; top: 8px; left: 8px; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 8px; }
+        .fav-p1 { background: rgba(230, 126, 144, 0.25); color: var(--accent-rose); border: 1px solid var(--accent-rose); }
+        .fav-p2 { background: rgba(163, 116, 219, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+        .fav-both { background: rgba(226, 176, 126, 0.25); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+
         .day-card.highlight { transform: scale(1.08); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); }
 
         .day-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-gold); }
@@ -211,9 +215,43 @@
 
         .cheat-tab-btn { flex: 1; padding: 8px; background: #0d0a12; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
         .cheat-tab-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 176, 126, 0.15); }
+        
         .cheat-item { background: #120f1a; border-left: 3px solid var(--accent-gold); padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0; text-align: left; }
         .cheat-item h4 { margin: 0 0 6px 0; color: var(--accent-gold); font-size: 0.95rem; }
-        .cheat-item p { margin: 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
+        .cheat-item p { margin: 0 0 8px 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
+        .cheat-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .cheat-link { font-size: 0.75rem; color: var(--accent-rose); text-decoration: none; font-weight: 600; }
+
+        /* СПОЙЛЕРЫ ДЛЯ АНАТОМИЧЕСКИХ СХЕМ */
+        details.anatomy-spoiler {
+            background: #0d0a12;
+            border: 1px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        details.anatomy-spoiler summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--accent-purple);
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .anatomy-content {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: var(--text-sub);
+        }
+        .anatomy-img {
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+        }
     </style>
 </head>
 <body>
@@ -254,7 +292,7 @@
         <div class="dash-top">
             <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
             <div class="dash-actions">
-                <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалки</button>
+                <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалки (20 техник)</button>
                 <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
                 <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
                 <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
@@ -272,6 +310,7 @@
 
     <div class="calendar-grid" id="grid"></div>
 
+    <!-- Модалка задания -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -287,6 +326,7 @@
         </div>
     </div>
 
+    <!-- Модалка Генератора совпадений -->
     <div class="modal-overlay" id="generatorModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeGeneratorModal()">&times;</button>
@@ -297,55 +337,154 @@
         </div>
     </div>
 
+    <!-- ШПАРГАЛКА С АНАТОМИЧЕСКИМИ СПОЙЛЕРАМИ И 20 ТЕХНИКАМИ -->
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeCheatSheetModal()">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Шпаргалка по Оральным Ласкам</h3>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Мастер-Гайд по Оральным Ласкам</h3>
             
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="cheat-tab-btn active" id="btnKun" onclick="switchCheatTab('kun')">🌹 Для Неё (Кунилингус)</button>
-                <button class="cheat-tab-btn" id="btnMin" onclick="switchCheatTab('min')">👑 Для Него (Минет)</button>
+                <button class="cheat-tab-btn active" id="btnKun" onclick="switchCheatTab('kun')">🌹 Для Неё (10 техник)</button>
+                <button class="cheat-tab-btn" id="btnMin" onclick="switchCheatTab('min')">👑 Для Него (10 техник)</button>
             </div>
 
+            <!-- Вкладка ДЛЯ НЕЁ -->
             <div id="cheatKunBlock">
+                <details class="anatomy-spoiler">
+                    <summary>🗺️ Анатомическая схема эрогенных зон (Спойлер)</summary>
+                    <div class="anatomy-content">
+                        <img class="anatomy-img" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80" alt="Анатомия Клитора">
+                        <b>Ключевые точки стимуляции:</b><br>
+                        • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний. Требует обильной смазки и непрямых скользящих ласк.<br>
+                        • <b>Ножки клитора:</b> Уходят внутрь вдоль малых губ. Стимулируются нажатием пальцев по бокам.<br>
+                        • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см (шершавая поверхность).
+                    </div>
+                </details>
+
                 <div class="cheat-item">
-                    <h4>1. Правило Треугольника 📐</h4>
-                    <p>Не начинайте сразу с клитора! Сначала ласкайте внутреннюю сторону бёдер, низ живота и половые губы, постепенно сужая круг к центру.</p>
+                    <h4>1. Техника «Треугольник и Восьмерка» 📐</h4>
+                    <p>Начинайте с бедер и половых губ. Затем описывайте кончиком плоского языка плавные восьмерки вокруг клитора, сочетая с тёплым дыханием.</p>
+                    <div class="cheat-links">
+                        <a class="cheat-link" href="https://www.youtube.com/results?search_query=cunnilingus+technique+guide" target="_blank">▶️ YouTube</a>
+                        <a class="cheat-link" href="https://www.tiktok.com/tag/cunnilingustips" target="_blank">📱 TikTok</a>
+                    </div>
                 </div>
                 <div class="cheat-item">
-                    <h4>2. Техника «Восьмерка» ♾️</h4>
-                    <p>Описывайте кончиком широкого и мягкого языка плавные восьмерки вокруг клитора, сочетая лёгкое всасывание и тёплое дыхание.</p>
+                    <h4>2. Волновое Всасывание (Kisses) 💋</h4>
+                    <p>Обхватите клитор губами, создавая легкий вакуум. Совершайте пульсирующие всасывающие движения, регулируя силу щеками.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=clitoral+suction+technique" target="_blank">▶️ YouTube</a></div>
                 </div>
                 <div class="cheat-item">
-                    <h4>3. Ручная поддержка 🖐️</h4>
-                    <p>Всегда используйте свободную руку: мягко расправляйте складки капюшона клитора или ласкайте точку G двумя пальцами изнутри.</p>
+                    <h4>3. Синергия Пальцев (Комбо Точка G) ✌️</h4>
+                    <p>Совмещайте оральные ласки клитора с введением 1–2 пальцев во влагалище подушечками вверх, совершая манящие движения к себе.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=g+spot+combo+oral" target="_blank">▶️ YouTube</a></div>
                 </div>
                 <div class="cheat-item">
-                    <h4>4. Стабильный ритм ⏱️</h4>
-                    <p>Когда она начинает приближаться к оргазму — НЕ меняйте темп и силу нажатия! Сохраняйте ровно тот ритм, на котором её накрыло.</p>
+                    <h4>4. Заморозка Ритма на Пике ⏱️</h4>
+                    <p>Когда она начинает изгибаться и стонать — НЕ ускоряйтесь и НЕ меняйте угол! Держите строго один и тот же темп до финиша.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=female+orgasm+rhythm+guide" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>5. Бабочка Ануса и Уздечки 🦋</h4>
+                    <p>Совершайте легкие касания кончиком языка промежности между влагалищем и анусом. Эта зона имеет единые нервные узлы с клитором.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=perineum+stimulation+women" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>6. «Алфавит» Языком 🔤</h4>
+                    <p>Мысленно выводите кончиком языка буквы алфавита по капюшону клитора. Отличный способ дать партнерше разнообразие ощущений.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=alphabet+oral+technique" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>7. Растяжка капюшона (Двуручная) 🖐️</h4>
+                    <p>Двумя пальцами одной руки аккуратно натягивайте кожу выше клитора, расправляя капюшон для прямого и чувствительного доступа языка.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=clitoral+hood+stretching" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>8. Ледяной / Горячий контраст 🧊</h4>
+                    <p>Подержите во рту кусочек льда или глоток теплого чая перед касанием клитора. Контраст температур невероятно обостряет чувства.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=temperature+play+oral" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>9. Боковое Скольжение (Side-to-Side) ↔️</h4>
+                    <p>Скользите широким основанием языка слева направо по клитору без прямых толчков в головку, снижая риск перенасыщения чувствительности.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=side+to+side+cunnilingus" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>10. Поршневой Губной Вакуум 🌊</h4>
+                    <p>Плотно прижмите губы к малым губам вокруг клитора и совершайте мягкие втягивающие движения без участия зубов.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=piston+oral+technique" target="_blank">▶️ YouTube</a></div>
                 </div>
             </div>
 
+            <!-- Вкладка ДЛЯ НЕГО -->
             <div id="cheatMinBlock" style="display:none;">
+                <details class="anatomy-spoiler">
+                    <summary>🗺️ Анатомическая схема эрогенных зон (Спойлер)</summary>
+                    <div class="anatomy-content">
+                        <img class="anatomy-img" src="https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80" alt="Анатомия Мужчины">
+                        <b>Ключевые точки стимуляции:</b><br>
+                        • <b>Уздечка:</b> Треугольная зона снизу под головкой. Самое чувствительное место.<br>
+                        • <b>Венечная борозда:</b> Ободок вокруг головки. Очень чувствителен к языковым круговым движениям.<br>
+                        • <b>Промежность (Шов):</b> Зона между мошонкой и анусом. Легкое нажатие пальцем перед финишем усиливает ощутимую разрядку.
+                    </div>
+                </details>
+
                 <div class="cheat-item">
-                    <h4>1. Скольжение и Смазка 💦</h4>
-                    <p>Главная ошибка — сухость. Используйте достаточное количество слюны или лубриканта на водной основе. Рука и губы должны скользить без трения.</p>
+                    <h4>1. Техника «Твист и Взгляд» 🌀</h4>
+                    <p>Обхватите ствол рукой у основания, двигая ладонь с прокручиванием противоположно ласкам губ на головке. Поддерживайте зрительный контакт.</p>
+                    <div class="cheat-links">
+                        <a class="cheat-link" href="https://www.youtube.com/results?search_query=blowjob+technique+hand+rotation" target="_blank">▶️ YouTube</a>
+                        <a class="cheat-link" href="https://www.tiktok.com/tag/relationshipadvice" target="_blank">📱 TikTok</a>
+                    </div>
                 </div>
                 <div class="cheat-item">
-                    <h4>2. Техника «Твист» 🌀</h4>
-                    <p>Обхватите ствол рукой у основания и совершайте мягкие прокручивающие движения ладонью противоположно движению губ на головке.</p>
+                    <h4>2. Акцент на Уздечку 🎯</h4>
+                    <p>Самая чувствительная зона — уздечка под головкой. Ласкайте её плоской стороной языка быстрыми, но очень нежными штрихами.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=frenulum+stimulation+guide" target="_blank">▶️ YouTube</a></div>
                 </div>
                 <div class="cheat-item">
-                    <h4>3. Внимание к Уздечке 🎯</h4>
-                    <p>Уздечка (нижняя сторона головки) — самая чувствительная зона. Уделяйте ей особое внимание кончиком языка с нежными поглаживаниями.</p>
+                    <h4>3. Глубокое Всасывание с Вакуумом 🌊</h4>
+                    <p>Подворачивайте губы за зубы. Создавайте комфортный вакуум щеками при движении вверх, мягко массируя промежность второй рукой.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=deep+oral+pleasure+tips" target="_blank">▶️ YouTube</a></div>
                 </div>
                 <div class="cheat-item">
-                    <h4>4. Защита Зубов 👄</h4>
-                    <p>Всегда подворачивайте губы за зубы, создавая мягкий барьер. Варьируйте глубину только до комфортного для вас уровня.</p>
+                    <h4>4. Горячий и Холодный Контраст 🧊</h4>
+                    <p>Возьмите перед актом глоток теплого чая, а затем кусочек льда. Контраст температур на головке дает взрывной всплеск эмоций.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=ice+and+warmth+sensory+sex" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>5. Массаж Мошонки и Промежности 🤲</h4>
+                    <p>Пока одна рука и губы заняты стволом, второй рукой нежно сжимайте мошонку или делайте круговые нажатия на точку промежности.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=testicle+massage+technique" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>6. Техника «Бабочка» на Головке 🦋</h4>
+                    <p>Совершайте трепещущие быструю вибрирующие касания кончиком языка вокруг венечной борозды головки.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=corona+glans+stimulation" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>7. Глубокий Прием (Deep Throat) 😮</h4>
+                    <p>Расслабьте горло, сожмите большой палец левой руки в кулак (подавляет рвотный рефлекс) и направляйте ствол вдоль неба.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=deepthroat+gag+reflex+technique" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>8. Техника «Помпа» (Двуручная) 🪠</h4>
+                    <p>Сложите две ладони кольцом друг над другом, имитируя вакуумную помпу, с ласками только самого кончика головки губами сверху.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=two+hands+oral+blowjob" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>9. Дразнение У основания 🛑</h4>
+                    <p>Остановитесь на пару секунд у самого основания ствола, массируя его губами и языком, не касаясь головки. Это распаляет его желание.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=edging+oral+technique" target="_blank">▶️ YouTube</a></div>
+                </div>
+                <div class="cheat-item">
+                    <h4>10. Скольжение со Смазкой на Водной Основе 🧴</h4>
+                    <p>Нанесите каплю капельного лубриканта прямо на головку. Это уберет малейшее трение и сделает ласки невероятно шелковистыми.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=lube+oral+sex+guide" target="_blank">▶️ YouTube</a></div>
                 </div>
             </div>
 
-            <button class="btn-primary" style="margin-top:10px;" onclick="closeCheatSheetModal()">Понятно, применяем! 🔥</button>
+            <button class="btn-primary" style="margin-top:10px;" onclick="closeCheatSheetModal()">Применяем! 🔥</button>
         </div>
     </div>
 
@@ -423,7 +562,6 @@
             ]
         };
 
-        // ДЕТЕРМИНИРОВАННЫЙ АЛГОРИТМ: ОДИНАКОВЫЙ ПОРЯДОК НА ВСЕХ УСТРОЙСТВАХ В ПАРЕ
         function getTasksForMonth(category, code) {
             let pool = [];
             if (category === 'balanced') {
@@ -432,7 +570,6 @@
                 pool = database[category] || database.classic;
             }
 
-            // Хэш-функция из Кода Пары для 100% совпадения карточек у двоих
             let seed = 0;
             for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
 
@@ -468,7 +605,8 @@
         
         let p1Completed = [];
         let p2Completed = [];
-        let favDays = [];
+        let p1Fav = [];
+        let p2Fav = [];
         let currentDay = null;
         let onlyFavFilter = false;
 
@@ -507,7 +645,6 @@
             if (!db || !pairCode) return;
             document.getElementById('syncBadge').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
             
-            // Загружаем прогресс СТРОГО для текущей категории
             db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
                 p1Completed = snapshot.val() || [];
                 renderGrid();
@@ -518,8 +655,13 @@
                 renderGrid();
             });
 
-            db.ref(`pairs/${pairCode}/favDays`).on('value', (snapshot) => {
-                favDays = snapshot.val() || [];
+            db.ref(`pairs/${pairCode}/fav/p1`).on('value', (snapshot) => {
+                p1Fav = snapshot.val() || [];
+                renderGrid();
+            });
+
+            db.ref(`pairs/${pairCode}/fav/p2`).on('value', (snapshot) => {
+                p2Fav = snapshot.val() || [];
                 renderGrid();
             });
         }
@@ -528,14 +670,17 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
             
+            const allFavDays = [...new Set([...p1Fav, ...p2Fav])];
             const tasksToRender = onlyFavFilter 
-                ? monthTasks.filter(t => favDays.includes(t.day)) 
+                ? monthTasks.filter(t => allFavDays.includes(t.day)) 
                 : monthTasks;
 
             tasksToRender.forEach(task => {
                 const hasP1 = p1Completed.includes(task.day);
                 const hasP2 = p2Completed.includes(task.day);
-                const isFav = favDays.includes(task.day);
+                
+                const isFavP1 = p1Fav.includes(task.day);
+                const isFavP2 = p2Fav.includes(task.day);
                 
                 const card = document.createElement('div');
                 card.id = `card-day-${task.day}`;
@@ -545,8 +690,15 @@
                 else if (hasP1) statusClass = 'completed-p1';
                 else if (hasP2) statusClass = 'completed-p2';
 
-                card.className = `day-card ${statusClass} ${isFav ? 'fav' : ''}`;
+                card.className = `day-card ${statusClass}`;
+                
+                let favTagHTML = '';
+                if (isFavP1 && isFavP2) favTagHTML = `<div class="fav-tag fav-both">⭐ М+Ж</div>`;
+                else if (isFavP1) favTagHTML = `<div class="fav-tag fav-p1">⭐ М</div>`;
+                else if (isFavP2) favTagHTML = `<div class="fav-tag fav-p2">⭐ Ж</div>`;
+
                 card.innerHTML = `
+                    ${favTagHTML}
                     <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
                     <div class="day-category">${task.category}</div>
                     <div class="day-role ${task.roleClass}">${task.lead.split(' ')[1]}</div>
@@ -569,7 +721,8 @@
             const isDone = myCompleted.includes(task.day);
             document.getElementById('completeBtn').innerText = isDone ? 'Отменить отметку ✖' : 'Отметить пройденным ✓';
 
-            const isFav = favDays.includes(task.day);
+            const myFav = (userRole === 'p1') ? p1Fav : p2Fav;
+            const isFav = myFav.includes(task.day);
             document.getElementById('modalFavBtn').innerText = isFav ? '⭐' : '☆';
             document.getElementById('modal').style.display = 'flex';
         }
@@ -588,7 +741,6 @@
             if (userRole === 'p1') p1Completed = myCompleted;
             else p2Completed = myCompleted;
 
-            // Запись в Firebase раздельно под категорию
             if (db && pairCode) {
                 db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(myCompleted);
             }
@@ -598,14 +750,22 @@
         }
 
         function toggleCurrentFav() {
-            if (favDays.includes(currentDay)) {
-                favDays = favDays.filter(d => d !== currentDay);
-            } else {
-                favDays.push(currentDay);
-            }
-            if (db && pairCode) db.ref(`pairs/${pairCode}/favDays`).set(favDays);
+            let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
             
-            document.getElementById('modalFavBtn').innerText = favDays.includes(currentDay) ? '⭐' : '☆';
+            if (myFav.includes(currentDay)) {
+                myFav = myFav.filter(d => d !== currentDay);
+            } else {
+                myFav.push(currentDay);
+            }
+
+            if (userRole === 'p1') p1Fav = myFav;
+            else p2Fav = myFav;
+
+            if (db && pairCode) {
+                db.ref(`pairs/${pairCode}/fav/${userRole}`).set(myFav);
+            }
+            
+            document.getElementById('modalFavBtn').innerText = myFav.includes(currentDay) ? '⭐' : '☆';
             renderGrid();
         }
 
@@ -720,23 +880,28 @@
                 const partnerVotes = snapshot.val() || {};
                 
                 let matchesCount = 0;
+                let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
+
                 monthTasks.forEach(task => {
                     const myV = myVotes[task.id];
                     const pV = partnerVotes[task.id];
                     
                     if ((myV === 'yes' && pV === 'yes') || (myV === 'yes' && pV === 'maybe') || (myV === 'maybe' && pV === 'yes')) {
-                        if (!favDays.includes(task.day)) favDays.push(task.day);
+                        if (!myFav.includes(task.day)) myFav.push(task.day);
                         matchesCount++;
                     }
                 });
 
-                if (db && pairCode) db.ref(`pairs/${pairCode}/favDays`).set(favDays);
+                if (userRole === 'p1') p1Fav = myFav;
+                else p2Fav = myFav;
+
+                if (db && pairCode) db.ref(`pairs/${pairCode}/fav/${userRole}`).set(myFav);
                 
                 renderGrid();
                 closeGeneratorModal();
 
                 if (matchesCount > 0) {
-                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они автоматически добавлены в общее Избранное ⭐`);
+                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они добавлены в ваше Избранное ⭐`);
                 } else {
                     alert("Партнер еще не прошел опрос. Данные обновятся, когда партнер сделает свой выбор!");
                 }
