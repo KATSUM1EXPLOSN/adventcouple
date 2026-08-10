@@ -11,9 +11,9 @@
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
-    <!-- Firebase SDK (Realtime Sync) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Firebase SDK (v9/v10 Compat CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -208,7 +208,7 @@
     <header>
         <h1>🔥 Чувственный Календарь</h1>
         <div class="month-title" id="monthTitle"></div>
-        <div class="sync-badge" id="syncBadge">📲 Синхронизация: Локальный режим</div>
+        <div class="sync-badge" id="syncBadge">📲 Синхронизация: Подключение...</div>
     </header>
 
     <div class="setup-card" id="setupCard">
@@ -285,9 +285,15 @@
     </div>
 
     <script>
-        // Инициализация общего публичного Firebase Realtime
+        // ВАШИ РЕАЛЬНЫЕ КЛЮЧИ FIREBASE
         const firebaseConfig = {
-            databaseURL: "https://calendar-pair-default-rtdb.europe-west1.firebasedatabase.app"
+            apiKey: "AIzaSyCHsmF5VKef6zOmUft_pLRAHoSph4cIsUg",
+            authDomain: "adventcouple-4fd17.firebaseapp.com",
+            databaseURL: "https://adventcouple-4fd17-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "adventcouple-4fd17",
+            storageBucket: "adventcouple-4fd17.firebasestorage.app",
+            messagingSenderId: "546937107365",
+            appId: "1:546937107365:web:281b443fee202d9d28ae4c"
         };
         
         let db = null;
@@ -393,12 +399,10 @@
             document.getElementById('dashboard').style.display = 'none';
         }
 
-        // ПОЛНАЯ СИНХРОНИЗАЦИЯ: ПРОГРЕСС + ИЗБРАННОЕ В РЕАЛЬНОМ ВРЕМЕНИ
         function initSync() {
             if (!db || !pairCode) return;
             document.getElementById('syncBadge').innerText = `🟢 Общий код: [ ${pairCode} ] (${userRole === 'p1' ? 'Он' : 'Она'})`;
             
-            // Слушаем отметки выполненных дней
             db.ref(`pairs/${pairCode}/completed_${monthKey}`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -408,7 +412,6 @@
                 }
             });
 
-            // Слушаем синхронное ИЗБРАННОЕ для двоих
             db.ref(`pairs/${pairCode}/favDays`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
