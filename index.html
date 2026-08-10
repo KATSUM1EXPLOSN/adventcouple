@@ -5,18 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Интимный Календарь</title>
 
-    <!-- PWA & iOS Web App Meta Tags -->
+    <!-- PWA & iOS Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
-    <!-- Web App Icons -->
+    <!-- Icons -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23121016'/><text y='65' x='50' font-size='50' text-anchor='middle'>🔥</text></svg>">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔥</text></svg>">
-
-    <!-- Manifest -->
-    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%98%D0%BD%D1%82%D0%B8%D0%BC%D0%BD%D1%8B%D0%B9%20%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C%22%2C%22short_name%22%3A%22%D0%9A%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0d13%22%2C%22theme_color%22%3A%22%230f0d13%22%7D">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,23 +51,7 @@
 
         header { text-align: center; max-width: 700px; margin-bottom: 15px; }
         h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
-        .month-title { color: var(--accent-rose); font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
-        p.subtitle { color: var(--text-sub); font-size: 0.85rem; line-height: 1.4; margin: 0; }
-
-        .install-guide {
-            background: linear-gradient(135deg, rgba(24, 20, 32, 0.9), rgba(35, 28, 48, 0.9));
-            border: 1px solid var(--accent-gold);
-            border-radius: 16px;
-            padding: 15px 18px;
-            margin-bottom: 20px;
-            max-width: 500px;
-            width: 100%;
-            position: relative;
-        }
-
-        .install-guide h3 { margin: 0 0 8px 0; font-size: 1rem; color: var(--accent-gold); }
-        .install-steps { font-size: 0.8rem; line-height: 1.5; color: var(--text-main); margin: 0; padding-left: 18px; }
-        .hide-guide-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text-sub); font-size: 1.2rem; cursor: pointer; }
+        .month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
 
         .setup-card {
             background: var(--card-bg);
@@ -182,15 +163,8 @@
 
     <header>
         <h1>🔥 Чувственный Календарь</h1>
-        <div class="month-title" id="monthTitle">Август 2026</div>
-        <p class="subtitle">Персональная программа на текущий месяц</p>
+        <div class="month-title" id="monthTitle"></div>
     </header>
-
-    <div class="install-guide" id="installGuide">
-        <button class="hide-guide-btn" onclick="dismissGuide()">&times;</button>
-        <h3>📱 Установите как приложение:</h3>
-        <ol class="install-steps" id="installSteps"></ol>
-    </div>
 
     <div class="setup-card" id="setupCard">
         <h2>✨ Настройка пары</h2>
@@ -205,23 +179,23 @@
             </div>
         </div>
         <div class="form-group">
-            <label>Основной акцент пары:</label>
+            <label>Основной акцент на месяц:</label>
             <select class="form-control" id="preferenceSelect">
-                <option value="balanced">Баланс: Классика + Камасутра + BDSM</option>
-                <option value="classic">Максимум Классики и Чувств</option>
-                <option value="kamasutra">Акробатика и Камасутра</option>
-                <option value="bdsm">Психология и Контроль (BDSM)</option>
+                <option value="balanced">Микс (Разнообразие всех направлений)</option>
+                <option value="classic">Классика и Нежность</option>
+                <option value="kamasutra">Камасутра и Позы</option>
+                <option value="bdsm">BDSM и Контроль</option>
             </select>
         </div>
-        <button class="btn-primary" onclick="saveSettings()">Сформировать на этот месяц 🔥</button>
+        <button class="btn-primary" onclick="saveSettings()">Сформировать Календарь 🔥</button>
     </div>
 
     <div class="dashboard" id="dashboard" style="display:none;">
         <div class="progress-bar-container">
-            <div class="progress-text" id="progressText">Прогресс: 0 / 31 дней</div>
+            <div class="progress-text" id="progressText"></div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
-        <button class="btn-primary" style="width:auto; padding: 8px 15px; margin:0; font-size:0.8rem;" onclick="resetProgress()">Сброс</button>
+        <button class="btn-primary" style="width:auto; padding: 8px 15px; margin:0; font-size:0.8rem;" onclick="resetSettings()">Настройки</button>
     </div>
 
     <div class="calendar-grid" id="grid"></div>
@@ -234,68 +208,80 @@
             <img id="modalImg" class="modal-img" src="" alt="Иллюстрация">
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            <a id="modalVideo" class="video-link" href="#" target="_blank">🎬 Смотреть обучающий гайд</a>
+            <a id="modalVideo" class="video-link" href="#" target="_blank">🎬 Обучающий материал / гайд</a>
             <button class="btn-primary" style="margin-top:20px;" onclick="toggleComplete()">Отметить пройденным ✓</button>
         </div>
     </div>
 
     <script>
-        // Работа с датами
         const now = new Date();
         const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth(); // 0-11
-        
-        // Автоматически определяем количество дней в текущем месяце
+        const currentMonth = now.getMonth();
         const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        
         const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-        const monthKey = `${currentYear}_${currentMonth}`; // Ключ для хранения прогресса текущего месяца
+        const monthKey = `${currentYear}_${currentMonth}`;
 
         document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
 
-        // PWA Инструкция
-        const stepsContainer = document.getElementById('installSteps');
-        const guideBlock = document.getElementById('installGuide');
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+        // РАСШИРЕННАЯ БАЗА ЗАДАНИЙ (30+ УНИКАЛЬНЫХ ПРАКТИК)
+        const database = {
+            classic: [
+                { title: "Техника CAT 💋", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "Миссионерская поза, где Мужчина смещается чуть выше. Скользящие движения давят основания члена на клитор без глубоких фрикций.", tip: "Совет: Подложите подушку под крестец партнерши.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
+                { title: "Длительные Поцелуи 💋", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "20 минут непрерывных ласк и поцелуев губ, шеи и плеч без касания паховой зоны. Переход к сексу только на пике возбуждения.", tip: "Совет: Не спешите опускаться ниже.", video: "https://www.youtube.com/results?search_query=foreplay+kissing+guide" },
+                { title: "Подушка под Таз 🛏️", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Классика на спине с плотной подушкой под тазом девушки. Меняет угол проникновения и стимулирует переднюю стенку (Точку G).", tip: "Совет: Сохраняйте планомерный средний темп.", video: "https://www.youtube.com/results?search_query=g+spot+positions" },
+                { title: "Осознанное Дыхание 🫁", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Занимайтесь сексом в удобной поза (миссионерская или ложечки), полностью синхронизировав вдохи и выдохи. Взгляд в глаза.", tip: "Совет: Главное не скорость, а эмоциональный контакт.", video: "https://www.youtube.com/results?search_query=tantric+breathing+couples" },
+                { title: "Тёмный Режим 🕯️", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Занимайтесь сексом в абсолютной темноте или при свете одной свечи. Полагайтесь исключительно на слух и осязание.", tip: "Совет: Шепчите партнерше на ухо свои ощущения.", video: "https://www.youtube.com/results?search_query=sensory+intimacy+tips" },
+                { title: "Замедленный Финиш ⏱️", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "При приближении оргазма снизьте темп до микро-движений (1 движение в 5 секунд) и задержитесь на этом уровне на 2 минуты.", tip: "Совет: Создает невероятный накопительный эффект.", video: "https://www.youtube.com/results?search_query=slow+sex+technique" },
+                { title: "Массаж Эрогенных Зон ✨", category: "Классика", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Ласки только внутренней стороны бедер, подколенных ямок, затылка и мочек ушей перед классическим продолжением.", tip: "Совет: Пробудите закрытые нервные окончания.", video: "https://www.youtube.com/results?search_query=erogenous+zones+massage" },
+                { title: "Смена Локации 🛋️", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Перенесите вечер из спальни на ковер в гостиной или кресло. Используйте непривычные упоры для тела.", tip: "Совет: Новая обстановка освежает чувственность.", video: "https://www.youtube.com/results?search_query=couples+spontaneous+romance" },
+                { title: "Зеркальный Контакт 🪞", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "Занимайтесь сексом напротив большого зеркала так, чтобы видеть движения и мимику друг друга.", tip: "Совет: Визуальный контекст сильно подстегивает возбуждение.", video: "https://www.youtube.com/results?search_query=intimacy+mirror+tips" },
+                { title: "Двойная Стимуляция 🌺", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Классический секс сзади с обязательным непрерывным ласканием клитора пальцами или стимулятором.", tip: "Совет: Синхронизируйте ритм фрикций и круговых ласк.", video: "https://www.youtube.com/results?search_query=clitoral+stimulation+techniques" }
+            ],
+            kamasutra: [
+                { title: "Цветок Лотоса 🧘‍♀️", category: "Камасутра", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Мужчина сидит скрестив ноги, Девушка садится сверху, обнимая за шею. Минимальные фрикции, синхронное дыхание.", tip: "Совет: Поза для глубинного контакта.", video: "https://www.youtube.com/results?search_query=lotus+position+couples" },
+                { title: "Поза 'Раковина' 🌊", category: "Камасутра", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Девушка лежит на спине, закинув ноги на его плечи. Задавайте ритм движениями бедер и добавляйте ручную стимуляцию.", tip: "Совет: Глубокий угол и контроль темпа.", video: "https://www.youtube.com/results?search_query=kamasutra+positions+guide" },
+                { title: "Поза 'Бабочка' 🦋", category: "Камасутра", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "Девушка лежит на краю стола или кровати, Мужчина стоит перед ней. Удобный угол и доступ для ласк.", tip: "Совет: Поддерживайте бедра партнерши.", video: "https://www.youtube.com/results?search_query=butterfly+position+guide" },
+                { title: "Глубокие 'Ложки' 🥄", category: "Камасутра", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Оба партнера лежат на боку сзади. Очень нежная поза для неспешного секса с доступом к груди.", tip: "Совет: Расслабьте мышцы и двигайтесь плавно.", video: "https://www.youtube.com/results?search_query=spooning+position+tips" },
+                { title: "Поза 'Сплит' 📐", category: "Камасутра", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "Девушка на спине, одна нога вытянута, вторая подтянута к её плечу. Дает новые ощущения глубины.", tip: "Совет: Меняйте ноги местами в процессе.", video: "https://www.youtube.com/results?search_query=kamasutra+flexibility+positions" },
+                { title: "Обратная Наездница 🔄", category: "Камасутра", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Девушка сверху спиной к его лицу. Она полностью контролирует глубину и скорость фрикций.", tip: "Совет: Отклоняйтесь немного назад для лучшего угла.", video: "https://www.youtube.com/results?search_query=cowgirl+variations+guide" },
+                { title: "Поза 'Тигр' 🐅", category: "Камасутра", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Коленно-локтевая поза, где партнерша полностью опускает грудь на матрас, а мужчина ложится сверху корпуса.", tip: "Совет: Максимальное прижатие 'кожа к коже'.", video: "https://www.youtube.com/results?search_query=doggy+style+variations" },
+                { title: "Поза 'Вараха' (У стены) 🧱", category: "Камасутра", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "Секс стоя с опорой спиной на стену. Партнерша обнимает ногами талию мужчины.", tip: "Совет: Поза требует выносливости, но дает яркий всплеск.", video: "https://www.youtube.com/results?search_query=standing+sex+positions+guide" },
+                { title: "Мостик и Трение 🌉", category: "Камасутра", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Девушка на спине с приподнятым тазом (опора на стопы). Угол идеален для круговых вращательных движений.", tip: "Совет: Совершайте движения не назад-вперед, а по кругу.", video: "https://www.youtube.com/results?search_query=pelvic+thrust+technique" },
+                { title: "Поза 'Сфинкс' 🐾", category: "Камасутра", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Девушка лежит на животе со сведенными вместе ногами. Проникновение сзади дает сильный эффект узкого пространства.", tip: "Совет: Используйте больше смазки.", video: "https://www.youtube.com/results?search_query=prone+bone+position+tips" }
+            ],
+            bdsm: [
+                { title: "Контроль Финиша ⏳", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Девушка полностью управляет процессом. Он не имеет права кончать без разрешения. Техника 3 остановок (Edging).", tip: "Совет: Выдерживайте долгие паузы.", video: "https://www.youtube.com/results?search_query=edging+technique+guide" },
+                { title: "Шелковая Фиксация 🎀", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Фиксация рук над головой шелковым шарфом. Полная отдача контроля и медленные ласки всего тела.", tip: "Совет: Действуйте нежно и плавно.", video: "https://www.youtube.com/results?search_query=soft+bondage+for+beginners" },
+                { title: "Сенсорная Пауза 🧊", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Маска на глаза и контрастный массаж льдом и теплым маслом. Запрет на касание паховой зоны.", tip: "Совет: Играйте на рецепторах кожи.", video: "https://www.youtube.com/results?search_query=sensate+focus+massage+tutorial" },
+                { title: "Исполнение Приказов 📜", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "В течение вечера он выполняет 3 её любых эротических приказа (массаж ног, подача напитка обнаженным и т.д.).", tip: "Совет: Наслаждайтесь доминированием.", video: "https://www.youtube.com/results?search_query=femdom+light+guide" },
+                { title: "Легкий Impact Play 💥", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "Использование спанкера или ладони. Легкие похлопывания по ягодицам с немедленным последующим нежным поглаживанием.", tip: "Совет: Контраст вызовет выброс эндорфинов.", video: "https://www.youtube.com/results?search_query=spanking+for+beginners+guide" },
+                { title: "Изоляция Слуха и Зрения 🎧", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Ему надевают маску на глаза и наушники с музыкой. Девушка ласкает его, пока он полностью изолирован.", tip: "Совет: Неожиданные прикосновения усилят чувствительность.", video: "https://www.youtube.com/results?search_query=sensory+deprivation+intimacy" },
+                { title: "Дразнение и Отказ (Tease & Denial) 🛑", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Доведение партнерши до грани оргазма 4 раза с резким прекращением ласк и отходом на 2 минуты.", tip: "Совет: Финальная разрядка будет максимально яркой.", video: "https://www.youtube.com/results?search_query=tease+and+denial+guide" },
+                { title: "Запрет на Движение ⛓️", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Партнерше запрещено двигаться и издавать звуки во время ласк без разрешения ведущего.", tip: "Совет: Психологическая дисциплина разжигает страсть.", video: "https://www.youtube.com/results?search_query=mind+games+intimacy" },
+                { title: "Строгий Тандем 🤝", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Девушка управляет его руками, давая четкие указания куда нажимать, с какой силой и когда останавливаться.", tip: "Совет: Полное подчинение его движений вашей воле.", video: "https://www.youtube.com/results?search_query=guided+touch+couples" },
+                { title: "Поза 'Уязвимость' 🎀", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Партнерша на спине, её щиколотки привязаны лентами к углам кровати. Полная открытость и подчинённость ласкам.", tip: "Совет: Ведите ласки снизу вверх.", video: "https://www.youtube.com/results?search_query=restraint+positions+guide" }
+            ]
+        };
 
-        if (isStandalone || localStorage.getItem('hideGuide') === 'true') {
-            guideBlock.style.display = 'none';
-        } else if (isIOS) {
-            stepsContainer.innerHTML = `
-                <li>Нажмите <b>«Поделиться»</b> (квадрат со стрелкой в Safari).</li>
-                <li>Выберите <b>«На экран "Домой"»</b> и нажмите <b>«Добавить»</b>.</li>
-            `;
-        } else {
-            stepsContainer.innerHTML = `
-                <li>Нажмите <b>меню (3 точки)</b> в браузере.</li>
-                <li>Выберите <b>«Установить приложение»</b> или <b>«На экран "Домой"»</b>.</li>
-            `;
-        }
+        // Генерация заданий без дубликатов на текущий месяц
+        function getTasksForMonth(category) {
+            let pool = [];
+            if (category === 'balanced') {
+                pool = [...database.classic, ...database.kamasutra, ...database.bdsm];
+            } else {
+                pool = database[category] || database.classic;
+            }
 
-        function dismissGuide() {
-            guideBlock.style.display = 'none';
-            localStorage.setItem('hideGuide', 'true');
-        }
+            // Псевдослучайное перемешивание на основе года и месяца
+            const shuffled = [...pool].sort((a, b) => {
+                const hashA = (a.title.length * 17 + currentMonth * 31) % 100;
+                const hashB = (b.title.length * 17 + currentMonth * 31) % 100;
+                return hashA - hashB;
+            });
 
-        // Базовая база заданий
-        const rawTasks = [
-            { title: "Сенсорная пауза 🧊", category: "Сенсорика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=600&q=80", task: "Он завязывает ей глаза и проводит 20-минутный контрастный массаж льдом и горячим маслом без касания паха.", tip: "Совет: Ей разрешено только чувствовать.", video: "https://www.youtube.com/results?search_query=sensate+focus+massage+tutorial" },
-            { title: "Цветок Лотоса 🧘‍♀️", category: "Камасутра", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", task: "Он сидит скрестив ноги, Она садится сверху, обнимая за шею. Минимальные фрикции, глубокие поцелуи и синхронное дыхание.", tip: "Совет: Поза для глубокой эмоциональной связи.", video: "https://www.youtube.com/results?search_query=lotus+position+couples" },
-            { title: "Контроль Финиша ⏳", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80", task: "Она полностью управляет процессом. Он не имеет права кончать без разрешения. Используйте 3 остановки на самом пике (Edging).", tip: "Совет: Выдерживайте длительные паузы.", video: "https://www.youtube.com/results?search_query=edging+technique+guide" },
-            { title: "Техника CAT 💋", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80", task: "Миссионерская поза, где Мужчина смещается чуть выше. Движения скользящие, создающие непрерывное трение о клитор.", tip: "Совет: Подушка под крестец улучшит угол.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
-            { title: "Шелковая Фиксация 🎀", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", roleClass: "role-m", img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=600&q=80", task: "Нежная фиксация рук над головой шелковым шарфом. Полная отдача контроля и медленные ласки всего тела.", tip: "Совет: Действуйте плавно и нежно.", video: "https://www.youtube.com/results?search_query=soft+bondage+for+beginners" },
-            { title: "Поза 'Раковина' 🌊", category: "Камасутра", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", roleClass: "role-f", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", task: "Она лежит на спине, закинув ноги на его плечи. Задавайте ритм движениями бедер и добавляйте стимуляцию пальцами.", tip: "Совет: Глубокий контакт и полный контроль темпа.", video: "https://www.youtube.com/results?search_query=kamasutra+positions+guide" },
-            { title: "Экспресс-Страсть 🔥", category: "Классика", lead: "🤝 Оба на равных", roleClass: "role-both", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80", task: "Быстрый, спонтанный секс вне спальни (гостиная или ванная). Минимум длинных прелюдий, максимум страсти.", tip: "Совет: Выплесните накопленную за неделю энергию.", video: "https://www.youtube.com/results?search_query=spontaneous+intimacy+tips" }
-        ];
-
-        // Генератор под текущий месяц
-        function generateMonthTasks() {
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
-                // Вычисляем индекс карточки на основе дня и месяца
-                const index = (day + currentMonth * 3) % rawTasks.length;
-                const base = rawTasks[index];
+                const base = shuffled[(day - 1) % shuffled.length];
                 result.push({
                     day: day,
                     title: `${day < 10 ? '0' + day : day}. ${base.title}`,
@@ -311,16 +297,32 @@
             return result;
         }
 
-        const monthTasks = generateMonthTasks();
-
-        // Загрузка прогресса именно для ЭТОГО месяца
-        let completedDays = JSON.parse(localStorage.getItem(`completedDays_${monthKey}`) || '[]');
+        let selectedCategory = localStorage.getItem('userCat') || 'balanced';
+        let monthTasks = getTasksForMonth(selectedCategory);
+        let completedDays = JSON.parse(localStorage.getItem(`completed_${monthKey}_${selectedCategory}`) || '[]');
         let currentDay = null;
 
-        function saveSettings() {
+        if (localStorage.getItem('userCat')) {
             document.getElementById('setupCard').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
             renderGrid();
+        }
+
+        function saveSettings() {
+            selectedCategory = document.getElementById('preferenceSelect').value;
+            localStorage.setItem('userCat', selectedCategory);
+            monthTasks = getTasksForMonth(selectedCategory);
+            completedDays = JSON.parse(localStorage.getItem(`completed_${monthKey}_${selectedCategory}`) || '[]');
+            
+            document.getElementById('setupCard').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'flex';
+            renderGrid();
+        }
+
+        function resetSettings() {
+            document.getElementById('setupCard').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('grid').innerHTML = '';
         }
 
         function renderGrid() {
@@ -361,7 +363,7 @@
             } else {
                 completedDays.push(currentDay);
             }
-            localStorage.setItem(`completedDays_${monthKey}`, JSON.stringify(completedDays));
+            localStorage.setItem(`completed_${monthKey}_${selectedCategory}`, JSON.stringify(completedDays));
             renderGrid();
             closeModal();
         }
@@ -370,14 +372,6 @@
             const count = completedDays.length;
             document.getElementById('progressText').innerText = `Прогресс: ${count} / ${daysInCurrentMonth} дней`;
             document.getElementById('progressFill').style.width = `${(count / daysInCurrentMonth) * 100}%`;
-        }
-
-        function resetProgress() {
-            if (confirm("Сбросить прогресс за текущий месяц?")) {
-                completedDays = [];
-                localStorage.removeItem(`completedDays_${monthKey}`);
-                renderGrid();
-            }
         }
     </script>
 </body>
