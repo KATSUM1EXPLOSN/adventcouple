@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
-    <!-- Firebase SDK (v9/v10 Compat CDN) -->
+    <!-- Firebase SDK (Compat CDN) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -167,8 +167,17 @@
             position: relative;
             transition: transform 0.2s;
         }
-        .day-card.completed { border-color: #4caf50; opacity: 0.75; }
-        .day-card.completed::after { content: '✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
+
+        /* Статусы прохождения */
+        .day-card.completed-both { border-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
+        .day-card.completed-both::after { content: '✓✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
+
+        .day-card.completed-p1 { border-color: var(--accent-rose); }
+        .day-card.completed-p1::after { content: 'М'; position: absolute; top: 8px; right: 10px; color: var(--accent-rose); font-size: 0.75rem; font-weight: bold; }
+
+        .day-card.completed-p2 { border-color: var(--accent-purple); }
+        .day-card.completed-p2::after { content: 'Ж'; position: absolute; top: 8px; right: 10px; color: var(--accent-purple); font-size: 0.75rem; font-weight: bold; }
+
         .day-card.fav::before { content: '⭐'; position: absolute; top: 8px; left: 10px; font-size: 0.8rem; }
         .day-card.highlight { transform: scale(1.08); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); }
 
@@ -269,8 +278,7 @@
             </div>
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            <a id="modalVideo" class="video-link" href="#" target="_blank">🎬 Обучающий материал / гайд</a>
-            <button class="btn-primary" style="margin-top:20px;" onclick="toggleComplete()">Отметить пройденным ✓</button>
+            <button class="btn-primary" id="completeBtn" style="margin-top:20px;" onclick="toggleComplete()">Отметить пройденным ✓</button>
         </div>
     </div>
 
@@ -285,7 +293,6 @@
     </div>
 
     <script>
-        // ВАШИ РЕАЛЬНЫЕ КЛЮЧИ FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCHsmF5VKef6zOmUft_pLRAHoSph4cIsUg",
             authDomain: "adventcouple-4fd17.firebaseapp.com",
@@ -300,7 +307,7 @@
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch(e) { console.log("Работа в локальном режиме"); }
+        } catch(e) {}
 
         const now = new Date();
         const currentYear = now.getFullYear();
@@ -315,24 +322,23 @@
             "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
+            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
         ];
 
         const database = {
             female_lead: [
-                { id: "fl1", title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Вы можете делать паузы на пике его возбуждения.", video: "https://www.youtube.com/results?search_query=cowgirl+position+guide" },
-                { id: "fl2", title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт.", video: "https://www.youtube.com/results?search_query=edging+and+denial+guide" }
+                { id: "fl1", title: "Классическая Наездница", category: "Доминирование", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол фрикций.", tip: "Совет: Вы можете делать паузы на пике его возбуждения." },
+                { id: "fl2", title: "Запрет на Оргазм (Orgasm Denial)", category: "BDSM", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки по команде. Финиш только с её разрешения.", tip: "Совет: Используйте прямой зрительный контакт." }
             ],
             classic: [
-                { id: "cl1", title: "Техника CAT (Коитальное Выравнивание)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец.", video: "https://www.youtube.com/results?search_query=coital+alignment+technique" },
-                { id: "cl2", title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту.", video: "https://www.youtube.com/results?search_query=foreplay+guide+couples" }
+                { id: "cl1", title: "Техника CAT (Коитальное Выравнивание)", category: "Классика", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец." },
+                { id: "cl2", title: "Правило 20 Минут Поцелуев", category: "Нежность", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный голод к контакту." }
             ],
             kamasutra: [
-                { id: "km1", title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею.", video: "https://www.youtube.com/results?search_query=lotus+pose+couples" }
+                { id: "km1", title: "Поза 'Цветок Лотоса'", category: "Камасутра", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка садится сверху. Поза для максимально глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею." }
             ],
             bdsm: [
-                { id: "bd1", title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи.", video: "https://www.youtube.com/results?search_query=silk+bondage+tutorial" }
+                { id: "bd1", title: "Шелковая Фиксация", category: "BDSM", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи." }
             ]
         };
 
@@ -353,8 +359,7 @@
                     roleClass: base.lead.includes("Она — Ведущая") ? "role-f" : (base.lead.includes("Он — Ведущий") ? "role-m" : "role-both"),
                     img: imgPool[(day - 1) % imgPool.length],
                     task: base.task,
-                    tip: base.tip,
-                    video: base.video
+                    tip: base.tip
                 });
             }
             return result;
@@ -364,8 +369,10 @@
         let userRole = localStorage.getItem('userRole') || 'p1';
         let selectedCategory = localStorage.getItem('userCat') || 'balanced';
         let monthTasks = getTasksForMonth(selectedCategory);
-        let completedDays = JSON.parse(localStorage.getItem(`completed_${monthKey}`) || '[]');
-        let favDays = JSON.parse(localStorage.getItem(`favDays`) || '[]');
+        
+        let p1Completed = [];
+        let p2Completed = [];
+        let favDays = [];
         let currentDay = null;
         let onlyFavFilter = false;
 
@@ -401,24 +408,24 @@
 
         function initSync() {
             if (!db || !pairCode) return;
-            document.getElementById('syncBadge').innerText = `🟢 Общий код: [ ${pairCode} ] (${userRole === 'p1' ? 'Он' : 'Она'})`;
+            document.getElementById('syncBadge').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
             
-            db.ref(`pairs/${pairCode}/completed_${monthKey}`).on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    completedDays = data;
-                    localStorage.setItem(`completed_${monthKey}`, JSON.stringify(completedDays));
-                    renderGrid();
-                }
+            // Синхронизация отметок Мужчины
+            db.ref(`pairs/${pairCode}/${monthKey}/p1`).on('value', (snapshot) => {
+                p1Completed = snapshot.val() || [];
+                renderGrid();
             });
 
+            // Синхронизация отметок Женщины
+            db.ref(`pairs/${pairCode}/${monthKey}/p2`).on('value', (snapshot) => {
+                p2Completed = snapshot.val() || [];
+                renderGrid();
+            });
+
+            // Синхронизация Избранного
             db.ref(`pairs/${pairCode}/favDays`).on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    favDays = data;
-                    localStorage.setItem('favDays', JSON.stringify(favDays));
-                    renderGrid();
-                }
+                favDays = snapshot.val() || [];
+                renderGrid();
             });
         }
 
@@ -431,11 +438,19 @@
                 : monthTasks;
 
             tasksToRender.forEach(task => {
-                const isCompleted = completedDays.includes(task.day);
+                const hasP1 = p1Completed.includes(task.day);
+                const hasP2 = p2Completed.includes(task.day);
                 const isFav = favDays.includes(task.day);
+                
                 const card = document.createElement('div');
                 card.id = `card-day-${task.day}`;
-                card.className = `day-card ${isCompleted ? 'completed' : ''} ${isFav ? 'fav' : ''}`;
+                
+                let statusClass = '';
+                if (hasP1 && hasP2) statusClass = 'completed-both';
+                else if (hasP1) statusClass = 'completed-p1';
+                else if (hasP2) statusClass = 'completed-p2';
+
+                card.className = `day-card ${statusClass} ${isFav ? 'fav' : ''}`;
                 card.innerHTML = `
                     <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
                     <div class="day-category">${task.category}</div>
@@ -454,8 +469,11 @@
             document.getElementById('modalImg').src = task.img;
             document.getElementById('modalTask').innerText = task.task;
             document.getElementById('modalTip').innerText = task.tip;
-            document.getElementById('modalVideo').href = task.video;
             
+            const myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
+            const isDone = myCompleted.includes(task.day);
+            document.getElementById('completeBtn').innerText = isDone ? 'Отменить отметку ✖' : 'Отметить пройденным ✓';
+
             const isFav = favDays.includes(task.day);
             document.getElementById('modalFavBtn').innerText = isFav ? '⭐' : '☆';
             document.getElementById('modal').style.display = 'flex';
@@ -464,13 +482,21 @@
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
         function toggleComplete() {
-            if (completedDays.includes(currentDay)) {
-                completedDays = completedDays.filter(d => d !== currentDay);
+            let myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
+            
+            if (myCompleted.includes(currentDay)) {
+                myCompleted = myCompleted.filter(d => d !== currentDay);
             } else {
-                completedDays.push(currentDay);
+                myCompleted.push(currentDay);
             }
-            localStorage.setItem(`completed_${monthKey}`, JSON.stringify(completedDays));
-            if (db && pairCode) db.ref(`pairs/${pairCode}/completed_${monthKey}`).set(completedDays);
+
+            if (userRole === 'p1') p1Completed = myCompleted;
+            else p2Completed = myCompleted;
+
+            if (db && pairCode) {
+                db.ref(`pairs/${pairCode}/${monthKey}/${userRole}`).set(myCompleted);
+            }
+            
             renderGrid();
             closeModal();
         }
@@ -481,7 +507,6 @@
             } else {
                 favDays.push(currentDay);
             }
-            localStorage.setItem('favDays', JSON.stringify(favDays));
             if (db && pairCode) db.ref(`pairs/${pairCode}/favDays`).set(favDays);
             
             document.getElementById('modalFavBtn').innerText = favDays.includes(currentDay) ? '⭐' : '☆';
@@ -497,9 +522,10 @@
         }
 
         function spinRoulette() {
-            const available = monthTasks.filter(t => !completedDays.includes(t.day));
+            const bothCompleted = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).map(t => t.day);
+            const available = monthTasks.filter(t => !bothCompleted.includes(t.day));
             if (available.length === 0) {
-                alert("Все дни пройдены!");
+                alert("Все дни пройдены обоими партнерами!");
                 return;
             }
             let count = 0;
@@ -517,18 +543,19 @@
         }
 
         function updateProgress() {
-            const count = completedDays.length;
-            const percent = Math.round((count / daysInCurrentMonth) * 100);
+            // Считаем дни, выполненные ОБOИМИ партнерами
+            const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
+            const percent = Math.round((bothCount / daysInCurrentMonth) * 100);
             
-            document.getElementById('progressText').innerText = `Прогресс пары: ${count} / ${daysInCurrentMonth} дней`;
+            document.getElementById('progressText').innerText = `Совместный прогресс: ${bothCount} / ${daysInCurrentMonth} дней`;
             document.getElementById('progressPercent').innerText = `${percent}%`;
             document.getElementById('progressFill').style.width = `${percent}%`;
 
             let badge = "🏆 Статус: Новички";
-            if (count >= 25) badge = "👑 Статус: Мастера Интимности";
-            else if (count >= 18) badge = "🔥 Статус: Огненный Союз";
-            else if (count >= 10) badge = "🧘‍♀️ Статус: Исследователи";
-            else if (count >= 3) badge = "✨ Статус: Первый Шаг";
+            if (bothCount >= 25) badge = "👑 Статус: Мастера Интимности";
+            else if (bothCount >= 18) badge = "🔥 Статус: Огненный Союз";
+            else if (bothCount >= 10) badge = "🧘‍♀️ Статус: Исследователи";
+            else if (bothCount >= 3) badge = "✨ Статус: Первый Шаг";
 
             document.getElementById('achievement').innerText = badge;
         }
@@ -570,7 +597,7 @@
 
         function checkMatches() {
             if (!db || !pairCode) {
-                alert("Для совпадений укажите одинаковый Код Пары!");
+                alert("Укажите Код Пары в настройках!");
                 return;
             }
 
@@ -591,16 +618,15 @@
                     }
                 });
 
-                localStorage.setItem('favDays', JSON.stringify(favDays));
                 if (db && pairCode) db.ref(`pairs/${pairCode}/favDays`).set(favDays);
                 
                 renderGrid();
                 closeGeneratorModal();
 
                 if (matchesCount > 0) {
-                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они сразу добавлены в общее Избранное ⭐`);
+                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они автоматически добавлены в общее Избранное ⭐`);
                 } else {
-                    alert("Партнер еще не прошел тест. Данные обновятся автоматически, когда партнер выберет свои ответы!");
+                    alert("Партнер еще не прошел опрос. Данные обновятся, когда партнер сделает свой выбор!");
                 }
             });
         }
