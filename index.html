@@ -55,7 +55,7 @@
 
         h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
-        header { text-align: center; max-width: 700px; margin-bottom: 10px; }
+        header { text-align: center; max-width: 700px; margin-bottom: 15px; width: 100%; }
         h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
         .month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
 
@@ -66,7 +66,7 @@
             padding: 6px 12px;
             border-radius: 12px;
             font-size: 0.75rem;
-            margin-bottom: 15px;
+            margin: 0 auto 15px auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -86,51 +86,63 @@
             cursor: pointer;
         }
 
-        .setup-card {
+        /* ОТДЕЛЬНЫЙ ЭКРАН ГЛАВНОЙ СТРАНИЦЫ */
+        .landing-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+        }
+
+        .welcome-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 500px;
+            border-radius: 20px;
+            padding: 25px 20px;
             width: 100%;
-            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .info-box {
             background: rgba(226, 176, 126, 0.08);
             border: 1px solid var(--accent-gold);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 18px;
-            font-size: 0.82rem;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
             line-height: 1.5;
             color: var(--text-main);
             text-align: left;
         }
 
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 6px; }
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
         .form-control {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: #0d0a12;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             color: #fff;
             font-family: inherit;
+            font-size: 0.95rem;
         }
 
         .btn-primary {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, var(--accent-gold), #c48c56);
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             color: #0f0d13;
             font-weight: 700;
             cursor: pointer;
             margin-top: 10px;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3);
         }
 
         .btn-secondary {
@@ -144,15 +156,23 @@
             font-weight: 600;
         }
 
-        .dashboard {
+        /* ЭКРАН КАЛЕНДАРЯ */
+        .calendar-screen {
             width: 100%;
             max-width: 900px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard {
+            width: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;
             background: var(--card-bg);
             padding: 15px 20px;
-            border-radius: 14px;
+            border-radius: 16px;
             border: 1px solid var(--border);
             margin-bottom: 20px;
         }
@@ -181,7 +201,6 @@
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 12px;
             width: 100%;
-            max-width: 900px;
         }
 
         .day-card {
@@ -291,68 +310,81 @@
         <h1>🔥 Чувственный Календарь</h1>
         <div class="month-title" id="monthTitle"></div>
         <div class="sync-badge">
-            <span id="syncBadgeText">📲 Подключение...</span>
+            <span id="syncBadgeText">📲 Режим синхронизации</span>
             <button class="pwa-btn" onclick="openPwaModal()">📲 На экран</button>
         </div>
     </header>
 
-    <div class="setup-card" id="setupCard">
-        <h2>✨ Настройка пары</h2>
-        
-        <div class="info-box">
-            <b style="color: var(--accent-gold);">🔑 Главное правило синхронизации:</b><br>
-            Придумайте один <b>уникальный секретный код</b> только для вашей пары (например: <code>ALEX_NIKA2026</code>).<br>
-            Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне!
-        </div>
+    <!-- ОТДЕЛЬНЫЙ ЭКРАН 1: ГЛАВНАЯ СТРАНИЦА (НАСТРОЙКИ И ИНСТРУКЦИЯ) -->
+    <div class="landing-screen" id="landingScreen">
+        <div class="welcome-card">
+            <h2 style="color: var(--accent-gold); margin-top: 0; font-size: 1.4rem;">✨ Добро пожаловать!</h2>
+            <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 20px;">
+                Ваш персональный пространство для романтики, экспериментов и взаимного сближения.
+            </p>
 
-        <div class="form-group">
-            <label>Общий Код Пары (одинаковый у обоих):</label>
-            <input type="text" class="form-control" placeholder="Например: ALEX_NIKA2026" id="pairCodeInput">
-        </div>
-        <div class="form-group">
-            <label>Ваш профиль в паре:</label>
-            <select class="form-control" id="userRoleSelect">
-                <option value="p1">Мужчина (Партнер 1)</option>
-                <option value="p2">Женщина (Партнер 2)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Основной акцент на месяц:</label>
-            <select class="form-control" id="preferenceSelect">
-                <option value="balanced">Микс (Разнообразие всех направлений)</option>
-                <option value="female_lead">Женское Доминирование (Она Ведёт)</option>
-                <option value="classic">Классика, Нежность и Поцелуи</option>
-                <option value="kamasutra">Камасутра и Сложные Позы</option>
-                <option value="bdsm">BDSM и Контроль</option>
-            </select>
-        </div>
-        <button class="btn-primary" onclick="saveSettings()">Запустить Программу 🔥</button>
-    </div>
+            <div class="info-box">
+                <b style="color: var(--accent-gold);">🔑 Инструкция по Коду Пары:</b><br>
+                1. Придумайте один <b>уникальный секретный код</b> только для вашей пары (например: <code>ALEX_NIKA2026</code>).<br>
+                2. Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне.<br>
+                3. Отметки прохождения, избранные карточки и результаты тестов будут мгновенно обновляться у обоих!
+            </div>
 
-    <div class="dashboard" id="dashboard" style="display:none;">
-        <div class="dash-top">
-            <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
-            <div class="dash-actions">
-                <button class="btn-secondary" onclick="forceRefreshData()" title="Принудительно обновить данные">🔄 Обновить</button>
-                <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
-                <button class="btn-secondary" onclick="openLingerieModal()">👙 Белье</button>
-                <button class="btn-secondary" onclick="openToysModal()">🧸 Игрушки</button>
-                <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
-                <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
-                <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
-                <button class="btn-secondary" onclick="resetSettings()">⚙️</button>
+            <div class="form-group">
+                <label>Общий Код Пары (одинаковый у обоих):</label>
+                <input type="text" class="form-control" placeholder="Например: ALEX_NIKA2026" id="pairCodeInput">
             </div>
-        </div>
-        <div class="progress-bar-container">
-            <div class="progress-text">
-                <span id="progressText">Прогресс пары: 0 / 30</span>
-                <span id="progressPercent">0%</span>
+
+            <div class="form-group">
+                <label>Ваш профиль в паре:</label>
+                <select class="form-control" id="userRoleSelect">
+                    <option value="p1">Мужчина (Партнер 1)</option>
+                    <option value="p2">Женщина (Партнер 2)</option>
+                </select>
             </div>
-            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+            <div class="form-group">
+                <label>Основной акцент на месяц:</label>
+                <select class="form-control" id="preferenceSelect">
+                    <option value="balanced">Микс (Разнообразие всех направлений)</option>
+                    <option value="female_lead">Женское Доминирование (Она Ведёт)</option>
+                    <option value="classic">Классика, Нежность и Поцелуи</option>
+                    <option value="kamasutra">Камасутра и Сложные Позы</option>
+                    <option value="bdsm">BDSM и Контроль</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
         </div>
     </div>
 
-    <div class="calendar-grid" id="grid"></div>
+    <!-- ОТДЕЛЬНЫЙ ЭКРАН 2: КАЛЕНДАРЬ И ПАНЕЛЬ УПРАВЛЕНИЯ -->
+    <div class="calendar-screen" id="calendarScreen">
+        <div class="dashboard" id="dashboard">
+            <div class="dash-top">
+                <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
+                <div class="dash-actions">
+                    <button class="btn-secondary" onclick="forceRefreshData()" title="Обновить данные">🔄 Обновить</button>
+                    <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
+                    <button class="btn-secondary" onclick="openLingerieModal()">👙 Белье</button>
+                    <button class="btn-secondary" onclick="openToysModal()">🧸 Игрушки</button>
+                    <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
+                    <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
+                    <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
+                    <button class="btn-secondary" onclick="resetSettings()" title="Вернуться в настройки">⚙️</button>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-text">
+                    <span id="progressText">Прогресс пары: 0 / 30</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+        </div>
+
+        <div class="calendar-grid" id="grid"></div>
+    </div>
 
     <!-- Модалка PWA (ИНСТРУКЦИЯ ПО ДОБАВЛЕНИЮ НА ЭКРАН) -->
     <div class="modal-overlay" id="pwaModal">
@@ -753,7 +785,7 @@
         let pairCode = localStorage.getItem('pairCode') || '';
         let userRole = localStorage.getItem('userRole') || 'p1';
         let selectedCategory = localStorage.getItem('userCat') || 'balanced';
-        let monthTasks = getTasksForMonth(selectedCategory, pairCode);
+        let monthTasks = [];
         
         let p1Completed = [];
         let p2Completed = [];
@@ -762,17 +794,31 @@
         let currentDay = null;
         let onlyFavFilter = false;
 
+        // ПРОВЕРКА: ЕСЛИ УЖЕ ВХОДИЛИ РАНЕЕ - СРАЗУ ПОКАЗЫВАЕМ КАЛЕНДАРЬ
         if (pairCode) {
             document.getElementById('pairCodeInput').value = pairCode;
             document.getElementById('userRoleSelect').value = userRole;
             document.getElementById('preferenceSelect').value = selectedCategory;
-            document.getElementById('setupCard').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'flex';
+            
+            showCalendarScreen();
+        } else {
+            showLandingScreen();
+        }
+
+        function showLandingScreen() {
+            document.getElementById('landingScreen').style.display = 'flex';
+            document.getElementById('calendarScreen').style.display = 'none';
+        }
+
+        function showCalendarScreen() {
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('calendarScreen').style.display = 'flex';
+            monthTasks = getTasksForMonth(selectedCategory, pairCode);
             initSync();
             renderGrid();
         }
 
-        function saveSettings() {
+        function saveSettingsAndEnter() {
             const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
             
             if (!rawCode || rawCode.length < 4) {
@@ -796,23 +842,17 @@
             localStorage.setItem('userRole', userRole);
             localStorage.setItem('userCat', selectedCategory);
             
-            monthTasks = getTasksForMonth(selectedCategory, pairCode);
-            document.getElementById('setupCard').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'flex';
-            initSync();
-            renderGrid();
+            showCalendarScreen();
         }
 
         function resetSettings() {
-            document.getElementById('setupCard').style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
+            showLandingScreen();
         }
 
         function initSync() {
             if (!db || !pairCode) return;
             document.getElementById('syncBadgeText').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
             
-            // Принудительное подключение слушателей Firebase
             db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).off();
             db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
                 p1Completed = snapshot.val() || [];
@@ -838,7 +878,6 @@
             });
         }
 
-        // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ ДАННЫХ ПРИ ОТКРЫТИИ/СВОРАЧИВАНИИ PWA
         function forceRefreshData() {
             if (pairCode) {
                 initSync();
@@ -848,13 +887,15 @@
         }
 
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
+            if (document.visibilityState === 'visible' && pairCode) {
                 forceRefreshData();
             }
         });
 
         window.addEventListener('pageshow', (event) => {
-            forceRefreshData();
+            if (pairCode) {
+                forceRefreshData();
+            }
         });
 
         function renderGrid() {
