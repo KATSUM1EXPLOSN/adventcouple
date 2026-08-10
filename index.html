@@ -86,7 +86,6 @@
             cursor: pointer;
         }
 
-        /* ОТДЕЛЬНЫЙ ЭКРАН ГЛАВНОЙ СТРАНИЦЫ */
         .landing-screen {
             display: flex;
             flex-direction: column;
@@ -146,20 +145,21 @@
         }
 
         .btn-faceid {
-            background: rgba(163, 116, 219, 0.2);
+            background: rgba(163, 116, 219, 0.25);
             border: 1px solid var(--accent-purple);
             color: var(--accent-purple);
-            padding: 14px;
-            border-radius: 12px;
+            padding: 18px;
+            border-radius: 14px;
             width: 100%;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
-            margin-top: 12px;
+            margin-top: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(163, 116, 219, 0.2);
         }
 
         .btn-secondary {
@@ -173,7 +173,6 @@
             font-weight: 600;
         }
 
-        /* ЭКРАН КАЛЕНДАРЯ */
         .calendar-screen {
             width: 100%;
             max-width: 900px;
@@ -332,53 +331,61 @@
         </div>
     </header>
 
-    <!-- ОТДЕЛЬНЫЙ ЭКРАН 1: ГЛАВНАЯ СТРАНИЦА (НАСТРОЙКИ И ИНСТРУКЦИЯ) -->
+    <!-- ОТДЕЛЬНЫЙ ЭКРАН 1: ГЛАВНАЯ СТРАНИЦА -->
     <div class="landing-screen" id="landingScreen">
         <div class="welcome-card">
             <h2 style="color: var(--accent-gold); margin-top: 0; font-size: 1.4rem;">✨ Добро пожаловать!</h2>
-            <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 20px;">
-                Ваше персональное пространство для романтики, экспериментов и взаимного сближения.
+            <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 15px;">
+                Ваше персональное пространство для романтики и сближения.
             </p>
 
-            <button class="btn-faceid" id="faceIdBtn" onclick="authenticateBiometrics()" style="display: none;">
-                👤 Войти по Face ID / Touch ID
-            </button>
-
-            <div class="info-box" style="margin-top: 15px;">
-                <b style="color: var(--accent-gold);">🔑 Инструкция по Коду Пары:</b><br>
-                1. Придумайте один <b>уникальный секретный код</b> только для вашей пары (например: <code>ALEX_NIKA2026</code>).<br>
-                2. Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне.<br>
-                3. Отметки прохождения, избранные карточки и результаты тестов будут мгновенно обновляться у обоих!
+            <!-- КНОПКА FACE ID ЕСЛИ БИОМЕТРИЯ ВКЛЮЧЕНА -->
+            <div id="biometricLockBlock" style="display: none; margin-bottom: 15px;">
+                <p style="color: var(--accent-purple); font-size: 0.85rem; font-weight: 600;">🔒 Приложение защищено биометрией</p>
+                <button class="btn-faceid" id="faceIdBtn" onclick="authenticateBiometrics()">
+                    👤 Подтвердить Face ID / Touch ID
+                </button>
             </div>
 
-            <div class="form-group">
-                <label>Общий Код Пары (одинаковый у обоих):</label>
-                <input type="text" class="form-control" placeholder="Например: ALEX_NIKA2026" id="pairCodeInput">
-            </div>
+            <!-- ФОРМА НАСТРОЙКИ (СКРЫВАЕТСЯ ПРИ ЗАБЛОКИРОВАННОМ FACE ID) -->
+            <div id="formSetupBlock">
+                <div class="info-box">
+                    <b style="color: var(--accent-gold);">🔑 Инструкция по Коду Пары:</b><br>
+                    1. Придумайте один <b>уникальный секретный код</b> только для вашей пары (например: <code>ALEX_NIKA2026</code>).<br>
+                    2. Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне.<br>
+                    3. Отметки прохождения и совпадения будут мгновенно синхронизироваться!
+                </div>
 
-            <div class="form-group">
-                <label>Ваш профиль в паре:</label>
-                <select class="form-control" id="userRoleSelect">
-                    <option value="p1">Мужчина (Партнер 1)</option>
-                    <option value="p2">Женщина (Партнер 2)</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label>Общий Код Пары (одинаковый у обоих):</label>
+                    <input type="text" class="form-control" placeholder="Например: ALEX_NIKA2026" id="pairCodeInput">
+                </div>
 
-            <div class="form-group">
-                <label>Основной акцент на месяц:</label>
-                <select class="form-control" id="preferenceSelect">
-                    <option value="balanced">Микс (Разнообразие всех направлений)</option>
-                    <option value="female_lead">Женское Доминирование (Она Ведёт)</option>
-                    <option value="classic">Классика, Нежность и Поцелуи</option>
-                    <option value="kamasutra">Камасутра и Сложные Позы</option>
-                    <option value="bdsm">BDSM и Контроль</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label>Ваш профиль в паре:</label>
+                    <select class="form-control" id="userRoleSelect">
+                        <option value="p1">Мужчина (Партнер 1)</option>
+                        <option value="p2">Женщина (Партнер 2)</option>
+                    </select>
+                </div>
 
-            <button class="btn-primary" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
-            <button class="btn-secondary" id="enableBiometricBtn" onclick="registerBiometrics()" style="margin-top: 12px; width: 100%; display: none;">
-                🔒 Включить Face ID / Touch ID для входа
-            </button>
+                <div class="form-group">
+                    <label>Основной акцент на месяц:</label>
+                    <select class="form-control" id="preferenceSelect">
+                        <option value="balanced">Микс (Разнообразие всех направлений)</option>
+                        <option value="female_lead">Женское Доминирование (Она Ведёт)</option>
+                        <option value="classic">Классика, Нежность и Поцелуи</option>
+                        <option value="kamasutra">Камасутра и Сложные Позы</option>
+                        <option value="bdsm">BDSM и Контроль</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" id="enterBtn" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
+                
+                <button class="btn-secondary" id="enableBiometricBtn" onclick="registerBiometrics()" style="margin-top: 12px; width: 100%; display: none;">
+                    🔒 Включить Face ID / Touch ID для входа
+                </button>
+            </div>
         </div>
     </div>
 
@@ -818,17 +825,19 @@
         let currentDay = null;
         let onlyFavFilter = false;
 
-        // ПРОВЕРКА WEBAUTHN / FACE ID ПРИ ЗАГРУЗКЕ
+        // ВАЖНО: ПРОВЕРКАWEBAUTHN И БЛОКИРОВКА КНОПКИ ВХОДА
         window.onload = function() {
             checkBiometricSupport();
+            
             if (pairCode) {
                 document.getElementById('pairCodeInput').value = pairCode;
                 document.getElementById('userRoleSelect').value = userRole;
                 document.getElementById('preferenceSelect').value = selectedCategory;
                 
-                // Если включена биометрия - запрашиваем вход по Face ID
+                // ЕСЛИ ВКЛЮЧЕНА БИОМЕТРИЯ - СКРЫВАЕМ ОБЫЧНУЮ ФОРМУ И ЗАПРАШИВАЕМ FACE ID
                 if (localStorage.getItem('biometricsEnabled') === 'true') {
-                    document.getElementById('faceIdBtn').style.display = 'flex';
+                    document.getElementById('biometricLockBlock').style.display = 'block';
+                    document.getElementById('formSetupBlock').style.display = 'none'; // Запрет прямого входа!
                     showLandingScreen();
                     authenticateBiometrics();
                 } else {
@@ -880,6 +889,8 @@
         }
 
         function resetSettings() {
+            // При смене настроек временно сбрасываем замок, пока не войдут заново
+            document.getElementById('formSetupBlock').style.display = 'block';
             showLandingScreen();
         }
 
@@ -890,7 +901,8 @@
                     .then(available => {
                         if (available) {
                             if (localStorage.getItem('biometricsEnabled') === 'true') {
-                                document.getElementById('faceIdBtn').style.display = 'flex';
+                                document.getElementById('biometricLockBlock').style.display = 'block';
+                                document.getElementById('formSetupBlock').style.display = 'none';
                             } else {
                                 document.getElementById('enableBiometricBtn').style.display = 'block';
                             }
@@ -921,9 +933,10 @@
             navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions })
                 .then(() => {
                     localStorage.setItem('biometricsEnabled', 'true');
-                    alert("🎉 Вход по Face ID / Touch ID успешно подключен!");
+                    alert("🎉 Вход по Face ID / Touch ID успешно защищен!");
                     document.getElementById('enableBiometricBtn').style.display = 'none';
-                    document.getElementById('faceIdBtn').style.display = 'flex';
+                    document.getElementById('biometricLockBlock').style.display = 'block';
+                    document.getElementById('formSetupBlock').style.display = 'none';
                 })
                 .catch(err => {
                     console.log(err);
@@ -940,10 +953,12 @@
 
             navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions })
                 .then(assertion => {
+                    // УСПЕШНЫЙ ВХОД ПО FACE ID - ОТКРЫВАЕМ КАЛЕНДАРЬ!
                     showCalendarScreen();
                 })
                 .catch(err => {
                     console.log("Ошибка проверки Face ID:", err);
+                    alert("Ошибка сканирования Face ID! Нажмите кнопку смены настроек, если нужно ввести код заново.");
                 });
         }
 
