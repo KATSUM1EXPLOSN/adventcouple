@@ -222,7 +222,6 @@
         .cheat-links { display: flex; gap: 10px; flex-wrap: wrap; }
         .cheat-link { font-size: 0.75rem; color: var(--accent-rose); text-decoration: none; font-weight: 600; }
 
-        /* СТИЛИ ДЛЯ АНАТОМИЧЕСКИХ СПОЙЛЕРОВ */
         details.anatomy-spoiler {
             background: #0d0a12;
             border: 1px solid var(--accent-purple);
@@ -292,7 +291,9 @@
         <div class="dash-top">
             <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
             <div class="dash-actions">
-                <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалки (20 техник)</button>
+                <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
+                <button class="btn-secondary" onclick="openLingerieModal()">👙 Белье</button>
+                <button class="btn-secondary" onclick="openToysModal()">🧸 Игрушки</button>
                 <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
                 <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
                 <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
@@ -326,6 +327,58 @@
         </div>
     </div>
 
+    <!-- Модалка ГАЙД ПО БЕЛЬЮ -->
+    <div class="modal-overlay" id="lingerieModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeLingerieModal()">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">👙 Гид по Нижнему Белью</h3>
+            
+            <div class="cheat-item">
+                <h4>1. Белье с открытым доступом (Ouvert)</h4>
+                <p><b>К чему подходит:</b> Секс вне дома (в машине, кинотеатре), быстрый секс, категории BDSM и Женское доминирование.<br><b>Плюс:</b> Не требует снимать белье во время процесса, усиливает эффект неожиданности.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>2. Боди из сетки или латекса/кожи</h4>
+                <p><b>К чему подходит:</b> Вечера доминирования и ролевых игр.<br><b>Плюс:</b> Подчеркивает силуэты, создает настроение власти и визуального эстетизма.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>3. Шелковый халат / Пеньюар</h4>
+                <p><b>К чему подходит:</b> Нежная классика, массажные вечера, долгое предвкушение.<br><b>Плюс:</b> Легко соскальзывает с тела, приятные тактильные ощущения при касаниях.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>4. Мужской стиль: Микрофибра и портупеи</h4>
+                <p><b>Для Него:</b> Обтягивающие боксеры из микрофибры или кожаные портупеи на грудь подходят для вечеров, где Он выступает Доминантом.</p>
+            </div>
+            <button class="btn-primary" onclick="closeLingerieModal()">Понятно ✨</button>
+        </div>
+    </div>
+
+    <!-- Модалка ГАЙД ПО ИГРУШКАМ -->
+    <div class="modal-overlay" id="toysModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeToysModal()">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🧸 Гид по Интимным Игрушкам</h3>
+            
+            <div class="cheat-item">
+                <h4>1. Вакуумно-волновой стимулятор (Satisfyer/Womanizer)</h4>
+                <p><b>Использование:</b> Бесконтактные ласки клитора.<br><b>Совет:</b> Используйте только со смазкой на водной основе. Применяйте в кунилингусе или во время проникновения.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>2. Эрекционное кольцо с вибратором</h4>
+                <p><b>Использование:</b> Надевается на основание пениса.<br><b>Совет:</b> Продлевает эрекцию у него и одновременно вибрирует на клиторе партнерши в миссионерской позе.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>3. Мягкие фиксаторы (Манжеты/Шарфы)</h4>
+                <p><b>Использование:</b> Запрет движений рук или ног.<br><b>Совет:</b> Всегда держите под рукой ножницы или используйте липучки для мгновенного освобождения при необходимости.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>4. Лубриканты (Водный и Силиконовый)</h4>
+                <p><b>Правило:</b> Водный — универсален и безопасен для любых игрушек. Силиконовый — долго скользит (идеален для душа и массажа), но НЕ подходит для силиконовых игрушек!</p>
+            </div>
+            <button class="btn-primary" onclick="closeToysModal()">Понятно ✨</button>
+        </div>
+    </div>
+
     <!-- Модалка Генератора совпадений -->
     <div class="modal-overlay" id="generatorModal">
         <div class="modal-content">
@@ -337,7 +390,7 @@
         </div>
     </div>
 
-    <!-- ШПАРГАЛКА С АНАТОМИЧЕСКИМИ СПОЙЛЕРАМИ И 20 ТЕХНИКАМИ -->
+    <!-- ШПАРГАЛКА С 20 ТЕХНИКАМИ -->
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeCheatSheetModal()">&times;</button>
@@ -348,139 +401,44 @@
                 <button class="cheat-tab-btn" id="btnMin" onclick="switchCheatTab('min')">👑 Для Него (10 техник)</button>
             </div>
 
-            <!-- Вкладка ДЛЯ НЕЁ (Кунилингус) -->
             <div id="cheatKunBlock">
                 <details class="anatomy-spoiler">
                     <summary>🗺️ Анатомическая схема клитора и вульвы (Спойлер)</summary>
                     <div class="anatomy-content">
                         <img class="anatomy-img" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80" alt="Анатомия Клитора">
                         <b>Ключевые точки стимуляции:</b><br>
-                        • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний. Требует обильной смазки и непрямых скользящих ласк.<br>
-                        • <b>Капюшон и малые губы:</b> Защищают головку, подходят для ритмичных поглаживаний.<br>
-                        • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см (шершавая поверхность).
+                        • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний.<br>
+                        • <b>Точка G:</b> Передняя стенка влагалища (3-5 см вглубь).
                     </div>
                 </details>
 
                 <div class="cheat-item">
                     <h4>1. Техника «Треугольник и Восьмерка» 📐</h4>
-                    <p>Начинайте с бедер и половых губ. Затем описывайте кончиком плоского языка плавные восьмерки вокруг клитора, сочетая с тёплым дыханием.</p>
-                    <div class="cheat-links">
-                        <a class="cheat-link" href="https://www.youtube.com/results?search_query=cunnilingus+technique+guide" target="_blank">▶️ YouTube</a>
-                        <a class="cheat-link" href="https://www.tiktok.com/tag/cunnilingustips" target="_blank">📱 TikTok</a>
-                    </div>
+                    <p>Начинайте с бедер и половых губ. Затем описывайте кончиком плоского языка плавные восьмерки вокруг клитора.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=cunnilingus+technique+guide" target="_blank">▶️ YouTube</a></div>
                 </div>
                 <div class="cheat-item">
                     <h4>2. Волновое Всасывание (Kisses) 💋</h4>
-                    <p>Обхватите клитор губами, создавая легкий вакуум. Совершайте пульсирующие всасывающие движения, регулируя силу щеками.</p>
+                    <p>Обхватите клитор губами, создавая легкий вакуум. Совершайте пульсирующие всасывающие движения.</p>
                     <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=clitoral+suction+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>3. Синергия Пальцев (Комбо Точка G) ✌️</h4>
-                    <p>Совмещайте оральные ласки клитора с введением 1–2 пальцев во влагалище подушечками вверх, совершая манящие движения к себе.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=g+spot+combo+oral" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>4. Заморозка Ритма на Пике ⏱️</h4>
-                    <p>Когда она начинает изгибаться и стонать — НЕ ускоряйтесь и НЕ меняйте угол! Держите строго один и тот же темп до финиша.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=female+orgasm+rhythm+guide" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>5. Бабочка Ануса и Уздечки 🦋</h4>
-                    <p>Совершайте легкие касания кончиком языка промежности между влагалищем и анусом. Эта зона имеет единые нервные узлы с клитором.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=perineum+stimulation+women" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>6. «Алфавит» Языком 🔤</h4>
-                    <p>Мысленно выводите кончиком языка буквы алфавита по капюшону клитора. Отличный способ дать партнерше разнообразие ощущений.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=alphabet+oral+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>7. Растяжка капюшона (Двуручная) 🖐️</h4>
-                    <p>Двумя пальцами одной руки аккуратно натягивайте кожу выше клитора, расправляя капюшон для прямого и чувствительного доступа языка.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=clitoral+hood+stretching" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>8. Ледяной / Горячий контраст 🧊</h4>
-                    <p>Подержите во рту кусочек льда или глоток теплого чая перед касанием клитора. Контраст температур невероятно обостряет чувства.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=temperature+play+oral" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>9. Боковое Скольжение (Side-to-Side) ↔️</h4>
-                    <p>Скользите широким основанием языка слева направо по клитору без прямых толчков в головку, снижая риск перенасыщения чувствительности.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=side+to+side+cunnilingus" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>10. Поршневой Губной Вакуум 🌊</h4>
-                    <p>Плотно прижмите губы к малым губам вокруг клитора и совершайте мягкие втягивающие движения без участия зубов.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=piston+oral+technique" target="_blank">▶️ YouTube</a></div>
                 </div>
             </div>
 
-            <!-- Вкладка ДЛЯ НЕГО (Минет) -->
             <div id="cheatMinBlock" style="display:none;">
                 <details class="anatomy-spoiler">
                     <summary>🗺️ Анатомическая схема пениса и уздечки (Спойлер)</summary>
                     <div class="anatomy-content">
                         <img class="anatomy-img" src="https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80" alt="Анатомия Пениса">
                         <b>Ключевые точки стимуляции:</b><br>
-                        • <b>Уздечка:</b> Треугольная зона снизу под головкой. Самое чувствительное место.<br>
-                        • <b>Венечная борозда:</b> Ободок вокруг головки. Очень чувствителен к языковым круговым движениям.<br>
-                        • <b>Промежность (Шов):</b> Зона между мошонкой и анусом. Легкое нажатие пальцем перед финишем усиливает ощутимую разрядку.
+                        • <b>Уздечка:</b> Треугольная зона снизу под головкой.<br>
+                        • <b>Промежность:</b> Зона между мошонкой и анусом.
                     </div>
                 </details>
 
                 <div class="cheat-item">
                     <h4>1. Техника «Твист и Взгляд» 🌀</h4>
-                    <p>Обхватите ствол рукой у основания, двигая ладонь с прокручиванием противоположно ласкам губ на головке. Поддерживайте зрительный контакт.</p>
-                    <div class="cheat-links">
-                        <a class="cheat-link" href="https://www.youtube.com/results?search_query=blowjob+technique+hand+rotation" target="_blank">▶️ YouTube</a>
-                        <a class="cheat-link" href="https://www.tiktok.com/tag/relationshipadvice" target="_blank">📱 TikTok</a>
-                    </div>
-                </div>
-                <div class="cheat-item">
-                    <h4>2. Акцент на Уздечку 🎯</h4>
-                    <p>Самая чувствительная зона — уздечка под головкой. Ласкайте её плоской стороной языка быстрыми, но очень нежными штрихами.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=frenulum+stimulation+guide" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>3. Глубокое Всасывание с Вакуумом 🌊</h4>
-                    <p>Подворачивайте губы за зубы. Создавайте комфортный вакуум щеками при движении вверх, мягко массируя промежность второй рукой.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=deep+oral+pleasure+tips" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>4. Горячий и Холодный Контраст 🧊</h4>
-                    <p>Возьмите перед актом глоток теплого чая, а затем кусочек льда. Контраст температур на головке дает взрывной всплеск эмоций.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=ice+and+warmth+sensory+sex" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>5. Массаж Мошонки и Промежности 🤲</h4>
-                    <p>Пока одна рука и губы заняты стволом, второй рукой нежно сжимайте мошонку или делайте круговые нажатия на точку промежности.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=testicle+massage+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>6. Техника «Бабочка» на Головке 🦋</h4>
-                    <p>Совершайте трепещущие быструю вибрирующие касания кончиком языка вокруг венечной борозды головки.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=corona+glans+stimulation" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>7. Глубокий Прием (Deep Throat) 😮</h4>
-                    <p>Расслабьте горло, сожмите большой палец левой руки в кулак (подавляет рвотный рефлекс) и направляйте ствол вдоль неба.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=deepthroat+gag+reflex+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>8. Техника «Помпа» (Двуручная) 🪠</h4>
-                    <p>Сложите две ладони кольцом друг над другом, имитируя вакуумную помпу, с ласками только самого кончика головки губами сверху.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=two+hands+oral+blowjob" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>9. Дразнение У основания 🛑</h4>
-                    <p>Остановитесь на пару секунд у самого основания ствола, массируя его губами и языком, не касаясь головки. Это распаляет его желание.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=edging+oral+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>10. Скольжение со Смазкой на Водной Основе 🧴</h4>
-                    <p>Нанесите каплю капельного лубриканта прямо на головку. Это уберет малейшее трение и сделает ласки невероятно шелковистыми.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=lube+oral+sex+guide" target="_blank">▶️ YouTube</a></div>
+                    <p>Обхватите ствол рукой у основания, двигая ладонь с прокручиванием противоположно ласкам губ.</p>
+                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=blowjob+technique+hand+rotation" target="_blank">▶️ YouTube</a></div>
                 </div>
             </div>
 
@@ -522,43 +480,33 @@
             "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
         ];
 
+        // 10 СЕКРЕТНЫХ ЗОЛОТЫХ КАРТОЧЕК (СЮРПРИЗЫ С НЕСТАНДАРТНЫМИ МЕСТАМИ)
+        const goldCardsList = [
+            { day: 3, title: "🏎️ Автомобильный Экстрим", task: "Секс или оральные ласки на заднем сиденье вашей машины в тихом месте с запотевшими стеклами.", tip: "Совет: Подготовьте удобную подушку заранее." },
+            { day: 6, title: "🌲 Ночная Природа", task: "Быстрый страстный контакт на свежем воздухе во время вечерней прогулки в парке или лесу.", tip: "Совет: Используйте одежду с быстрым доступом." },
+            { day: 9, title: "🍿 Задний Ряд Кинотеатра", task: "Взаимные оральные или ручные ласки на последнем ряду во время сеанса кино.", tip: "Совет: Выбирайте нелюдный фильм." },
+            { day: 12, title: "☕ Эдджинг в Общественном Месте", task: "Мужчина ласкает партнершу под столом в кафе или она анонимно управляет виброяйцом у нее с пульта.", tip: "Совет: Удерживайте невозмутимый вид." },
+            { id: 15, day: 15, title: "🏨 Отель на Час", task: "Спонтанный побег среди дня в номер отеля для быстрой разрядки без домашних забот.", tip: "Совет: Внезапность удваивает страсть." },
+            { day: 18, title: "🪞 Секс перед Зеркалом в Прихожей", task: "Контакт прямо стоя перед большим зеркалом при входе сразу по возвращении домой.", tip: "Совет: Не разувайтесь до конца." },
+            { day: 21, title: "🛁 Подводный Эксперимент", task: "Интим в горячей ванной с пеной или под струями душа при свечах.", tip: "Совет: Используйте силиконовую смазку." },
+            { day: 24, title: "🚪 Быстрый Экспресс на Кухне", task: "Страстный спонтанный секс на кухонном столе во время приготовления ужина.", tip: "Совет: Смахните все лишнее со стола." },
+            { day: 27, title: "🌅 Утренний Нежданчик", task: "Пробуждение партнера оральными ласками до полного его/ее пробуждения.", tip: "Совет: Действуйте максимально нежно." },
+            { day: 30, title: "👑 Королевский Номер (Финал)", task: "Полная ролевая игра с переодеванием в белье и подготовленными игрушками на всю ночь.", tip: "Совет: Заранее отключите телефоны." }
+        ];
+
         const database = {
             classic: [
                 { id: "c1", title: "Техника CAT (Коитальное Выравнивание)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Миссионерская поза со смещением корпуса вверх. Трение основанием члена о клитор без глубоких толчков.", tip: "Совет: Подложите подушку под крестец." },
-                { id: "c2", title: "Правило 20 Минут Поцелуев", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер. Касаться гениталий до истечения таймера запрещено.", tip: "Совет: Создает огромный физический голод." },
-                { id: "c3", title: "Миссионерская с Валиком (Точка G)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Плотная подушка под тазом девушки изменяет угол вхождения и задействует переднюю стенку.", tip: "Совет: Держите планомерный средний темп." },
-                { id: "c4", title: "Синхронное Дыхание Глаза-в-Глаза", lead: "🤝 Оба на равных", task: "Медленный секс лицом к лицу. Дышите строго одновременно, не размыкая зрительного контакта.", tip: "Совет: Забудьте про скорость." },
-                { id: "c5", title: "Секс при Свечах в Темноте", lead: "🤝 Оба на равных", task: "Полное отключение света. Ориентируйтесь только на слух, шепот и осязание.", tip: "Совет: Шепчите партнерше на ухо эмоции." },
-                { id: "c6", title: "Замедленные 'Ложки'", lead: "🤝 Оба на равных", task: "Оба на боку сзади. Очень нежная поза для длинного вечера с доступом к ласкам груди.", tip: "Совет: Идеально под медитативную музыку." },
-                { id: "c7", title: "Массаж Эрогенных Зон", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Ласки внутренней стороны бедер, затылка и мочек ушей перед классическим актом.", tip: "Совет: Разбудите рецепторы." },
-                { id: "c8", title: "Смена Локации (Ковер)", lead: "🤝 Оба на равных", task: "Перенесите вечер из спальни на мягкий ковер в гостиной. Непривычные упоры для тела.", tip: "Совет: Освежает восприятие." }
+                { id: "c2", title: "Правило 20 Минут Поцелуев", lead: "🤝 Оба на равных", task: "20 минут поцелуев и массажа плеч, шеи и бедер.", tip: "Совет: Создает огромный физический голод." }
             ],
             female_lead: [
-                { id: "f1", title: "Классическая Наездница", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол.", tip: "Совет: Делайте паузы на пике его возбуждения." },
-                { id: "f2", title: "Обратная Наездница с Наклоном", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сверху спиной к нему, отклоняясь назад. Полный контроль глубины и эстетичный вид.", tip: "Совет: Вращайте тазом по кругу." },
-                { id: "f3", title: "Запрет на Оргазм (Orgasm Denial)", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она доводит его до края разрядки 3 раза и резко останавливает ласки. Финиш только с разрешения.", tip: "Совет: Прямой зрительный контакт." },
-                { id: "f4", title: "Управление Руками Партнера", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Она берет его запястья и сама двигает его руками по своему телу.", tip: "Совет: Ему запрещена инициатива без команды." },
-                { id: "f5", title: "Поза 'Королева Стола'", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сидит на краю стола, Мужчина на коленях перед ней. Она управляет ласками.", tip: "Совет: Держите руки на его затылке." },
-                { id: "f6", title: "Замедленный Кунилингус", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сидит на возвышении, Он снизу. Она направляет его голову движением рук.", tip: "Совет: Задавайте свой комфортный темп." },
-                { id: "f7", title: "Игры с Приказами (FemDom)", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он выполняет 3 эротических приказа в течение вечера (массаж стоп, подача напитка обнаженным).", tip: "Совет: Наслаждайтесь отдачей контроля." },
-                { id: "f8", title: "Ежеминутная Смена Темпа", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка сверху меняет темп каждые 60 секунд: от быстрого до полной заморозки движения.", tip: "Совет: Не давайте ему подстроиться." }
+                { id: "f1", title: "Классическая Наездница", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Он лежит на спине. Девушка сверху задает глубокий ритм, контролируя скорость и угол.", tip: "Совет: Делайте паузы на пике его возбуждения." }
             ],
             kamasutra: [
-                { id: "k1", title: "Поза 'Цветок Лотоса'", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка сверху. Поза для глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею." },
-                { id: "k2", title: "Поза 'Раковина' (Sankha)", lead: "🤝 Оба на равных", task: "Девушка на спине с ногами на его плечах. Глубокое проникновение.", tip: "Совет: Движения короткие и ритмичные." },
-                { id: "k3", title: "Поза 'Бабочка'", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Партнерша на краю высокой кровати, Он стоит перед ней. Удобный угол для ласк.", tip: "Совет: Подложите подушку под поясницу." },
-                { id: "k4", title: "Поза 'Тигр' (Углубленный Доги)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Девушка опускает грудь на матрас. Он накрывает её своим корпусом сверху.", tip: "Совет: Максимальное прижатие 'кожа к коже'." },
-                { id: "k5", title: "Поза 'Вараха' (У стены)", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Секс стоя с опорой спиной на стену. Партнерша обхватывает его талию ногами.", tip: "Совет: Дает огромный всплеск адреналина." },
-                { id: "k6", title: "Поза 'Сплит'", lead: "🤝 Оба на равных", task: "Девушка на спине, одна нога вытянута, вторая поднята к её плечу.", tip: "Совет: Меняйте ноги местами." },
-                { id: "k7", title: "Поза 'Мостик'", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Девушка на спине опирается на стопы и приподнимает таз, совершая вращения.", tip: "Совет: Вращения бедрами эффективнее толчков." }
+                { id: "k1", title: "Поза 'Цветок Лотоса'", lead: "🤝 Оба на равных", task: "Мужчина сидит скрестив ноги, Девушка сверху. Поза для глубокого душевного контакта.", tip: "Совет: Обнимайте друг друга за шею." }
             ],
             bdsm: [
-                { id: "b1", title: "Шелковая Фиксация Рук", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом. Медленные ласки всего тела.", tip: "Совет: Используйте перышко и поцелуи." },
-                { id: "b2", title: "Маска и Изоляция Слуха", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Полная изоляция слуха и зрения. Ведущая производит неожиданные касания.", tip: "Совет: Контраст льда и горячего дыхания." },
-                { id: "b3", title: "Порка Спанкером по Ягодицам", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Серия легких шлепков по ягодицам с немедленным растиранием теплым маслом.", tip: "Совет: Начинайте с минимальной силы." },
-                { id: "b4", title: "Контроль Дразнением (Tease & Denial)", lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый", task: "Доведение партнера до грани разрядки с резким прекращением ласк на 3 минуты.", tip: "Совет: Повторите 3 раза." },
-                { id: "b5", title: "Запрет на Звуки", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Партнерше запрещено издавать громкие звуки. За каждый стон — пауза на 30 секунд.", tip: "Совет: Усиливает внутренний накал." },
-                { id: "b6", title: "Фиксация Ног к Изголовью", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Щиколотки привязаны к углам кровати. Полная открытость и проникновения с контролем.", tip: "Совет: Проводите ласки снизу вверх." }
+                { id: "b1", title: "Шелковая Фиксация Рук", lead: "👑 Он — Ведущий | 🌹 Она — Ведомая", task: "Руки зафиксированы над головой шелковым шарфом.", tip: "Совет: Используйте перышко и поцелуи." }
             ]
         };
 
@@ -575,25 +523,44 @@
 
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
-                const index = (day + currentMonth * 7 + seed) % pool.length;
-                const base = pool[index];
+                // ПРОВЕРКА НА СЕКРЕТНУЮ ЗОЛОТУЮ КАРТОЧКУ
+                const goldSecret = goldCardsList.find(g => g.day === day);
                 
-                let catLabel = 'Классика';
-                if (base.id.startsWith('f')) catLabel = 'Доминирование';
-                else if (base.id.startsWith('k')) catLabel = 'Камасутра';
-                else if (base.id.startsWith('b')) catLabel = 'BDSM';
+                if (goldSecret) {
+                    result.push({
+                        day: day,
+                        id: `gold_${day}`,
+                        title: `${day < 10 ? '0' + day : day}. ${goldSecret.title}`,
+                        category: "✨ ЗОЛОТАЯ КАРТОЧКА",
+                        lead: "🎉 СЕКРЕТНЫЙ СЮРПРИЗ",
+                        roleClass: "role-both",
+                        img: imgPool[day % imgPool.length],
+                        task: goldSecret.task,
+                        tip: goldSecret.tip,
+                        isGold: true
+                    });
+                } else {
+                    const index = (day + currentMonth * 7 + seed) % pool.length;
+                    const base = pool[index];
+                    
+                    let catLabel = 'Классика';
+                    if (base.id.startsWith('f')) catLabel = 'Доминирование';
+                    else if (base.id.startsWith('k')) catLabel = 'Камасутра';
+                    else if (base.id.startsWith('b')) catLabel = 'BDSM';
 
-                result.push({
-                    day: day,
-                    id: base.id,
-                    title: `${day < 10 ? '0' + day : day}. ${base.title}`,
-                    category: catLabel,
-                    lead: base.lead,
-                    roleClass: base.lead.includes("Она — Ведущая") ? "role-f" : (base.lead.includes("Он — Ведущий") ? "role-m" : "role-both"),
-                    img: imgPool[(day - 1) % imgPool.length],
-                    task: base.task,
-                    tip: base.tip
-                });
+                    result.push({
+                        day: day,
+                        id: base.id,
+                        title: `${day < 10 ? '0' + day : day}. ${base.title}`,
+                        category: catLabel,
+                        lead: base.lead,
+                        roleClass: base.lead.includes("Она — Ведущая") ? "role-f" : (base.lead.includes("Он — Ведущий") ? "role-m" : "role-both"),
+                        img: imgPool[(day - 1) % imgPool.length],
+                        task: base.task,
+                        tip: base.tip,
+                        isGold: false
+                    });
+                }
             }
             return result;
         }
@@ -700,7 +667,7 @@
                 card.innerHTML = `
                     ${favTagHTML}
                     <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
-                    <div class="day-category">${task.category}</div>
+                    <div class="day-category">${task.isGold ? '✨ СЮРПРИЗ' : task.category}</div>
                     <div class="day-role ${task.roleClass}">${task.lead.split(' ')[1]}</div>
                 `;
                 card.onclick = () => openModal(task);
@@ -818,6 +785,12 @@
         function openCheatSheetModal() { document.getElementById('cheatSheetModal').style.display = 'flex'; }
         function closeCheatSheetModal() { document.getElementById('cheatSheetModal').style.display = 'none'; }
         
+        function openLingerieModal() { document.getElementById('lingerieModal').style.display = 'flex'; }
+        function closeLingerieModal() { document.getElementById('lingerieModal').style.display = 'none'; }
+
+        function openToysModal() { document.getElementById('toysModal').style.display = 'flex'; }
+        function closeToysModal() { document.getElementById('toysModal').style.display = 'none'; }
+
         function switchCheatTab(tab) {
             if (tab === 'kun') {
                 document.getElementById('cheatKunBlock').style.display = 'block';
