@@ -198,7 +198,6 @@
         .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .video-link { display: inline-block; margin-top: 12px; color: var(--accent-gold); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
 
-        /* Стиль для генератора совпадений */
         .vote-options { display: flex; gap: 8px; margin-top: 10px; }
         .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
         .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
@@ -242,7 +241,7 @@
         <div class="dash-top">
             <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
             <div class="dash-actions">
-                <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Генератор Совпадений</button>
+                <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
                 <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
                 <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
                 <button class="btn-secondary" onclick="resetSettings()">⚙️</button>
@@ -259,7 +258,6 @@
 
     <div class="calendar-grid" id="grid"></div>
 
-    <!-- Модальное окно дня -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -276,7 +274,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно Генератора Совпадений (Yes/No/Maybe) -->
     <div class="modal-overlay" id="generatorModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeGeneratorModal()">&times;</button>
@@ -288,6 +285,7 @@
     </div>
 
     <script>
+        // Инициализация общего публичного Firebase Realtime
         const firebaseConfig = {
             databaseURL: "https://calendar-pair-default-rtdb.europe-west1.firebasedatabase.app"
         };
@@ -296,7 +294,7 @@
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch(e) {}
+        } catch(e) { console.log("Работа в локальном режиме"); }
 
         const now = new Date();
         const currentYear = now.getFullYear();
@@ -395,14 +393,27 @@
             document.getElementById('dashboard').style.display = 'none';
         }
 
+        // ПОЛНАЯ СИНХРОНИЗАЦИЯ: ПРОГРЕСС + ИЗБРАННОЕ В РЕАЛЬНОМ ВРЕМЕНИ
         function initSync() {
             if (!db || !pairCode) return;
-            document.getElementById('syncBadge').innerText = `🟢 Синхронно: Код [ ${pairCode} ] (${userRole === 'p1' ? 'Он' : 'Она'})`;
-            db.ref(`pairs/${pairCode}/${monthKey}`).on('value', (snapshot) => {
+            document.getElementById('syncBadge').innerText = `🟢 Общий код: [ ${pairCode} ] (${userRole === 'p1' ? 'Он' : 'Она'})`;
+            
+            // Слушаем отметки выполненных дней
+            db.ref(`pairs/${pairCode}/completed_${monthKey}`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     completedDays = data;
                     localStorage.setItem(`completed_${monthKey}`, JSON.stringify(completedDays));
+                    renderGrid();
+                }
+            });
+
+            // Слушаем синхронное ИЗБРАННОЕ для двоих
+            db.ref(`pairs/${pairCode}/favDays`).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    favDays = data;
+                    localStorage.setItem('favDays', JSON.stringify(favDays));
                     renderGrid();
                 }
             });
@@ -456,7 +467,7 @@
                 completedDays.push(currentDay);
             }
             localStorage.setItem(`completed_${monthKey}`, JSON.stringify(completedDays));
-            if (db && pairCode) db.ref(`pairs/${pairCode}/${monthKey}`).set(completedDays);
+            if (db && pairCode) db.ref(`pairs/${pairCode}/completed_${monthKey}`).set(completedDays);
             renderGrid();
             closeModal();
         }
@@ -468,6 +479,8 @@
                 favDays.push(currentDay);
             }
             localStorage.setItem('favDays', JSON.stringify(favDays));
+            if (db && pairCode) db.ref(`pairs/${pairCode}/favDays`).set(favDays);
+            
             document.getElementById('modalFavBtn').innerText = favDays.includes(currentDay) ? '⭐' : '☆';
             renderGrid();
         }
@@ -517,7 +530,6 @@
             document.getElementById('achievement').innerText = badge;
         }
 
-        /* ЛОГИКА ГЕНЕРАТОРА СОВПАДЕНИЙ (YES/NO/MAYBE) */
         let myVotes = {};
 
         function openGeneratorModal() {
@@ -555,14 +567,12 @@
 
         function checkMatches() {
             if (!db || !pairCode) {
-                alert("Для работы генератора совпадений включите код пары!");
+                alert("Для совпадений укажите одинаковый Код Пары!");
                 return;
             }
 
-            // Сохраняем свои голоса в Firebase
             db.ref(`votes/${pairCode}/${userRole}`).set(myVotes);
 
-            // Получаем голоса партнера
             const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
             db.ref(`votes/${pairCode}/${partnerRole}`).once('value', (snapshot) => {
                 const partnerVotes = snapshot.val() || {};
@@ -572,7 +582,6 @@
                     const myV = myVotes[task.id];
                     const pV = partnerVotes[task.id];
                     
-                    // Совпадение: оба "yes" или ("yes" + "maybe")
                     if ((myV === 'yes' && pV === 'yes') || (myV === 'yes' && pV === 'maybe') || (myV === 'maybe' && pV === 'yes')) {
                         if (!favDays.includes(task.day)) favDays.push(task.day);
                         matchesCount++;
@@ -580,13 +589,15 @@
                 });
 
                 localStorage.setItem('favDays', JSON.stringify(favDays));
+                if (db && pairCode) db.ref(`pairs/${pairCode}/favDays`).set(favDays);
+                
                 renderGrid();
                 closeGeneratorModal();
 
                 if (matchesCount > 0) {
-                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они автоматически добавлены в вашу папку Избранного ⭐`);
+                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они сразу добавлены в общее Избранное ⭐`);
                 } else {
-                    alert("Партнер еще не прошел опрос или нет полных совпадений. Данные обновятся, когда партнер закончит!");
+                    alert("Партнер еще не прошел тест. Данные обновятся автоматически, когда партнер выберет свои ответы!");
                 }
             });
         }
