@@ -14,162 +14,18 @@
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
-    <!-- Firebase & Confetti SDK -->
+    <!-- Firebase SDK (Compat CDN) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-color: #0f0d13;
-            --card-bg: #181420;
-            --card-hover: #231c30;
-            --accent-gold: #e2b07e;
-            --accent-rose: #e67e90;
-            --accent-purple: #a374db;
-            --text-main: #f5f0fa;
-            --text-sub: #a89fbe;
-            --border: rgba(226, 176, 126, 0.2);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Montserrat', -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: calc(20px + env(safe-area-inset-top)) 15px calc(50px + env(safe-area-inset-bottom)) 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            user-select: none;
-        }
-
-        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
-
-        header { text-align: center; max-width: 700px; margin-bottom: 15px; width: 100%; }
-        h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
-        .month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
-
-        .sync-badge {
-            background: rgba(230, 126, 144, 0.15);
-            border: 1px solid var(--accent-rose);
-            color: var(--accent-rose);
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            margin: 0 auto 15px auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .pwa-btn {
-            background: rgba(226, 176, 126, 0.2);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .landing-screen { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; margin-top: 10px; }
-        .welcome-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px 20px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .info-box { background: rgba(226, 176, 126, 0.08); border: 1px solid var(--accent-gold); border-radius: 14px; padding: 15px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); text-align: left; }
-        
-        .form-group { margin-bottom: 18px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
-        .form-control { width: 100%; padding: 14px; background: #0d0a12; border: 1px solid var(--border); border-radius: 12px; color: #fff; font-family: inherit; font-size: 0.95rem; }
-
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), #c48c56); border: none; border-radius: 12px; color: #0f0d13; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 1.05rem; box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3); }
-        .btn-faceid { background: rgba(163, 116, 219, 0.25); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 0 15px rgba(163, 116, 219, 0.2); }
-        .btn-secondary { background: rgba(226, 176, 126, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
-
-        .calendar-screen { width: 100%; max-width: 900px; display: none; flex-direction: column; align-items: center; }
-        .dashboard { width: 100%; display: flex; flex-direction: column; gap: 12px; background: var(--card-bg); padding: 15px 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .progress-bar-container { width: 100%; }
-        .progress-text { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .progress-bar { height: 8px; background: #0d0a12; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); transition: width 0.3s; }
-
-        .achievement-badge { background: rgba(163, 116, 219, 0.2); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; text-align: center; font-weight: 600; }
-        .points-badge { background: rgba(226, 176, 126, 0.2); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; }
-
-        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; width: 100%; }
-        .day-card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 15px 10px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 120px; position: relative; transition: transform 0.2s; }
-        .day-card.completed-both { border-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
-        .day-card.completed-both::after { content: '✓✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
-        .day-card.completed-p1 { border-color: var(--accent-rose); }
-        .day-card.completed-p1::after { content: 'М'; position: absolute; top: 8px; right: 10px; color: var(--accent-rose); font-size: 0.75rem; font-weight: bold; }
-        .day-card.completed-p2 { border-color: var(--accent-purple); }
-        .day-card.completed-p2::after { content: 'Ж'; position: absolute; top: 8px; right: 10px; color: var(--accent-purple); font-size: 0.75rem; font-weight: bold; }
-
-        .fav-tag { position: absolute; top: 8px; left: 8px; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 8px; }
-        .fav-p1 { background: rgba(230, 126, 144, 0.25); color: var(--accent-rose); border: 1px solid var(--accent-rose); }
-        .fav-p2 { background: rgba(163, 116, 219, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
-        .fav-both { background: rgba(226, 176, 126, 0.25); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
-
-        .day-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-gold); }
-        .day-category { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; margin-top: 4px; }
-        .day-role { font-size: 0.65rem; padding: 3px 8px; border-radius: 10px; margin-top: 6px; font-weight: 600; }
-        .role-m { background: rgba(230, 126, 144, 0.15); color: var(--accent-rose); }
-        .role-f { background: rgba(163, 116, 219, 0.15); color: var(--accent-purple); }
-        .role-both { background: rgba(226, 176, 126, 0.15); color: var(--accent-gold); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8, 6, 10, 0.92); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--accent-gold); border-radius: 20px; padding: 25px; max-width: 480px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-sub); font-size: 1.8rem; cursor: pointer; }
-        .fav-toggle-btn { position: absolute; top: 18px; right: 50px; background: none; border: none; font-size: 1.3rem; cursor: pointer; }
-        .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
-        .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
-
-        .vote-options { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
-        .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
-
-        .cheat-tab-btn { flex: 1; padding: 8px; background: #0d0a12; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-        .cheat-tab-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 176, 126, 0.15); }
-        
-        .cheat-item { background: #120f1a; border-left: 3px solid var(--accent-gold); padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0; text-align: left; }
-        .cheat-item h4 { margin: 0 0 6px 0; color: var(--accent-gold); font-size: 0.95rem; }
-        .cheat-item p { margin: 0 0 8px 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
-        .cheat-links { display: flex; gap: 10px; flex-wrap: wrap; }
-        .cheat-link { font-size: 0.75rem; color: var(--accent-rose); text-decoration: none; font-weight: 600; }
-
-        details.anatomy-spoiler { background: #0d0a12; border: 1px solid var(--accent-purple); border-radius: 12px; padding: 10px 14px; margin-bottom: 15px; text-align: left; }
-        details.anatomy-spoiler summary { cursor: pointer; font-weight: 700; color: var(--accent-purple); font-size: 0.85rem; outline: none; }
-        .anatomy-content { margin-top: 10px; font-size: 0.8rem; line-height: 1.5; color: var(--text-sub); }
-        .anatomy-img { width: 100%; height: 180px; border-radius: 10px; object-fit: cover; margin: 8px 0; border: 1px solid var(--border); }
-
-        /* РУЛЕТКА (SLOTS) */
-        .slot-machine { display: flex; gap: 10px; margin: 20px 0; justify-content: center; }
-        .slot-reel { flex: 1; background: #0d0a12; border: 1px solid var(--accent-gold); border-radius: 12px; padding: 15px 8px; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .slot-label { font-size: 0.65rem; color: var(--text-sub); text-transform: uppercase; margin-bottom: 8px; }
-        .slot-value { font-size: 0.82rem; font-weight: bold; color: var(--text-main); text-align: center; }
-
-        /* STEALTH MODE (МАСКИРОВКА) */
-        .stealth-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #121212; color: #e0e0e0; display: none; justify-content: center; align-items: flex-start; padding: calc(20px + env(safe-area-inset-top)) 15px 30px 15px; z-index: 99999; overflow-y: auto; }
-        .stealth-card { background: #1e1e1e; border: 1px solid #333; border-radius: 16px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-        .stealth-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
-        .stealth-header h2 { font-family: sans-serif !important; font-size: 1.1rem; color: #e0e0e0; margin: 0; }
-        .shopping-list { display: flex; flex-direction: column; gap: 12px; text-align: left; }
-        .shopping-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #ccc; cursor: pointer; }
-        .shopping-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #666; }
-    </style>
+    
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -177,10 +33,10 @@
         <h1>🔥 Чувственный Календарь</h1>
         <div class="month-title" id="monthTitle"></div>
         <div class="sync-badge">
-            <span id="syncBadgeText">📲 Подключение...</span>
+            <span id="syncBadgeText">📲 Режим синхронизации</span>
             <div style="display:flex; gap:6px;">
-                <button class="pwa-btn" onclick="toggleStealthMode()" title="Быстрая маскировка" style="border-color: #888; color: #aaa;">🛡️</button>
-                <button class="pwa-btn" onclick="openModal('pwaModal')">📲 На экран</button>
+                <button class="pwa-btn" id="panicBtn" title="Быстрая маскировка" style="border-color: #888; color: #aaa;">🛡️</button>
+                <button class="pwa-btn" id="openPwaBtn">📲 На экран</button>
             </div>
         </div>
     </header>
@@ -189,24 +45,30 @@
     <div class="landing-screen" id="landingScreen">
         <div class="welcome-card">
             <h2 style="color: var(--accent-gold); margin-top: 0; font-size: 1.4rem;">✨ Добро пожаловать!</h2>
-            <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 15px;">Ваше персональное пространство для романтики и сближения.</p>
+            <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 15px;">
+                Ваше персональное пространство для романтики и сближения.
+            </p>
 
             <div id="biometricLockBlock" style="display: none; margin-bottom: 15px;">
                 <p style="color: var(--accent-purple); font-size: 0.85rem; font-weight: 600;">🔒 Приложение защищено биометрией</p>
-                <button class="btn-faceid" onclick="authenticateBiometrics()">👤 Подтвердить Face ID / Touch ID</button>
+                <button class="btn-faceid" id="faceIdBtn">
+                    👤 Подтвердить Face ID / Touch ID
+                </button>
             </div>
 
             <div id="formSetupBlock">
                 <div class="info-box">
                     <b style="color: var(--accent-gold);">🔑 Инструкция по Коду Пары:</b><br>
                     1. Придумайте один <b>уникальный секретный код</b> только для вашей пары (например: <code>ALEX_NIKA2026</code>).<br>
-                    2. Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне.
+                    2. Ваш партнер должен ввести <b>точно такой же код</b> у себя на телефоне.<br>
+                    3. Отметки прохождения и совпадения будут мгновенно синхронизироваться!
                 </div>
 
                 <div class="form-group">
                     <label>Общий Код Пары (одинаковый у обоих):</label>
                     <input type="text" class="form-control" placeholder="Например: ALEX_NIKA2026" id="pairCodeInput">
                 </div>
+
                 <div class="form-group">
                     <label>Ваш профиль в паре:</label>
                     <select class="form-control" id="userRoleSelect">
@@ -214,6 +76,7 @@
                         <option value="p2">Женщина (Партнер 2)</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>Основной акцент на месяц:</label>
                     <select class="form-control" id="preferenceSelect">
@@ -225,8 +88,10 @@
                     </select>
                 </div>
 
-                <button class="btn-primary" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
-                <button class="btn-secondary" id="enableBiometricBtn" onclick="registerBiometrics()" style="margin-top: 12px; width: 100%; display: none;">🔒 Включить Face ID для входа</button>
+                <button class="btn-primary" id="saveEnterBtn">Войти в Календарь 🔥</button>
+                <button class="btn-secondary" id="enableBiometricBtn" style="margin-top: 12px; width: 100%; display: none;">
+                    🔒 Включить Face ID / Touch ID для входа
+                </button>
             </div>
         </div>
     </div>
@@ -240,17 +105,20 @@
             </div>
             
             <div class="dash-actions">
-                <button class="btn-secondary" onclick="forceRefreshData()">🔄</button>
-                <button class="btn-secondary" onclick="openShopModal()" style="border-color: var(--accent-gold); color: var(--accent-gold);">🛍️ Магазин</button>
-                <button class="btn-secondary" onclick="openModal('achievementsModal')" style="border-color: var(--accent-purple); color: var(--accent-purple);">🏆 Ачивки</button>
-                <button class="btn-secondary" onclick="openModal('wheelModal')">🎰 Рулетка</button>
-                <button class="btn-secondary" onclick="openModal('cheatSheetModal')" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Гайд</button>
-                <button class="btn-secondary" onclick="openModal('lingerieModal')">👙 Белье</button>
-                <button class="btn-secondary" onclick="openModal('toysModal')">🧸 Игрушки</button>
-                <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
-                <button class="btn-secondary" onclick="openModal('statusModal')">💬 Статус</button>
-                <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
-                <button class="btn-secondary" onclick="resetSettings()">⚙️</button>
+                <button class="btn-secondary" id="refreshBtn" title="Обновить данные">🔄</button>
+                <button class="btn-secondary" id="openAchievementsBtn" style="border-color: var(--accent-purple); color: var(--accent-purple);">🏆 Ачивки</button>
+                <button class="btn-secondary" id="openShopBtn" style="border-color: var(--accent-gold); color: var(--accent-gold);">🛍️ Магазин</button>
+                <button class="btn-secondary" id="openChallengeBtn">💌 Вызов</button>
+                <button class="btn-secondary" id="openWheelBtn">🎰 Рулетка 3x</button>
+                <button class="btn-secondary" id="openAnalyticsBtn">📊 Аналитика</button>
+                <button class="btn-secondary" id="openCheatBtn" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Гайд</button>
+                <button class="btn-secondary" id="openLingerieBtn">👙 Белье</button>
+                <button class="btn-secondary" id="openToysBtn">🧸 Игрушки</button>
+                <button class="btn-secondary" id="openGeneratorBtn">🔮 Совпадения</button>
+                <button class="btn-secondary" id="openStatusBtn">💬 Статус</button>
+                <button class="btn-secondary" id="openMusicBtn">🎵 Плейлист</button>
+                <button class="btn-secondary" id="favFilterBtn">⭐</button>
+                <button class="btn-secondary" id="openSettingsBtn" title="Настройки и Бэкап">⚙️</button>
             </div>
 
             <div class="progress-bar-container">
@@ -262,589 +130,258 @@
             </div>
         </div>
 
+        <!-- Переключатель архива месяцев -->
+        <div class="month-selector">
+            <button class="btn-secondary" id="prevMonthBtn">◄ Пред. месяц</button>
+            <span id="currentMonthLabel" style="font-weight:bold; color:var(--accent-gold); font-size:0.9rem;">Текущий месяц</span>
+            <button class="btn-secondary" id="nextMonthBtn">След. месяц ►</button>
+        </div>
+
         <div class="calendar-grid" id="grid"></div>
     </div>
 
     <!-- МОДАЛЬНЫЕ ОКНА -->
 
-    <!-- Модалка задания с Дневником Впечатлений -->
-    <div class="modal-overlay" id="taskModal">
+    <!-- Модалка задания с дневником впечатлений -->
+    <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('taskModal')">&times;</button>
-            <button class="fav-toggle-btn" id="modalFavBtn" onclick="toggleCurrentFav()">☆</button>
+            <button class="close-btn" id="closeTaskModalBtn">&times;</button>
+            <button class="fav-toggle-btn" id="modalFavBtn">☆</button>
             <h3 id="modalTitle" style="color:var(--accent-gold); margin-top:0;"></h3>
             <div id="modalRole" style="font-size:0.85rem; margin-bottom:10px;"></div>
-            <div class="modal-img-container"><img id="modalImg" src="" alt="Иллюстрация"></div>
+            <div class="modal-img-container">
+                <img id="modalImg" src="" alt="Иллюстрация">
+            </div>
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
             
+            <!-- Дневник впечатлений -->
             <div class="feedback-section" style="margin-top:15px; text-align:left; background:rgba(0,0,0,0.2); padding:12px; border-radius:12px;">
                 <h4 style="margin:0 0 8px 0; color:var(--accent-rose); font-size:0.85rem;">📝 Дневник впечатлений пары</h4>
-                <div id="partnerFeedbackBox" style="font-size:0.75rem; color:var(--accent-purple); margin-bottom:6px; font-style:italic;">💬 Партнер: еще не оставил отзыв.</div>
+                <div class="rating-stars" id="ratingStars" style="font-size:1.2rem; cursor:pointer; margin-bottom:8px;">
+                    <span data-star="1">☆</span><span data-star="2">☆</span><span data-star="3">☆</span><span data-star="4">☆</span><span data-star="5">☆</span>
+                </div>
                 <textarea class="form-control" id="feedbackInput" rows="2" placeholder="Оставьте личный отзыв о практике..." style="font-size:0.8rem;"></textarea>
+                <div id="partnerFeedbackBox" style="font-size:0.75rem; color:var(--accent-purple); margin-top:6px; font-style:italic;"></div>
             </div>
 
-            <button class="btn-primary" id="completeBtn" onclick="toggleComplete()" style="margin-top:15px;">Отметить пройденным (+50 CP) ✓</button>
+            <button class="btn-primary" id="completeBtn" style="margin-top:15px;">Отметить пройденным (+50 CP) ✓</button>
         </div>
     </div>
 
-    <!-- Магазин (Shop) -->
+    <!-- Модалка 1: Ачивки и Шеринг -->
+    <div class="modal-overlay" id="achievementsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeAchievementsBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🏆 Достижения и Награды</h3>
+            <div id="achievementsList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
+            <button class="btn-primary" id="closeAchievementsBtnMain" style="margin-top:15px;">Отлично 🔥</button>
+        </div>
+    </div>
+
+    <!-- Модалка 2: Магазин Желаний (Couple Points) -->
     <div class="modal-overlay" id="shopModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('shopModal')">&times;</button>
+            <button class="close-btn" id="closeShopBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🛍️ Магазин Желаний</h3>
             <p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">Тратьте заработанные Couple Points (CP) на исполнения желаний!</p>
             <div id="shopList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
         </div>
     </div>
 
-    <!-- Ачивки -->
-    <div class="modal-overlay" id="achievementsModal">
+    <!-- Модалка 3: Дневные Вызовы (Дуэли) -->
+    <div class="modal-overlay" id="challengeModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('achievementsModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🏆 Ваши Достижения</h3>
-            <div id="achievementsList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
+            <button class="close-btn" id="closeChallengeBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💌 Секретный Вызов</h3>
+            <div id="incomingChallengeBox" class="cheat-item" style="display:none; border-left-color:var(--accent-rose);">
+                <h4 style="color:var(--accent-rose);">📩 У вас есть закрытый конверт!</h4>
+                <p id="incomingChallengeText" style="filter: blur(4px); transition: filter 0.3s;">Секретное задание от партнера</p>
+                <button class="btn-secondary" id="revealChallengeBtn" style="margin-top:8px;">Открыть конверт 🔓</button>
+            </div>
+            <div class="form-group" style="margin-top:15px;">
+                <label>Отправить новый секретный вызов партнеру:</label>
+                <input type="text" class="form-control" id="challengeInput" placeholder="Например: Держи меня за руку весь вечер...">
+            </div>
+            <button class="btn-primary" id="sendChallengeBtn">Запечатать и Отправить 💌</button>
         </div>
     </div>
 
-    <!-- Рулетка -->
+    <!-- Модалка 4: 3D-Слот Барабаны (Рулетка) -->
     <div class="modal-overlay" id="wheelModal">
         <div class="modal-content" style="text-align:center;">
-            <button class="close-btn" onclick="closeModal('wheelModal')">&times;</button>
+            <button class="close-btn" id="closeWheelBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0;">🎰 Генератор Вечера</h3>
             <div class="slot-machine">
                 <div class="slot-reel"><div class="slot-label">Локация</div><div class="slot-value" id="slotLoc">???</div></div>
                 <div class="slot-reel"><div class="slot-label">Белье</div><div class="slot-value" id="slotLing">???</div></div>
-                <div class="slot-reel"><div class="slot-label">Стиль</div><div class="slot-value" id="slotStyle">???</div></div>
+                <div class="slot-reel"><div class="slot-label">Игрушка / Поза</div><div class="slot-value" id="slotStyle">???</div></div>
             </div>
-            <button class="btn-primary" onclick="spinSlots()" style="margin-top:15px;">Крутить Барабаны! 🎲</button>
+            <button class="btn-primary" id="spinSlotsBtn" style="margin-top:15px;">Крутить Барабаны! 🎲</button>
         </div>
     </div>
 
-    <!-- Белье (Полный текст восстановлен) -->
+    <!-- Модалка 5: Аналитика и Инфографика -->
+    <div class="modal-overlay" id="analyticsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeAnalyticsBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📊 Аналитика Пары</h3>
+            <div class="analytics-box">
+                <h4>🗓️ Активность по дням недели</h4>
+                <canvas id="weekdayChart" width="300" height="150"></canvas>
+            </div>
+            <div class="analytics-box" style="margin-top:15px;">
+                <h4>🔥 Предпочтения Категорий</h4>
+                <canvas id="categoriesChart" width="300" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка 6: Настройки, Бэкап и Экспорт -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">⚙️ Настройки и Безопасность</h3>
+            
+            <div class="cheat-item">
+                <h4>🔒 Режим «Паника» (Stealth)</h4>
+                <p>Тройной тап по экрану, клавиша Esc или кнопка 🛡️ мгновенно маскируют сайт под Список Покупок.</p>
+            </div>
+
+            <div class="cheat-item">
+                <h4>💾 Резервное копирование</h4>
+                <p>Экспортируйте прогресс в зашифрованный `.couple` файл или восстановите данные.</p>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="btn-secondary" id="exportDataBtn">Зашифровать и Скачать</button>
+                    <button class="btn-secondary" id="importDataBtn">Импорт из файла</button>
+                    <input type="file" id="importFileInput" style="display:none;" accept=".couple,.json">
+                </div>
+            </div>
+
+            <button class="btn-primary" id="changeSettingsBtn" style="margin-top:10px;">Изменить профиль пары</button>
+        </div>
+    </div>
+
+    <!-- Другие вспомогательные модалки (PWA, Белье, Игрушки, Гайд, Статус, Музыка) -->
+    <div class="modal-overlay" id="pwaModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closePwaBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📱 Установка на Главный Экран</h3>
+            <div class="cheat-item">
+                <h4>🍎 Для iPhone (Safari):</h4>
+                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>2. Прокрутите вниз и выберите <b>«На экран "Домой"»</b> ➕.<br>3. Нажмите «Добавить» в правом верхнем углу.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>🤖 Для Android (Chrome):</h4>
+                <p>1. Нажмите меню <b>«Три точки»</b> в правом верхнем углу браузера.<br>2. Выберите <b>«Добавить на гл. экран»</b> или <b>«Установить приложение»</b>.<br>3. Подтвердите добавление.</p>
+            </div>
+            <button class="btn-primary" id="closePwaBtnMain">Понятно, спасибо! 👍</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="lingerieModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('lingerieModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">👙 Энциклопедия Белья</h3>
+            <button class="close-btn" id="closeLingerieBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">👙 Энциклопедия Нижнего Белья</h3>
             <div id="lingerieContent"></div>
-            <button class="btn-primary" onclick="closeModal('lingerieModal')">Понятно ✨</button>
+            <button class="btn-primary" id="closeLingerieBtnMain">Понятно ✨</button>
         </div>
     </div>
 
-    <!-- Игрушки (Полный текст восстановлен) -->
     <div class="modal-overlay" id="toysModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('toysModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🧸 Интимные Игрушки</h3>
+            <button class="close-btn" id="closeToysBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🧸 Энциклопедия Интимных Игрушек</h3>
             <div id="toysContent"></div>
-            <button class="btn-primary" onclick="closeModal('toysModal')">Понятно ✨</button>
+            <button class="btn-primary" id="closeToysBtnMain">Понятно ✨</button>
         </div>
     </div>
 
-    <!-- Гайд по оральным ласкам (20 техник со спойлерами) -->
+    <div class="modal-overlay" id="generatorModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeGeneratorBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0;">🔮 Генератор Совпадений</h3>
+            <p style="font-size:0.85rem; color:var(--text-sub);">Отметьте желания анонимно. Приложение откроет только те практики, где ваши ответы совпадут!</p>
+            <div id="surveyContainer" style="max-height: 50vh; overflow-y: auto;"></div>
+            <button class="btn-primary" id="checkMatchesBtn" style="margin-top:15px;">Найти Совпадения ✨</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('cheatSheetModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Мастер-Гайд по Ласкам</h3>
+            <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Мастер-Гайд по Оральным Ласкам</h3>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="cheat-tab-btn active" id="btnKun" onclick="switchCheatTab('kun')">🌹 Для Неё (10)</button>
-                <button class="cheat-tab-btn" id="btnMin" onclick="switchCheatTab('min')">👑 Для Него (10)</button>
+                <button class="cheat-tab-btn active" id="btnKun">🌹 Для Неё (10 техник)</button>
+                <button class="cheat-tab-btn" id="btnMin">👑 Для Него (10 техник)</button>
             </div>
             <div id="cheatKunBlock"></div>
             <div id="cheatMinBlock" style="display:none;"></div>
-            <button class="btn-primary" onclick="closeModal('cheatSheetModal')" style="margin-top:10px;">Применяем! 🔥</button>
+            <button class="btn-primary" id="closeCheatSheetBtnMain" style="margin-top:10px;">Применяем! 🔥</button>
         </div>
     </div>
 
-    <!-- PWA -->
-    <div class="modal-overlay" id="pwaModal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('pwaModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📱 Установка на Экран</h3>
-            <div class="cheat-item"><h4>🍎 iPhone (Safari):</h4><p>Нажмите «Поделиться» ➔ «На экран "Домой"» ➕.</p></div>
-            <div class="cheat-item"><h4>🤖 Android (Chrome):</h4><p>Меню «Три точки» ➔ «Добавить на гл. экран».</p></div>
-            <button class="btn-primary" onclick="closeModal('pwaModal')">Понятно 👍</button>
-        </div>
-    </div>
-
-    <!-- Статус -->
     <div class="modal-overlay" id="statusModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('statusModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💬 Ваш Статус</h3>
-            <div class="form-group">
+            <button class="close-btn" id="closeStatusBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💬 Ваш Интимный Статус</h3>
+            <div class="form-group" style="margin-top:15px;">
+                <label>Выберите статус:</label>
                 <select class="form-control" id="statusSelect">
-                    <option value="❤️ Хочу нежности">❤️ Хочу нежности</option>
-                    <option value="🔥 Готов(а) к экспериментам">🔥 Готов(а) к экспериментам</option>
-                    <option value="😈 Настрой на доминирование">😈 Настрой на доминирование</option>
-                    <option value="😴 Устал(а), нужен массаж">😴 Устал(а), нужен массаж</option>
+                    <option value="❤️ Хочу нежности и поцелуев">❤️ Хочу нежности и поцелуев</option>
+                    <option value="🔥 Готов(а) к горячим экспериментам">🔥 Готов(а) к горячим экспериментам</option>
+                    <option value="😈 Настрой на BDSM / Доминирование">😈 Настрой на BDSM / Доминирование</option>
+                    <option value="😴 Устал(а), нужен просто массаж">😴 Устал(а), нужен просто массаж</option>
+                    <option value="🎁 Приготовил(а) для тебя сюрприз">🎁 Приготовил(а) для тебя сюрприз</option>
                 </select>
             </div>
-            <button class="btn-primary" onclick="saveStatus()">Обновить Статус 📲</button>
+            <button class="btn-primary" id="saveStatusBtn">Обновить Мой Статус 📲</button>
         </div>
     </div>
 
-    <!-- Генератор Совпадений -->
-    <div class="modal-overlay" id="generatorModal">
+    <div class="modal-overlay" id="musicModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('generatorModal')">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0;">🔮 Генератор Совпадений</h3>
-            <p style="font-size:0.85rem; color:var(--text-sub);">Отметьте желания анонимно. Откроются только совпадения!</p>
-            <div id="surveyContainer" style="max-height: 50vh; overflow-y: auto;"></div>
-            <button class="btn-primary" onclick="checkMatches()" style="margin-top:15px;">Найти Совпадения ✨</button>
+            <button class="close-btn" id="closeMusicBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🎵 Атмосферная Музыка</h3>
+            
+            <div class="cheat-item">
+                <h4>🎷 Romantic & Chill (Для классики)</h4>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX6V1q18M2A9L?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <div class="cheat-item">
+                <h4>🔥 Dark Sensual & Rhythm (Для BDSM)</h4>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX2A2938v9D4m?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <button class="btn-primary" id="closeMusicBtnMain">Отлично 🎧</button>
         </div>
     </div>
 
-    <!-- МАСКИРОВОЧНЫЙ ЭКРАН (STEALTH) -->
+    <!-- МАСКИРОВОЧНЫЙ ЭКРАН (STEALTH / PANIC MODE) -->
     <div class="stealth-screen" id="stealthScreen">
         <div class="stealth-card">
             <div class="stealth-header">
                 <h2>📝 Мои Заметки и Покупки</h2>
-                <button class="pwa-btn" onclick="toggleStealthMode()" style="border-color: #555; color: #888;">🛡️</button>
+                <button class="pwa-btn" id="unpanicBtn" style="border-color: #555; color: #888;">🛡️</button>
             </div>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Список продуктов на неделю:</p>
+            
             <div class="shopping-list">
                 <label class="shopping-item"><input type="checkbox" checked> Молоко 3.2% (2 пачки)</label>
                 <label class="shopping-item"><input type="checkbox" checked> Хлеб цельнозерновой</label>
                 <label class="shopping-item"><input type="checkbox"> Яйца C0 (10 шт)</label>
                 <label class="shopping-item"><input type="checkbox"> Филе куриное (1 кг)</label>
+                <label class="shopping-item"><input type="checkbox"> Сыр Твердый (200г)</label>
                 <label class="shopping-item"><input type="checkbox"> Яблоки Гала (1.5 кг)</label>
                 <label class="shopping-item"><input type="checkbox"> Кофе в зернах</label>
             </div>
+
             <div style="margin-top: 20px;">
                 <input type="text" class="form-control" placeholder="Добавить новый пункт..." style="background:#1a1a1a; border-color:#333; color:#ccc;">
             </div>
         </div>
     </div>
 
-    <script>
-        // ИНИЦИАЛИЗАЦИЯ FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyCHsmF5VKef6zOmUft_pLRAHoSph4cIsUg",
-            authDomain: "adventcouple-4fd17.firebaseapp.com",
-            databaseURL: "https://adventcouple-4fd17-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "adventcouple-4fd17",
-            storageBucket: "adventcouple-4fd17.firebasestorage.app",
-            messagingSenderId: "546937107365",
-            appId: "1:546937107365:web:281b443fee202d9d28ae4c"
-        };
-
-        let db = null;
-        try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) {}
-
-        const now = new Date();
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth();
-        const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-        const monthKey = `${currentYear}_${currentMonth}`;
-        document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
-
-        const imgPool = [
-            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
-        ];
-
-        // БАЗА ДАННЫХ (ВОССТАНОВЛЕНА В ПОЛНОМ ОБЪЕМЕ)
-        const lingerieItems = [
-            { title: "1. Белье с открытым доступом (Ouvert)", text: "<b>Для чего:</b> Быстрый секс, категории BDSM.<br><b>Плюс:</b> Не требует снимать белье во время процесса, создает интригу." },
-            { title: "2. Боди из сетки, кружева или экокожи", text: "<b>Для чего:</b> Ролевые игры и доминирование.<br><b>Плюс:</b> Корректирует фигуру, визуально удлиняет силуэт." },
-            { title: "3. Шелковый пеньюар / Халат", text: "<b>Для чего:</b> Нежная классика, долгое прелюдие.<br><b>Плюс:</b> Невесомо скользит по коже, даря тактильный кайф." },
-            { title: "4. Страппинг и Портупеи (Harness)", text: "<b>Для чего:</b> BDSM-практики и фиксация.<br><b>Плюс:</b> Подчёркивает изгибы и грудь." },
-            { title: "5. Корсеты на Косточках", text: "<b>Для чего:</b> Романтические вечера.<br><b>Плюс:</b> Формирует осиную талию, приподнимает грудь." },
-            { title: "6. Прозрачные Микро-Бикини", text: "<b>Для чего:</b> Горячий визуальный контакт.<br><b>Плюс:</b> Максимально открывают тело." },
-            { title: "7. Латексные комплекты", text: "<b>Для чего:</b> Глубокий BDSM.<br><b>Плюс:</b> Обтягивает тело как вторая кожа, отражает свет." },
-            { title: "8. Мужское премиум-белье", text: "<b>Для Него:</b> Анатомические боксеры из микрофибры.<br><b>Плюс:</b> Подчеркивают рельеф тела." }
-        ];
-
-        const toysItems = [
-            { title: "1. Вакуумно-волновой стимулятор", text: "<b>Назначение:</b> Бесконтактные ласки клитора.<br><b>Правило:</b> Использовать ТОЛЬКО с водным лубрикантом." },
-            { title: "2. Эрекционное кольцо", text: "<b>Назначение:</b> Усиление эрекции у него + ласки клитора.<br><b>Правило:</b> Не носить дольше 30 минут." },
-            { title: "3. Парный вибратор (We-Vibe)", text: "<b>Назначение:</b> Одновременная стимуляция Точки G и клитора ВО ВРЕМЯ акта." },
-            { title: "4. Смарт-виброяйцо с пультом", text: "<b>Назначение:</b> Эдджинг в общественных местах (кафе, прогулка)." },
-            { title: "5. Анальные пробки", text: "<b>Назначение:</b> Дополнительное наполнение.<br><b>Правило:</b> Обильный лубрикант и обязателен ограничитель!" },
-            { title: "6. Стеклянные фаллоимитаторы", text: "<b>Назначение:</b> Температурные игры (нагрев или охлаждение)." },
-            { title: "7. Мягкие BDSM-фиксаторы", text: "<b>Назначение:</b> Ограничение движений.<br><b>Правило:</b> Всегда оговаривайте стоп-слово." },
-            { title: "8. Смазки: Водная vs Силиконовая", text: "Водная — безопасна для всех игрушек. Силиконовая — портит силиконовые игрушки, но идеальна для душа." }
-        ];
-
-        const cheatKunItems = [
-            { title: "1. Треугольник и Восьмерка 📐", text: "Описывайте кончиком языка плавные восьмерки вокруг клитора, сочетая с тёплым дыханием." },
-            { title: "2. Волновое Всасывание 💋", text: "Обхватите клитор губами, создавая легкий вакуум." },
-            { title: "3. Синергия Пальцев ✌️", text: "Совмещайте оральные ласки с введением 1–2 пальцев во влагалище подушечками вверх." },
-            { title: "4. Заморозка Ритма ⏱️", text: "Когда она начинает изгибаться — НЕ ускоряйтесь и НЕ меняйте угол! Держите строго один темп." },
-            { title: "5. Бабочка Ануса 🦋", text: "Легкие касания кончиком языка промежности между влагалищем и анусом." },
-            { title: "6. «Алфавит» Языком 🔤", text: "Мысленно выводите языком буквы алфавита по капюшону клитора." },
-            { title: "7. Растяжка капюшона 🖐️", text: "Двумя пальцами аккуратно натягивайте кожу выше клитора." },
-            { title: "8. Ледяной контраст 🧊", text: "Подержите во рту кусочек льда перед касанием." },
-            { title: "9. Боковое Скольжение ↔️", text: "Скользите широким основанием языка слева направо." },
-            { title: "10. Поршневой Вакуум 🌊", text: "Плотно прижмите губы вокруг малых губ и совершайте втягивающие движения." }
-        ];
-
-        const cheatMinItems = [
-            { title: "1. Твист и Взгляд 🌀", text: "Обхватите ствол рукой у основания, двигая ладонь с прокручиванием противоположно ласкам губ." },
-            { title: "2. Акцент на Уздечку 🎯", text: "Самая чувствительная зона — уздечка под головкой. Ласкайте плоской стороной языка." },
-            { title: "3. Глубокое Всасывание 🌊", text: "Подворачивайте губы за зубы. Создавайте комфортный вакуум щеками." },
-            { title: "4. Горячий Контраст 🧊", text: "Возьмите глоток теплого чая, а затем кусочек льда." },
-            { title: "5. Массаж Мошонки 🤲", text: "Одной рукой нежно сжимайте мошонку или делайте нажатия на промежность." },
-            { title: "6. «Бабочка» на Головке 🦋", text: "Быстрые вибрирующие касания кончиком языка вокруг венечной борозды." },
-            { title: "7. Deep Throat 😮", text: "Расслабьте горло, сожмите большой палец левой руки в кулак (подавляет рвотный рефлекс)." },
-            { title: "8. Техника «Помпа» 🪠", text: "Сложите ладони кольцом друг над другом, имитируя вакуумную помпу." },
-            { title: "9. Дразнение у основания 🛑", text: "Остановитесь у основания ствола, массируя его губами и языком." },
-            { title: "10. Скольжение со Смазкой 🧴", text: "Нанесите каплю лубриканта прямо на головку." }
-        ];
-
-        const shopItems = [
-            { id: "s1", title: "🥐 Завтрак в постель", cost: 200, desc: "Партнер готовит и подает любимый завтрак." },
-            { id: "s2", title: "💆‍♂️ Массаж стоп (30 мин)", cost: 300, desc: "Расслабляющий массаж с маслом без отговорок." },
-            { id: "s3", title: "📵 Вечер без гаджетов", cost: 400, desc: "Полное отключение телефонов и ТВ после 19:00." },
-            { id: "s4", title: "👑 Выполнение желания", cost: 1000, desc: "Исполнение одного пикантного желания без права отказа!" }
-        ];
-
-        const achievementsData = [
-            { id: "a1", title: "✨ Первый Шаг", desc: "Пройти 3 карточки", req: 3 },
-            { id: "a2", title: "🧘‍♀️ Исследователи", desc: "Пройти 10 практик", req: 10 },
-            { id: "a3", title: "🔥 Огненный Союз", desc: "Пройти 18 практик", req: 18 },
-            { id: "a4", title: "👑 Мастера Интимности", desc: "Завершить 25 карточек", req: 25 }
-        ];
-
-        const wheelLocations = ["На ковре при свечах", "На кухне", "В ванной", "У зеркала", "В машине"];
-        const wheelLingeries = ["Ouvert (Открытое)", "Боди", "Шелковое кимоно", "Портупея", "Без белья"];
-        const wheelStyles = ["Только поцелуи", "С маской на глаза", "С фиксацией рук", "С задержкой финиша"];
-
-        // Генерация 800 поз (Детерминированный shuffle)
-        const databaseFull = {
-            classic: Array.from({length: 200}, (_, i) => ({ id: `c_${i}`, title: `Классика №${i+1}`, lead: "🤝 Оба на равных", task: `Нежная романтическая практика №${i+1}. Задействуйте дыхание и зрительный контакт.`, tip: "Сохраняйте медленный темп." })),
-            female_lead: Array.from({length: 200}, (_, i) => ({ id: `f_${i}`, title: `Доминирование №${i+1}`, lead: "👑 Она — Ведущая", task: `Она берет полный контроль №${i+1}. Мужчина подчиняется.`, tip: "Сдерживайте разрядку." })),
-            kamasutra: Array.from({length: 200}, (_, i) => ({ id: `k_${i}`, title: `Камасутра №${i+1}`, lead: "🤝 Оба на равных", task: `Уникальная поза Камасутры №${i+1}.`, tip: "Используйте подушку для упора." })),
-            bdsm: Array.from({length: 200}, (_, i) => ({ id: `b_${i}`, title: `BDSM №${i+1}`, lead: "👑 Он — Ведущий", task: `Эксперимент с ограничением движений №${i+1}.`, tip: "Оговорите стоп-слово." }))
-        };
-
-        function getTasksForMonth(category, code) {
-            let pool = category === 'balanced' ? [...databaseFull.classic.slice(0,50), ...databaseFull.female_lead.slice(0,50), ...databaseFull.kamasutra.slice(0,50), ...databaseFull.bdsm.slice(0,50)] : databaseFull[category];
-            let seed = 0; for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
-            
-            const shuffledPool = [...pool];
-            for (let i = shuffledPool.length - 1; i > 0; i--) {
-                const j = Math.abs((seed * (i + 1) * 17) % (i + 1));
-                [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
-            }
-
-            const result = [];
-            for (let day = 1; day <= daysInCurrentMonth; day++) {
-                const base = shuffledPool[(day - 1) % shuffledPool.length];
-                result.push({
-                    day: day, id: base.id, title: `${day < 10 ? '0' + day : day}. ${base.title}`,
-                    category: category === 'balanced' ? 'Микс' : category,
-                    lead: base.lead, roleClass: base.lead.includes("Она") ? "role-f" : (base.lead.includes("Он") ? "role-m" : "role-both"),
-                    img: imgPool[day % imgPool.length], task: base.task, tip: base.tip
-                });
-            }
-            return result;
-        }
-
-        let pairCode = localStorage.getItem('pairCode') || '';
-        let userRole = localStorage.getItem('userRole') || 'p1';
-        let selectedCategory = localStorage.getItem('userCat') || 'balanced';
-        let couplePoints = parseInt(localStorage.getItem('couplePoints') || '0');
-        let monthTasks = [], p1Completed = [], p2Completed = [], p1Fav = [], p2Fav = [];
-        let currentDay = null, onlyFavFilter = false, myVotes = {};
-
-        // ВСТРАИВАНИЕ HTML-КОНТЕНТА В МОДАЛКИ ПРИ ЗАГРУЗКЕ
-        function injectStaticContent() {
-            document.getElementById('lingerieContent').innerHTML = lingerieItems.map(i => `<div class="cheat-item"><h4>${i.title}</h4><p>${i.text}</p></div>`).join('');
-            document.getElementById('toysContent').innerHTML = toysItems.map(i => `<div class="cheat-item"><h4>${i.title}</h4><p>${i.text}</p></div>`).join('');
-            
-            document.getElementById('cheatKunBlock').innerHTML = `
-                <details class="anatomy-spoiler"><summary>🗺️ Анатомия Клитора (Спойлер)</summary><div class="anatomy-content"><b>Головка клитора:</b> >10 000 нервных окончаний.<br><b>Точка G:</b> Передняя стенка, 3-5 см.</div></details>
-                ${cheatKunItems.map(i => `<div class="cheat-item"><h4>${i.title}</h4><p>${i.text}</p></div>`).join('')}`;
-            
-            document.getElementById('cheatMinBlock').innerHTML = `
-                <details class="anatomy-spoiler"><summary>🗺️ Анатомия Пениса (Спойлер)</summary><div class="anatomy-content"><b>Уздечка:</b> Треугольная зона под головкой.<br><b>Промежность:</b> Между мошонкой и анусом.</div></details>
-                ${cheatMinItems.map(i => `<div class="cheat-item"><h4>${i.title}</h4><p>${i.text}</p></div>`).join('')}`;
-        }
-
-        window.onload = function() {
-            injectStaticContent();
-            checkBiometricSupport();
-            if (pairCode) {
-                document.getElementById('pairCodeInput').value = pairCode;
-                document.getElementById('userRoleSelect').value = userRole;
-                document.getElementById('preferenceSelect').value = selectedCategory;
-
-                if (localStorage.getItem('biometricsEnabled') === 'true') {
-                    showLandingScreen();
-                    document.getElementById('biometricLockBlock').style.display = 'block';
-                    document.getElementById('formSetupBlock').style.display = 'none';
-                    authenticateBiometrics();
-                } else {
-                    showCalendarScreen();
-                }
-            } else {
-                showLandingScreen();
-            }
-        };
-
-        function showLandingScreen() {
-            document.getElementById('landingScreen').style.display = 'flex';
-            document.getElementById('calendarScreen').style.display = 'none';
-        }
-
-        function showCalendarScreen() {
-            document.getElementById('landingScreen').style.display = 'none';
-            document.getElementById('calendarScreen').style.display = 'flex';
-            monthTasks = getTasksForMonth(selectedCategory, pairCode);
-            document.getElementById('pointsDisplay').innerText = `🔥 ${couplePoints} CP`;
-            initSync();
-            renderGrid();
-        }
-
-        function saveSettingsAndEnter() {
-            const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
-            if (!rawCode || rawCode.length < 4) { alert("❌ Введите уникальный код минимум из 4 символов!"); return; }
-            pairCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
-            userRole = document.getElementById('userRoleSelect').value;
-            selectedCategory = document.getElementById('preferenceSelect').value;
-
-            localStorage.setItem('pairCode', pairCode);
-            localStorage.setItem('userRole', userRole);
-            localStorage.setItem('userCat', selectedCategory);
-
-            showCalendarScreen();
-        }
-
-        function resetSettings() {
-            document.getElementById('formSetupBlock').style.display = 'block';
-            showLandingScreen();
-        }
-
-        function initSync() {
-            if (!db || !pairCode) return;
-            document.getElementById('syncBadgeText').innerText = `🟢 Код: [ ${pairCode} ]`;
-            
-            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (s) => { p1Completed = s.val() || []; renderGrid(); });
-            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).on('value', (s) => { p2Completed = s.val() || []; renderGrid(); });
-            db.ref(`pairs/${pairCode}/fav/p1`).on('value', (s) => { p1Fav = s.val() || []; renderGrid(); });
-            db.ref(`pairs/${pairCode}/fav/p2`).on('value', (s) => { p2Fav = s.val() || []; renderGrid(); });
-            
-            db.ref(`pairs/${pairCode}/status/${userRole === 'p1'?'p2':'p1'}`).on('value', (s) => {
-                if(s.val()) document.getElementById('syncBadgeText').innerText = `💬 Партнер: ${s.val()}`;
-            });
-        }
-
-        function renderGrid() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            const allFavs = [...new Set([...p1Fav, ...p2Fav])];
-            const tasks = onlyFavFilter ? monthTasks.filter(t => allFavs.includes(t.day)) : monthTasks;
-
-            tasks.forEach(task => {
-                const hasP1 = p1Completed.includes(task.day);
-                const hasP2 = p2Completed.includes(task.day);
-                const isFavP1 = p1Fav.includes(task.day);
-                const isFavP2 = p2Fav.includes(task.day);
-
-                const card = document.createElement('div');
-                let statusClass = (hasP1 && hasP2) ? 'completed-both' : (hasP1 ? 'completed-p1' : (hasP2 ? 'completed-p2' : ''));
-                card.className = `day-card ${statusClass}`;
-                
-                let favTagHTML = '';
-                if (isFavP1 && isFavP2) favTagHTML = `<div class="fav-tag fav-both">⭐ М+Ж</div>`;
-                else if (isFavP1) favTagHTML = `<div class="fav-tag fav-p1">⭐ М</div>`;
-                else if (isFavP2) favTagHTML = `<div class="fav-tag fav-p2">⭐ Ж</div>`;
-
-                card.innerHTML = `
-                    ${favTagHTML}
-                    <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
-                    <div class="day-category">${task.category}</div>
-                    <div class="day-role ${task.roleClass}">${task.lead.split(' ')[1] || ''}</div>
-                `;
-                card.onclick = () => openTaskModal(task);
-                grid.appendChild(card);
-            });
-            updateProgress();
-        }
-
-        function openTaskModal(task) {
-            currentDay = task.day;
-            document.getElementById('modalTitle').innerText = task.title;
-            document.getElementById('modalRole').innerText = task.lead;
-            document.getElementById('modalImg').src = task.img;
-            document.getElementById('modalTask').innerText = task.task;
-            document.getElementById('modalTip').innerText = task.tip;
-            
-            const myComp = (userRole === 'p1') ? p1Completed : p2Completed;
-            document.getElementById('completeBtn').innerText = myComp.includes(task.day) ? 'Отменить отметку ✖' : 'Отметить пройденным (+50 CP) ✓';
-            
-            const myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-            document.getElementById('modalFavBtn').innerText = myFav.includes(task.day) ? '⭐' : '☆';
-            
-            if(db) db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${task.day}/${userRole === 'p1'?'p2':'p1'}`).once('value', (s) => {
-                document.getElementById('partnerFeedbackBox').innerText = s.val() ? `💬 Партнер: "${s.val().text}"` : `💬 Партнер: еще не оставил отзыв.`;
-            });
-
-            openModal('taskModal');
-        }
-
-        function toggleComplete() {
-            let myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
-            if (myCompleted.includes(currentDay)) {
-                myCompleted = myCompleted.filter(d => d !== currentDay);
-            } else {
-                myCompleted.push(currentDay);
-                couplePoints += 50; // Начисление баллов
-                localStorage.setItem('couplePoints', couplePoints);
-                document.getElementById('pointsDisplay').innerText = `🔥 ${couplePoints} CP`;
-                if(window.confetti) window.confetti({particleCount: 100, spread: 70, origin: {y: 0.6}});
-            }
-
-            if (userRole === 'p1') p1Completed = myCompleted; else p2Completed = myCompleted;
-            if (db && pairCode) db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(myCompleted);
-            
-            const fb = document.getElementById('feedbackInput').value.trim();
-            if(fb && db) db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${currentDay}/${userRole}`).set({text: fb});
-            
-            renderGrid();
-            closeModal('taskModal');
-        }
-
-        function toggleCurrentFav() {
-            let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-            if (myFav.includes(currentDay)) myFav = myFav.filter(d => d !== currentDay);
-            else myFav.push(currentDay);
-
-            if (userRole === 'p1') p1Fav = myFav; else p2Fav = myFav;
-            if (db && pairCode) db.ref(`pairs/${pairCode}/fav/${userRole}`).set(myFav);
-            document.getElementById('modalFavBtn').innerText = myFav.includes(currentDay) ? '⭐' : '☆';
-            renderGrid();
-        }
-
-        function updateProgress() {
-            const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
-            const percent = Math.round((bothCount / daysInCurrentMonth) * 100);
-            document.getElementById('progressText').innerText = `Совместный прогресс: ${bothCount} / ${daysInCurrentMonth}`;
-            document.getElementById('progressPercent').innerText = `${percent}%`;
-            document.getElementById('progressFill').style.width = `${percent}%`;
-            
-            let badge = "🏆 Новички";
-            if (bothCount >= 25) badge = "👑 Мастера";
-            else if (bothCount >= 18) badge = "🔥 Огненный Союз";
-            else if (bothCount >= 10) badge = "🧘‍♀️ Исследователи";
-            document.getElementById('achievement').innerText = badge;
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        // Shop Logic
-        function openShopModal() {
-            document.getElementById('shopList').innerHTML = shopItems.map(i => `
-                <div class="cheat-item">
-                    <h4>${i.title} (${i.cost} CP)</h4><p>${i.desc}</p>
-                    <button class="btn-primary" onclick="buyShopItem(${i.cost})" style="padding:8px; font-size:0.8rem; margin-top:5px;">Купить 🔥</button>
-                </div>`).join('');
-            openModal('shopModal');
-        }
-        function buyShopItem(cost) {
-            if(couplePoints >= cost) {
-                couplePoints -= cost;
-                localStorage.setItem('couplePoints', couplePoints);
-                document.getElementById('pointsDisplay').innerText = `🔥 ${couplePoints} CP`;
-                if(window.confetti) window.confetti();
-                alert("Покупка совершена! Желание отправлено партнеру.");
-                closeModal('shopModal');
-            } else { alert("Недостаточно CP!"); }
-        }
-
-        // Achievements Modal
-        function openAchievementsModal() {
-            const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
-            document.getElementById('achievementsList').innerHTML = achievementsData.map(a => {
-                const ok = bothCount >= a.req;
-                return `<div class="cheat-item" style="opacity:${ok?'1':'0.4'}"><h4>${a.title} ${ok?'✅':'🔒'}</h4><p>${a.desc} (${bothCount}/${a.req})</p></div>`;
-            }).join('');
-            openModal('achievementsModal');
-        }
-
-        // Slots / Roulette
-        function spinSlots() {
-            let c=0; const iv = setInterval(() => {
-                document.getElementById('slotLoc').innerText = wheelLocations[Math.floor(Math.random()*wheelLocations.length)];
-                document.getElementById('slotLing').innerText = wheelLingeries[Math.floor(Math.random()*wheelLingeries.length)];
-                document.getElementById('slotStyle').innerText = wheelStyles[Math.floor(Math.random()*wheelStyles.length)];
-                if(c++ > 15) { clearInterval(iv); if(window.confetti) window.confetti(); }
-            }, 100);
-        }
-
-        // Generator Matches
-        function openGeneratorModal() {
-            document.getElementById('surveyContainer').innerHTML = monthTasks.map(t => `
-                <div style="background:#120f1a; padding:10px; border-radius:10px; margin-bottom:10px;">
-                    <div style="color:var(--accent-gold); font-size:0.85rem; font-weight:bold;">${t.title}</div>
-                    <div class="vote-options">
-                        <button class="btn-vote" onclick="setVote('${t.id}','yes',this)">Да 🔥</button>
-                        <button class="btn-vote" onclick="setVote('${t.id}','no',this)">Нет ❌</button>
-                    </div>
-                </div>`).join('');
-            openModal('generatorModal');
-        }
-        function setVote(id, val, btn) {
-            myVotes[id] = val;
-            btn.parentElement.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        }
-        function checkMatches() {
-            if(db) db.ref(`votes/${pairCode}/${userRole}`).set(myVotes);
-            alert("Сохранено! Совпадения автоматически добавятся в ⭐ Избранное, как только ответит партнер.");
-            closeModal('generatorModal');
-        }
-
-        // Cheat Sheet Tabs
-        function switchCheatTab(tab) {
-            if (tab === 'kun') { document.getElementById('cheatKunBlock').style.display='block'; document.getElementById('cheatMinBlock').style.display='none'; document.getElementById('btnKun').classList.add('active'); document.getElementById('btnMin').classList.remove('active'); }
-            else { document.getElementById('cheatKunBlock').style.display='none'; document.getElementById('cheatMinBlock').style.display='block'; document.getElementById('btnMin').classList.add('active'); document.getElementById('btnKun').classList.remove('active'); }
-        }
-
-        // Status
-        function saveStatus() {
-            if (db) db.ref(`pairs/${pairCode}/status/${userRole}`).set(document.getElementById('statusSelect').value);
-            alert("Статус сохранен!"); closeModal('statusModal');
-        }
-
-        // Fav Filter
-        function toggleFavFilter() {
-            onlyFavFilter = !onlyFavFilter;
-            const btn = document.getElementById('favFilterBtn');
-            btn.style.background = onlyFavFilter ? 'var(--accent-gold)' : 'rgba(226, 176, 126, 0.15)';
-            btn.style.color = onlyFavFilter ? '#0f0d13' : 'var(--accent-gold)';
-            renderGrid();
-        }
-
-        function forceRefreshData() { initSync(); renderGrid(); }
-
-        // Stealth Mode
-        function toggleStealthMode() {
-            const el = document.getElementById('stealthScreen');
-            el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
-        }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleStealthMode(); });
-
-        // Biometrics
-        function checkBiometricSupport() {
-            if (window.PublicKeyCredential) {
-                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(ok => {
-                    if (ok && localStorage.getItem('biometricsEnabled') !== 'true') document.getElementById('enableBiometricBtn').style.display = 'block';
-                });
-            }
-        }
-        function registerBiometrics() {
-            navigator.credentials.create({ publicKey: { challenge: new Uint8Array([1,2,3,4]), rp: {name: "App"}, user: {id: new Uint8Array([1,2]), name: "U", displayName: "U"}, pubKeyCredParams: [{alg: -7, type: "public-key"}], timeout: 60000 } })
-            .then(() => { localStorage.setItem('biometricsEnabled', 'true'); alert("Включено!"); document.getElementById('biometricLockBlock').style.display = 'block'; document.getElementById('formSetupBlock').style.display = 'none'; });
-        }
-        function authenticateBiometrics() {
-            navigator.credentials.get({ publicKey: { challenge: new Uint8Array([1,2,3,4]), timeout: 60000 } }).then(() => showCalendarScreen());
-        }
-    </script>
+    <!-- Подключение JS-модулей -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
