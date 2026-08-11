@@ -87,14 +87,26 @@ function showLandingScreen() {
     document.getElementById('calendarScreen').style.display = 'none';
 }
 
-function showCalendarScreen() {
-    document.getElementById('landingScreen').style.display = 'none';
-    document.getElementById('calendarScreen').style.display = 'flex';
+function updateMonthDisplayAndTasks() {
+    const targetDate = new Date(currentYear, currentMonth + activeMonthOffset, 1);
+    const monthName = monthNames[targetDate.getMonth()];
+    const yearNum = targetDate.getFullYear();
+    const label = document.getElementById('currentMonthLabel');
+    if (label) {
+        label.innerText = (activeMonthOffset === 0) ? `${monthName} ${yearNum} (Текущий)` : `${monthName} ${yearNum}`;
+    }
     monthTasks = getTasksForMonth(selectedCategory, pairCode, activeMonthOffset);
     startSync();
     renderGrid();
+}
+
+function showCalendarScreen() {
+    document.getElementById('landingScreen').style.display = 'none';
+    document.getElementById('calendarScreen').style.display = 'flex';
+    updateMonthDisplayAndTasks();
     updatePointsDisplay();
 }
+
 
 function updatePointsDisplay() {
     document.getElementById('pointsDisplay').innerText = `🔥 ${getCouplePoints()} CP`;
@@ -605,6 +617,23 @@ function setupEventListeners() {
             }
         };
     }
+
+    // Переключение месяца (Пред. / След.)
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    if (prevMonthBtn) {
+        prevMonthBtn.onclick = () => {
+            activeMonthOffset--;
+            updateMonthDisplayAndTasks();
+        };
+    }
+    if (nextMonthBtn) {
+        nextMonthBtn.onclick = () => {
+            activeMonthOffset++;
+            updateMonthDisplayAndTasks();
+        };
+    }
 }
+
 
 
