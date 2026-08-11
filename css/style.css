@@ -53,7 +53,44 @@
 * { 
     box-sizing: border-box; 
     -webkit-tap-highlight-color: transparent; 
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }
+
+/* Стилизация и убирание уродливых стандартных скроллбаров Windows */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(226, 176, 126, 0.35);
+    border-radius: 10px;
+    backdrop-filter: blur(4px);
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-gold);
+}
+
+/* Полное скрытие скроллбаров по всему приложению по желанию */
+body.no-scrollbars-all, 
+body.no-scrollbars-all * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+body.no-scrollbars-all *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+
 
 body {
     font-family: 'Montserrat', -apple-system, sans-serif;

@@ -23,6 +23,11 @@ let currentRating = 0;
 let onlyFavFilter = false;
 let myVotes = {};
 
+if (localStorage.getItem('hideScrollbars') !== 'false') {
+    document.body.classList.add('no-scrollbars-all');
+}
+
+
 function applyTheme(themeName) {
     if (!themeName) themeName = localStorage.getItem('userTheme') || 'gold';
     document.documentElement.setAttribute('data-theme', themeName);
@@ -577,5 +582,29 @@ function setupEventListeners() {
         btn.style.color = onlyFavFilter ? '#0f0d13' : 'var(--accent-gold)';
         renderGrid();
     };
+
+    // Управление отображением полос прокрутки
+    const hideScrollbarCheckbox = document.getElementById('hideScrollbarsCheckbox');
+    const isHideScrollbars = localStorage.getItem('hideScrollbars') !== 'false';
+    if (isHideScrollbars) {
+        document.body.classList.add('no-scrollbars-all');
+        if (hideScrollbarCheckbox) hideScrollbarCheckbox.checked = true;
+    } else {
+        document.body.classList.remove('no-scrollbars-all');
+        if (hideScrollbarCheckbox) hideScrollbarCheckbox.checked = false;
+    }
+
+    if (hideScrollbarCheckbox) {
+        hideScrollbarCheckbox.onchange = (e) => {
+            if (e.target.checked) {
+                document.body.classList.add('no-scrollbars-all');
+                localStorage.setItem('hideScrollbars', 'true');
+            } else {
+                document.body.classList.remove('no-scrollbars-all');
+                localStorage.setItem('hideScrollbars', 'false');
+            }
+        };
+    }
 }
+
 
