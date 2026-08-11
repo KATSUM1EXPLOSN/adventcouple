@@ -6,8 +6,9 @@ import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip, achievements
 import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes, saveStatusToDb, listenPartnerStatus, saveFeedbackToDb, listenFeedbackFromDb } from './firebase.js';
 import { checkBiometricSupport, registerBiometrics, authenticateBiometrics } from './auth.js';
 import { getCouplePoints, addCouplePoints, triggerConfetti, shareAchievement, shopItems, redeemShopItem, sendChallenge, initChallengeListener } from './services/gamification.js';
-import { renderAnalyticsCharts } from './services/analytics.js';
 import { initStealthAndSecurity, toggleStealthMode, exportEncryptedData, importEncryptedData } from './services/security.js';
+import { initNotificationService, requestBrowserNotificationPermission, setNotificationsEnabled, showToastNotification, trackPartnerActivityNotifications } from './services/notifications.js';
+
 
 let pairCode = localStorage.getItem('pairCode') || '';
 let userRole = localStorage.getItem('userRole') || 'p1';
@@ -50,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUIElements();
     setupEventListeners();
     initStealthAndSecurity();
+    initNotificationService();
+
 
     checkBiometricSupport(pairCode, {
         onBiometricsActive: () => {
@@ -115,17 +118,29 @@ function updatePointsDisplay() {
 
 function startSync() {
     const currentMKey = getActiveMonthKey();
+    const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+
     initSync(pairCode, selectedCategory, currentMKey, {
         onP1Completed: (val) => { p1Completed = val || []; renderGrid(); },
-        onP2Completed: (val) => { p2Completed = val || []; renderGrid(); },
+        onP2Completed: (val) => {
+            const newP2Comp = val || [];
+            if (userRole === 'p1') trackPartnerActivityNotifications(newP2Comp, p2Fav, p1Fav);
+            p2Completed = newP2Comp;
+            renderGrid();
+        },
         onP1Fav: (val) => { p1Fav = val || []; renderGrid(); },
-        onP2Fav: (val) => { p2Fav = val || []; renderGrid(); }
+        onP2Fav: (val) => {
+            const newP2Fav = val || [];
+            if (userRole === 'p1') trackPartnerActivityNotifications(p2Completed, newP2Fav, p1Fav);
+            p2Fav = newP2Fav;
+            renderGrid();
+        }
     });
 
-    const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
     listenPartnerStatus(pairCode, partnerRole, (partnerStatus) => {
         if (partnerStatus && partnerStatus !== 'Статус не установлен') {
             document.getElementById('syncBadgeText').innerText = `💬 Партнер: ${partnerStatus}`;
+            showToastNotification('💬 Статус Партнера', partnerStatus, 'info');
         }
     });
 
@@ -133,9 +148,11 @@ function startSync() {
         if (text) {
             document.getElementById('incomingChallengeBox').style.display = 'block';
             document.getElementById('incomingChallengeText').innerText = text;
+            showToastNotification('💌 Входящий Вызов!', text, 'purple');
         }
     });
 }
+
 
 function renderGrid() {
     const grid = document.getElementById('grid');
@@ -672,7 +689,25 @@ function setupEventListeners() {
             updateMonthDisplayAndTasks();
         };
     }
+
+    // Управление Системой Уведомлений
+    const notifCheckbox = document.getElementById('notificationsToggleCheckbox');
+    if (notifCheckbox) {
+        notifCheckbox.checked = localStorage.getItem('notificationsEnabled') !== 'false';
+        notifCheckbox.onchange = (e) => {
+            setNotificationsEnabled(e.target.checked);
+            if (e.target.checked) {
+                showToastNotification('🔔 Уведомления включены', 'Вы будете получать неоновые тосты об активностях пары.', 'success');
+            }
+        };
+    }
+
+    const enablePushBtn = document.getElementById('enablePushBtn');
+    if (enablePushBtn) {
+        enablePushBtn.onclick = () => requestBrowserNotificationPermission();
+    }
 }
+
 
 
 
