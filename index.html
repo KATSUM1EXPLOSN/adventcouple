@@ -10,6 +10,7 @@
     <title>Интимный Календарь</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
@@ -17,6 +18,24 @@
     <!-- Firebase SDK (Compat CDN) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <!-- Обязательная инициализация Firebase ПЕРЕД запуском модулей -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHsmF5VKef6zOmUft_pLRAHoSph4cIsUg",
+            authDomain: "adventcouple-4fd17.firebaseapp.com",
+            databaseURL: "https://adventcouple-4fd17-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "adventcouple-4fd17",
+            storageBucket: "adventcouple-4fd17.firebasestorage.app",
+            messagingSenderId: "546937107365",
+            appId: "1:546937107365:web:281b443fee202d9d28ae4c"
+        };
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e) {
+            console.error("Firebase init error:", e);
+        }
+    </script>
 
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -382,6 +401,6 @@
     </div>
 
     <!-- Подключение JS-модулей -->
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
