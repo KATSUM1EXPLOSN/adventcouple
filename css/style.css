@@ -1,4 +1,6 @@
-/* ОБЩИЕ СТИЛИ И СЕТКА КАЛЕНДАРЯ */
+/* ==========================================
+   1. БАЗОВЫЕ ПЕРЕМЕННЫЕ И СБРОС СТИЛЕЙ
+   ================================---------- */
 :root {
     --bg-color: #0f0d13;
     --card-bg: #181420;
@@ -11,7 +13,10 @@
     --border: rgba(226, 176, 126, 0.2);
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+}
 
 body {
     font-family: 'Montserrat', -apple-system, sans-serif;
@@ -26,11 +31,33 @@ body {
     user-select: none;
 }
 
-h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+h1, h2, h3, h4 { 
+    font-family: 'Playfair Display', serif; 
+}
 
-header { text-align: center; max-width: 700px; margin-bottom: 15px; width: 100%; }
-h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
-.month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
+/* ==========================================
+   2. ШАПКА И ДАШБОРД
+   ================================---------- */
+header { 
+    text-align: center; 
+    max-width: 700px; 
+    margin-bottom: 15px; 
+    width: 100%; 
+}
+
+h1 { 
+    color: var(--accent-gold); 
+    font-size: 1.8rem; 
+    margin: 0 0 4px 0; 
+}
+
+.month-title { 
+    color: var(--accent-rose); 
+    font-size: 1rem; 
+    font-weight: 600; 
+    margin-bottom: 8px; 
+    text-transform: capitalize; 
+}
 
 .sync-badge {
     background: rgba(230, 126, 144, 0.15);
@@ -59,29 +86,180 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     cursor: pointer;
 }
 
-.landing-screen { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; margin-top: 10px; }
-.welcome-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px 20px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-.info-box { background: rgba(226, 176, 126, 0.08); border: 1px solid var(--accent-gold); border-radius: 14px; padding: 15px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); text-align: left; }
+/* ==========================================
+   3. ФОРМЫ И ЭКРАН ВХОДА
+   ================================---------- */
+.landing-screen { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 100%; 
+    max-width: 500px; 
+    margin-top: 10px; 
+}
 
-.form-group { margin-bottom: 18px; text-align: left; }
-.form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
-.form-control { width: 100%; padding: 14px; background: #0d0a12; border: 1px solid var(--border); border-radius: 12px; color: #fff; font-family: inherit; font-size: 0.95rem; }
+.welcome-card { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border); 
+    border-radius: 20px; 
+    padding: 25px 20px; 
+    width: 100%; 
+    text-align: center; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+}
 
-.btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), #c48c56); border: none; border-radius: 12px; color: #0f0d13; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 1.05rem; box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3); }
-.btn-faceid { background: rgba(163, 116, 219, 0.25); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 0 15px rgba(163, 116, 219, 0.2); }
-.btn-secondary { background: rgba(226, 176, 126, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+.info-box { 
+    background: rgba(226, 176, 126, 0.08); 
+    border: 1px solid var(--accent-gold); 
+    border-radius: 14px; 
+    padding: 15px; 
+    margin-bottom: 20px; 
+    font-size: 0.85rem; 
+    line-height: 1.5; 
+    color: var(--text-main); 
+    text-align: left; 
+}
 
-.calendar-screen { width: 100%; max-width: 900px; display: none; flex-direction: column; align-items: center; }
-.dashboard { width: 100%; display: flex; flex-direction: column; gap: 12px; background: var(--card-bg); padding: 15px 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; }
-.dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-.dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.form-group { 
+    margin-bottom: 18px; 
+    text-align: left; 
+}
 
-.progress-bar-container { width: 100%; }
-.progress-text { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
-.progress-bar { height: 8px; background: #0d0a12; border-radius: 4px; overflow: hidden; }
-.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); transition: width 0.3s; }
+.form-group label { 
+    display: block; 
+    font-size: 0.85rem; 
+    color: var(--text-sub); 
+    margin-bottom: 8px; 
+    font-weight: 500; 
+}
 
-.achievement-badge { background: rgba(163, 116, 219, 0.2); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; text-align: center; font-weight: 600; }
+.form-control { 
+    width: 100%; 
+    padding: 14px; 
+    background: #0d0a12; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    color: #fff; 
+    font-family: inherit; 
+    font-size: 0.95rem; 
+}
+
+.btn-primary { 
+    width: 100%; 
+    padding: 16px; 
+    background: linear-gradient(135deg, var(--accent-gold), #c48c56); 
+    border: none; 
+    border-radius: 12px; 
+    color: #0f0d13; 
+    font-weight: 700; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    font-size: 1.05rem; 
+    box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3); 
+}
+
+.btn-faceid { 
+    background: rgba(163, 116, 219, 0.25); 
+    border: 1px solid var(--accent-purple); 
+    color: var(--accent-purple); 
+    padding: 18px; 
+    border-radius: 14px; 
+    width: 100%; 
+    font-weight: bold; 
+    font-size: 1rem; 
+    cursor: pointer; 
+    margin-top: 15px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+    box-shadow: 0 0 15px rgba(163, 116, 219, 0.2); 
+}
+
+.btn-secondary { 
+    background: rgba(226, 176, 126, 0.15); 
+    border: 1px solid var(--accent-gold); 
+    color: var(--accent-gold); 
+    padding: 8px 12px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+}
+
+/* ==========================================
+   4. ДАШБОРД И СЕТКА КАЛЕНДАРЯ
+   ================================---------- */
+.calendar-screen { 
+    width: 100%; 
+    max-width: 900px; 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.dashboard { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    background: var(--card-bg); 
+    padding: 15px 20px; 
+    border-radius: 16px; 
+    border: 1px solid var(--border); 
+    margin-bottom: 20px; 
+}
+
+.dash-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+}
+
+.dash-actions { 
+    display: flex; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+}
+
+.progress-bar-container { 
+    width: 100%; 
+}
+
+.progress-text { 
+    font-size: 0.85rem; 
+    color: var(--text-sub); 
+    margin-bottom: 5px; 
+    display: flex; 
+    justify-content: space-between; 
+}
+
+.progress-bar { 
+    height: 8px; 
+    background: #0d0a12; 
+    border-radius: 4px; 
+    overflow: hidden; 
+}
+
+.progress-fill { 
+    height: 100%; 
+    width: 0%; 
+    background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); 
+    transition: width 0.3s; 
+}
+
+.achievement-badge { 
+    background: rgba(163, 116, 219, 0.2); 
+    border: 1px solid var(--accent-purple); 
+    color: var(--accent-purple); 
+    padding: 6px 12px; 
+    border-radius: 10px; 
+    font-size: 0.8rem; 
+    text-align: center; 
+    font-weight: 600; 
+}
 
 /* БАЛЛЫ СТРАСТИ (COUPLE POINTS) */
 .points-badge {
@@ -94,7 +272,7 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     font-weight: 700;
 }
 
-/* СЕТКА КАЛЕНДАРЯ (Чтобы карточки не шли в столбик) */
+/* СЕТКА КАЛЕНДАРЯ */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -115,10 +293,83 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     justify-content: space-between;
     min-height: 120px;
     position: relative;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background 0.2s;
 }
 
-/* СЕЛЕКТОР МЕСЯЦЕВ */
+.day-card:hover {
+    background-color: var(--card-hover);
+    transform: translateY(-2px);
+}
+
+/* ==========================================
+   5. МОДАЛЬНЫЕ ОКНА (ИСПРАВЛЕНО: СКРЫТЫ ПО УМОЛЧАНИЮ)
+   ================================---------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(8, 6, 10, 0.92);
+    backdrop-filter: blur(8px);
+    display: none; /* Обязательно скрыты, пока не вызваны */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--accent-gold);
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.fav-toggle-btn {
+    position: absolute;
+    top: 18px;
+    right: 50px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.modal-img-container {
+    width: 100%;
+    height: 200px;
+    border-radius: 14px;
+    margin: 15px 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.modal-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ==========================================
+   6. СЕЛЕКТОР МЕСЯЦЕВ
+   ================================---------- */
 .month-selector {
     display: flex;
     justify-content: space-between;
@@ -131,7 +382,9 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     border: 1px solid var(--border);
 }
 
-/* 3D СЛОТ-БАРАБАНЫ РУЛЕТКИ */
+/* ==========================================
+   7. 3D СЛОТ-БАРАБАНЫ РУЛЕТКИ
+   ================================---------- */
 .slot-machine {
     display: flex;
     gap: 10px;
@@ -166,7 +419,9 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     transition: transform 0.1s;
 }
 
-/* АНАЛИТИКА */
+/* ==========================================
+   8. АНАЛИТИКА И ВСПОМОГАТЕЛЬНЫЕ БЛОКИ
+   ================================---------- */
 .analytics-box {
     background: #120f1a;
     border: 1px solid var(--border);
@@ -186,7 +441,31 @@ canvas {
     height: auto;
 }
 
-/* STEALTH MODE (МАСКИРОВКА) */
+.cheat-item {
+    background: #120f1a;
+    border-left: 3px solid var(--accent-gold);
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 0 10px 10px 0;
+    text-align: left;
+}
+
+.cheat-item h4 {
+    margin: 0 0 6px 0;
+    color: var(--accent-gold);
+    font-size: 0.95rem;
+}
+
+.cheat-item p {
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+/* ==========================================
+   9. STEALTH MODE (МАСКИРОВКА)
+   ================================---------- */
 .stealth-screen {
     position: fixed;
     top: 0;
