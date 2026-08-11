@@ -1,5 +1,6 @@
 import { monthNames, daysInCurrentMonth, currentYear, currentMonth } from './config.js';
-import { getTasksForMonth } from './data/database.js';
+import { getTasksForMonth, rawMedowPoses } from './data/database.js';
+
 import { lingerieItems, toysItems, cheatKunItems, cheatMinItems, cheatAnilingusItems, cheatErogenousMItems, cheatErogenousWItems, cheatPreludeItems, cheatWordsItems, cheatPointGItems } from './data/extras.js';
 
 import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip, achievementsData } from './data/interactive.js';
@@ -762,22 +763,110 @@ function setupEventListeners() {
     };
 
 
-    // 3D-Слот Рулетка
+    // 3D Рулетка Камасутры (490 Поз Medow Club)
+    let currentWheelMode = 'pose'; // 'pose' or 'combo'
+    let lastSelectedPose = null;
+    let lastSelectedComboText = '';
+
+    const modePoseBtn = document.getElementById('modePoseBtn');
+    const modeComboBtn = document.getElementById('modeComboBtn');
+    const poseSection = document.getElementById('poseWheelSection');
+    const comboSection = document.getElementById('comboWheelSection');
+    const sendWheelChallengeBtn = document.getElementById('sendWheelChallengeBtn');
+
+    if (modePoseBtn && modeComboBtn) {
+        modePoseBtn.onclick = () => {
+            currentWheelMode = 'pose';
+            modePoseBtn.classList.add('active');
+            modeComboBtn.classList.remove('active');
+            poseSection.style.display = 'block';
+            comboSection.style.display = 'none';
+        };
+        modeComboBtn.onclick = () => {
+            currentWheelMode = 'combo';
+            modeComboBtn.classList.add('active');
+            modePoseBtn.classList.remove('active');
+            poseSection.style.display = 'none';
+            comboSection.style.display = 'block';
+        };
+    }
+
     document.getElementById('openWheelBtn').onclick = () => document.getElementById('wheelModal').style.display = 'flex';
     document.getElementById('closeWheelBtn').onclick = () => document.getElementById('wheelModal').style.display = 'none';
+
+    const slotConditions = [
+        "👁️ С повязкой на глазах",
+        "🔥 Удерживать ритм 60 секунд",
+        "🪞 Зеркальный зрительный контакт",
+        "💆 Увлажнение эротическим маслом",
+        "❄️ Прикосновение кусочком льда",
+        "🤫 Без единого громкого звука",
+        "🍷 Под глоток охлажденного вина",
+        "⏳ Медленный темп 3 минуты"
+    ];
+
     document.getElementById('spinSlotsBtn').onclick = () => {
-        let count = 0;
-        const interval = setInterval(() => {
-            document.getElementById('slotLoc').innerText = wheelLocations[Math.floor(Math.random() * wheelLocations.length)];
-            document.getElementById('slotLing').innerText = wheelLingeries[Math.floor(Math.random() * wheelLingeries.length)];
-            document.getElementById('slotStyle').innerText = wheelStyles[Math.floor(Math.random() * wheelStyles.length)];
-            count++;
-            if (count > 15) {
-                clearInterval(interval);
-                triggerConfetti();
+        let spinCount = 0;
+        const cardBox = document.getElementById('slotPoseCard');
+        if (cardBox) cardBox.classList.add('spinning');
+        sendWheelChallengeBtn.style.display = 'none';
+
+        const spinInterval = setInterval(() => {
+            spinCount++;
+            const randomPose = rawMedowPoses[Math.floor(Math.random() * rawMedowPoses.length)];
+
+            if (currentWheelMode === 'pose') {
+                document.getElementById('slotPoseTitle').innerText = randomPose.title || 'Поза';
+                document.getElementById('slotPoseTags').innerText = `🔥 ${randomPose.vidSeksa || 'Камасутра'} • ${randomPose.slozhnost || 'средний'}`;
+                document.getElementById('slotPoseImg').src = randomPose.img || './img/icon-192.png';
+                document.getElementById('slotPoseDesc').innerText = randomPose.desc || '';
+            } else {
+                document.getElementById('slotPoseVal').innerText = randomPose.title.replace('Поза #', '№') || 'Поза';
+                document.getElementById('slotLingVal').innerText = wheelLingeries[Math.floor(Math.random() * wheelLingeries.length)];
+                document.getElementById('slotCondVal').innerText = slotConditions[Math.floor(Math.random() * slotConditions.length)];
             }
-        }, 100);
+
+            if (spinCount > 18) {
+                clearInterval(spinInterval);
+                if (cardBox) cardBox.classList.remove('spinning');
+                triggerConfetti();
+
+                if (currentWheelMode === 'pose') {
+                    lastSelectedPose = rawMedowPoses[Math.floor(Math.random() * rawMedowPoses.length)];
+                    document.getElementById('slotPoseTitle').innerText = lastSelectedPose.title;
+                    document.getElementById('slotPoseTags').innerText = `🔥 ${lastSelectedPose.vidSeksa || 'Камасутра'} • Сложность: ${lastSelectedPose.slozhnost || 'средний'}`;
+                    document.getElementById('slotPoseImg').src = lastSelectedPose.img || './img/icon-192.png';
+                    document.getElementById('slotPoseDesc').innerText = lastSelectedPose.desc;
+                    sendWheelChallengeBtn.style.display = 'inline-block';
+                } else {
+                    const finalPose = rawMedowPoses[Math.floor(Math.random() * rawMedowPoses.length)];
+                    const finalLing = wheelLingeries[Math.floor(Math.random() * wheelLingeries.length)];
+                    const finalCond = slotConditions[Math.floor(Math.random() * slotConditions.length)];
+
+                    document.getElementById('slotPoseVal').innerText = finalPose.title.replace('Поза #', '№');
+                    document.getElementById('slotLingVal').innerText = finalLing;
+                    document.getElementById('slotCondVal').innerText = finalCond;
+
+                    lastSelectedComboText = `🎲 Вызов 3D-Рулетки:\n• ${finalPose.title}\n• Белье: ${finalLing}\n• Условие: ${finalCond}`;
+                    document.getElementById('comboResultBox').innerText = `✨ Идеальное комбо вечера:\n${finalPose.title} + ${finalLing} + ${finalCond}!`;
+                    sendWheelChallengeBtn.style.display = 'inline-block';
+                }
+            }
+        }, 80);
     };
+
+    if (sendWheelChallengeBtn) {
+        sendWheelChallengeBtn.onclick = () => {
+            const payload = currentWheelMode === 'pose' ? {
+                text: `🎰 Вызов 3D Рулетки! Сыграем сегодня в эту позу?\n\n${lastSelectedPose.title}\n${lastSelectedPose.desc}`
+            } : {
+                text: lastSelectedComboText
+            };
+            sendChallenge(pairCode, userRole, payload);
+            document.getElementById('wheelModal').style.display = 'none';
+        };
+    }
+
 
     // Аналитика
     document.getElementById('openAnalyticsBtn').onclick = () => {

@@ -330,19 +330,48 @@
     </div>
 
 
-    <!-- Модалка 4: 3D-Слот Барабаны (Рулетка) -->
+    <!-- Модалка 4: 3D Рулетка Страсти (490 Поз Medow Club) -->
     <div class="modal-overlay" id="wheelModal">
-        <div class="modal-content" style="text-align:center;">
+        <div class="modal-content" style="max-width: 540px; text-align:center;">
             <button class="close-btn" id="closeWheelBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0;">🎰 Генератор Вечера</h3>
-            <div class="slot-machine">
-                <div class="slot-reel"><div class="slot-label">Локация</div><div class="slot-value" id="slotLoc">???</div></div>
-                <div class="slot-reel"><div class="slot-label">Белье</div><div class="slot-value" id="slotLing">???</div></div>
-                <div class="slot-reel"><div class="slot-label">Игрушка / Поза</div><div class="slot-value" id="slotStyle">???</div></div>
+            <h3 style="color:var(--accent-gold); margin-top:0;">🎰 3D Рулетка Страсти (490 Поз)</h3>
+            <p style="font-size:0.82rem; color:var(--text-sub); margin-bottom:12px;">Случайная поза из полной базы Medow Club и спец-условия вечера</p>
+            
+            <!-- Режимы Рулетки -->
+            <div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">
+                <button class="btn-secondary active" id="modePoseBtn" style="font-size:0.78rem; padding:6px 12px;">🪷 Поза из 490 Поз</button>
+                <button class="btn-secondary" id="modeComboBtn" style="font-size:0.78rem; padding:6px 12px;">🎲 3D-Слот Сценарий</button>
             </div>
-            <button class="btn-primary" id="spinSlotsBtn" style="margin-top:15px;">Крутить Барабаны! 🎲</button>
+
+            <!-- Режим 1: 3D Карточка Позы -->
+            <div id="poseWheelSection">
+                <div id="slotPoseCard" class="slot-pose-card">
+                    <img id="slotPoseImg" src="./img/icon-192.png" class="slot-pose-img" alt="Поза">
+                    <div id="slotPoseTitle" class="slot-pose-title">Нажмите «Крутить Рулетку!»</div>
+                    <div id="slotPoseTags" class="slot-pose-tags">🎯 Энциклопедия Камасутры</div>
+                    <div id="slotPoseDesc" class="slot-pose-desc">Крутите барабаны, чтобы вытянуть случайную позу из 490 доступных вариантов со всеми нюансами выполнения.</div>
+                </div>
+            </div>
+
+            <!-- Режим 2: 3D Слот Сценарий -->
+            <div id="comboWheelSection" style="display:none;">
+                <div class="slot-machine">
+                    <div class="slot-reel"><div class="slot-label">Поза Камасутры</div><div class="slot-value" id="slotPoseVal">???</div></div>
+                    <div class="slot-reel"><div class="slot-label">Белье / С стиль</div><div class="slot-value" id="slotLingVal">???</div></div>
+                    <div class="slot-reel"><div class="slot-label">Спец-Фишка</div><div class="slot-value" id="slotCondVal">???</div></div>
+                </div>
+                <div id="comboResultBox" style="font-size:0.85rem; color:var(--accent-gold); margin-top:10px; font-weight:600; line-height:1.4;"></div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button class="btn-primary" id="spinSlotsBtn" style="flex:1;">Крутить Рулетку! 🎰</button>
+                <button class="btn-secondary" id="sendWheelChallengeBtn" style="flex:1; border-color:var(--accent-rose); color:var(--accent-rose); display:none;">
+                    💌 Отправить Вызов
+                </button>
+            </div>
         </div>
     </div>
+
 
     <!-- Модалка 5: Аналитика и Инфографика Пары -->
     <div class="modal-overlay" id="analyticsModal">

@@ -723,6 +723,71 @@ h1 {
     transition: transform 0.1s;
 }
 
+/* 3D Слот и Рулетка Камасутры (490 Поз) */
+.slot-pose-card {
+    background: rgba(18, 15, 26, 0.85);
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 0 25px var(--glow-gold);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.slot-pose-card.spinning {
+    animation: slotSpinGlow 0.12s infinite alternate;
+}
+
+@keyframes slotSpinGlow {
+    from { transform: scale(0.98); filter: brightness(1.4); }
+    to { transform: scale(1.01); filter: brightness(0.85); }
+}
+
+.slot-pose-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 2px solid var(--accent-rose);
+    box-shadow: 0 0 15px var(--glow-rose);
+    margin: 0 auto 12px auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.slot-pose-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    margin-bottom: 6px;
+}
+
+.slot-pose-tags {
+    font-size: 0.75rem;
+    color: var(--accent-rose);
+    font-weight: 600;
+    margin-bottom: 8px;
+    background: rgba(230, 126, 144, 0.12);
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.slot-pose-desc {
+    font-size: 0.82rem;
+    color: var(--text-main);
+    line-height: 1.45;
+    max-height: 120px;
+    overflow-y: auto;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+
 .analytics-box {
     background: rgba(18, 15, 26, 0.7);
     border: 1px solid var(--border);
