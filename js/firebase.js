@@ -128,10 +128,10 @@ export function saveShopRedemptionToDb(pairCode, userRole, itemTitle) {
     }
 }
 
-// Дуэли / Вызовы
-export function sendChallengeToDb(pairCode, userRole, challengeText) {
-    if (db && pairCode && challengeText !== undefined) {
-        db.ref(`pairs/${pairCode}/challenge/${userRole}`).set(challengeText);
+// Дуэли / Секретные вызовы с медиа и авто-удалением
+export function sendChallengeToDb(pairCode, userRole, challengeData) {
+    if (db && pairCode && challengeData !== undefined) {
+        db.ref(`pairs/${pairCode}/challenge/${userRole}`).set(challengeData);
     }
 }
 
@@ -140,10 +140,17 @@ export function listenChallengeFromDb(pairCode, partnerRole, callback) {
         if (challengeRef) challengeRef.off();
         challengeRef = db.ref(`pairs/${pairCode}/challenge/${partnerRole}`);
         challengeRef.on('value', (snapshot) => {
-            callback(snapshot.val() || '');
+            callback(snapshot.val() || null);
         });
     }
 }
+
+export function deleteChallengeFromDb(pairCode, partnerRole) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/challenge/${partnerRole}`).remove();
+    }
+}
+
 
 // Сохранение голосов генератора совпадений
 export function saveVotesToDb(pairCode, userRole, votesObj) {

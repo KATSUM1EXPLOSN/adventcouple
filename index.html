@@ -249,23 +249,74 @@
         </div>
     </div>
 
-    <!-- Модалка 3: Дневные Вызовы (Дуэли) -->
+    <!-- Модалка 3: Дневные Вызовы и Секретные Конверты (с фото и видеокружочками Telegram) -->
     <div class="modal-overlay" id="challengeModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 520px;">
             <button class="close-btn" id="closeChallengeBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💌 Секретный Вызов</h3>
-            <div id="incomingChallengeBox" class="cheat-item" style="display:none; border-left-color:var(--accent-rose);">
-                <h4 style="color:var(--accent-rose);">📩 У вас есть закрытый конверт!</h4>
-                <p id="incomingChallengeText" style="filter: blur(4px); transition: filter 0.3s;">Секретное задание от партнера</p>
-                <button class="btn-secondary" id="revealChallengeBtn" style="margin-top:8px;">Открыть конверт 🔓</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💌 Секретный Конверт Пары</h3>
+            
+            <!-- Блок Входящего Конверта -->
+            <div id="incomingChallengeBox" class="cheat-item" style="display:none; border-left-color:var(--accent-rose); margin-bottom:15px; text-align:center;">
+                <h4 style="color:var(--accent-rose); margin:0 0 6px 0;">📩 Вам пришло закрытое письмо!</h4>
+                <div id="incomingChallengeBlurArea" style="filter: blur(8px); transition: filter 0.5s ease; padding:10px 0;">
+                    <p id="incomingChallengeText" style="font-size:0.95rem; line-height:1.4; color:var(--text-main); font-weight:600;">Секретное послание от партнера</p>
+                    
+                    <!-- Видеокружочек и Фото в сообщении -->
+                    <div id="incomingChallengeMediaArea" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:10px;"></div>
+                </div>
+
+                <div id="selfDestructTimerLabel" style="font-size:0.78rem; color:var(--accent-rose); margin-top:8px; display:none; font-weight:700;">
+                    ⏳ Временные фото и видеокружочек самоуничтожатся через <span id="destructCountdown">60</span> сек!
+                </div>
+
+                <button class="btn-primary" id="revealChallengeBtn" style="margin-top:10px; width:100%;">Распечатать конверт 🔓</button>
             </div>
+
+            <!-- Блок Отправки Конверта -->
             <div class="form-group" style="margin-top:15px;">
-                <label>Отправить новый секретный вызов партнеру:</label>
-                <input type="text" class="form-control" id="challengeInput" placeholder="Например: Держи меня за руку весь вечер...">
+                <label style="font-weight:700; color:var(--accent-gold);">Запечатать новый вызов партнеру:</label>
+                <textarea class="form-control" id="challengeInput" rows="2" placeholder="Напишите текст вызова или романтическое послание..."></textarea>
+                
+                <!-- Панель Прикрепления Медиа (Фото & Telegram-Кружочек) -->
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="btn-secondary" id="attachPhotoBtn" style="flex:1; font-size:0.8rem;">📷 Прикрепить Фото</button>
+                    <button class="btn-secondary" id="recordCircleBtn" style="flex:1; font-size:0.8rem; border-color:var(--accent-rose); color:var(--accent-rose);">🔴 Записать Кружочек (TG)</button>
+                    <input type="file" id="photoFileInput" accept="image/*" style="display:none;">
+                </div>
+
+                <!-- Зона предпросмотра прикрепленных медиа -->
+                <div id="attachedMediaPreview" style="display:flex; align-items:center; justify-content:center; gap:15px; margin-top:12px;">
+                    <div id="photoPreviewBox" style="display:none; position:relative;">
+                        <img id="photoPreviewImg" style="width:70px; height:70px; border-radius:10px; object-fit:cover; border:2px solid var(--accent-gold);">
+                        <button class="remove-media-btn" id="removePhotoBtn">&times;</button>
+                    </div>
+                    
+                    <div id="circlePreviewBox" style="display:none; position:relative; text-align:center;">
+                        <div class="telegram-circle-wrapper">
+                            <video id="circlePreviewVid" autoplay loop muted playsinline style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-rose); box-shadow:0 0 15px var(--glow-rose);"></video>
+                        </div>
+                        <button class="remove-media-btn" id="removeCircleBtn">&times;</button>
+                    </div>
+                </div>
+
+                <!-- Модальный контейнер рекордера видеокружочка -->
+                <div id="videoRecorderBlock" style="display:none; margin-top:12px; text-align:center; background:rgba(0,0,0,0.3); padding:12px; border-radius:16px; border:1px solid var(--accent-rose);">
+                    <div style="font-size:0.8rem; color:var(--accent-rose); margin-bottom:8px; font-weight:700;">🔴 Запись круглого видеосообщения: <span id="recordTimerLabel">00:00</span></div>
+                    <div style="display:flex; justify-content:center; margin-bottom:10px;">
+                        <video id="cameraStreamVid" autoplay muted playsinline style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-rose); box-shadow:0 0 20px var(--glow-rose);"></video>
+                    </div>
+                    <div style="display:flex; gap:8px; justify-content:center;">
+                        <button class="btn-primary" id="startRecordingBtn" style="padding:6px 12px; font-size:0.8rem;">Запись ⏺️</button>
+                        <button class="btn-secondary" id="stopRecordingBtn" style="padding:6px 12px; font-size:0.8rem; display:none;">Стоп ⏹️</button>
+                        <button class="btn-secondary" id="cancelRecordingBtn" style="padding:6px 12px; font-size:0.8rem;">Отмена ❌</button>
+                    </div>
+                </div>
             </div>
-            <button class="btn-primary" id="sendChallengeBtn">Запечатать и Отправить 💌</button>
+
+            <button class="btn-primary" id="sendChallengeBtn" style="margin-top:12px; width:100%;">Запечатать конверт и Отправить 💌</button>
         </div>
     </div>
+
 
     <!-- Модалка 4: 3D-Слот Барабаны (Рулетка) -->
     <div class="modal-overlay" id="wheelModal">

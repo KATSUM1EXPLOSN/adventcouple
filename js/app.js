@@ -5,7 +5,8 @@ import { lingerieItems, toysItems, cheatKunItems, cheatMinItems, cheatAnilingusI
 import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip, achievementsData } from './data/interactive.js';
 import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes, saveStatusToDb, listenPartnerStatus, saveFeedbackToDb, listenFeedbackFromDb } from './firebase.js';
 import { checkBiometricSupport, registerBiometrics, authenticateBiometrics } from './auth.js';
-import { getCouplePoints, addCouplePoints, triggerConfetti, shareAchievement, shopItems, redeemShopItem, sendChallenge, initChallengeListener } from './services/gamification.js';
+import { getCouplePoints, addCouplePoints, triggerConfetti, shareAchievement, shopItems, redeemShopItem, sendChallenge, initChallengeListener, clearPartnerChallenge } from './services/gamification.js';
+
 import { initStealthAndSecurity, toggleStealthMode, exportEncryptedData, importEncryptedData } from './services/security.js';
 import { initNotificationService, requestBrowserNotificationPermission, setNotificationsEnabled, showToastNotification, trackPartnerActivityNotifications } from './services/notifications.js';
 
@@ -493,17 +494,268 @@ function setupEventListeners() {
     };
     document.getElementById('closeShopBtn').onclick = () => document.getElementById('shopModal').style.display = 'none';
 
-    // Вызовы (Дуэли)
+    // ================================================
+    // МЕДИА-ПРИКРЕПЛЕНИЯ И ТЕЛЕГРАМ-ВИДЕОКРУЖОЧКИ
+    // ================================================
+    let currentPhotoBase64 = null;
+    let currentCircleBase64 = null;
+    let mediaRecorder = null;
+    let cameraStream = null;
+    let recordedChunks = [];
+    let recordInterval = null;
+    let recordSecs = 0;
+    let destructInterval = null;
+
+    // 1. Прикрепление фотографии
+    const attachPhotoBtn = document.getElementById('attachPhotoBtn');
+    const photoFileInput = document.getElementById('photoFileInput');
+    if (attachPhotoBtn && photoFileInput) {
+        attachPhotoBtn.onclick = () => photoFileInput.click();
+        photoFileInput.onchange = (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 500;
+                        let w = img.width, h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+                        }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        currentPhotoBase64 = canvas.toDataURL('image/webp', 0.75);
+                        
+                        const previewImg = document.getElementById('photoPreviewImg');
+                        if (previewImg) previewImg.src = currentPhotoBase64;
+                        document.getElementById('photoPreviewBox').style.display = 'block';
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    }
+
+    const removePhotoBtn = document.getElementById('removePhotoBtn');
+    if (removePhotoBtn) {
+        removePhotoBtn.onclick = () => {
+            currentPhotoBase64 = null;
+            document.getElementById('photoPreviewBox').style.display = 'none';
+            document.getElementById('photoFileInput').value = '';
+        };
+    }
+
+    // 2. Запись Телеграм-видеокружочка (MediaRecorder API)
+    const recordCircleBtn = document.getElementById('recordCircleBtn');
+    const videoRecorderBlock = document.getElementById('videoRecorderBlock');
+    const startRecordingBtn = document.getElementById('startRecordingBtn');
+    const stopRecordingBtn = document.getElementById('stopRecordingBtn');
+    const cancelRecordingBtn = document.getElementById('cancelRecordingBtn');
+    const cameraStreamVid = document.getElementById('cameraStreamVid');
+
+    function stopCameraStream() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+    }
+
+    if (recordCircleBtn) {
+        recordCircleBtn.onclick = async () => {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 320, height: 320 }, audio: true });
+                if (cameraStreamVid) {
+                    cameraStreamVid.srcObject = cameraStream;
+                    cameraStreamVid.play();
+                }
+                videoRecorderBlock.style.display = 'block';
+            } catch (err) {
+                alert('Не удалось получить доступ к камере/микрофону: ' + err.message);
+            }
+        };
+    }
+
+    if (startRecordingBtn) {
+        startRecordingBtn.onclick = () => {
+            if (!cameraStream) return;
+            recordedChunks = [];
+            let options = { mimeType: 'video/webm;codecs=vp8,opus' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/mp4' };
+            
+            try {
+                mediaRecorder = new MediaRecorder(cameraStream, options);
+            } catch (e) {
+                mediaRecorder = new MediaRecorder(cameraStream);
+            }
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    currentCircleBase64 = reader.result;
+                    const circleVid = document.getElementById('circlePreviewVid');
+                    if (circleVid) {
+                        circleVid.src = currentCircleBase64;
+                        circleVid.play();
+                    }
+                    document.getElementById('circlePreviewBox').style.display = 'block';
+                };
+                reader.readAsDataURL(blob);
+                stopCameraStream();
+            };
+
+            mediaRecorder.start();
+            startRecordingBtn.style.display = 'none';
+            stopRecordingBtn.style.display = 'inline-block';
+
+            recordSecs = 0;
+            const timerLabel = document.getElementById('recordTimerLabel');
+            recordInterval = setInterval(() => {
+                recordSecs++;
+                if (timerLabel) timerLabel.innerText = `00:${recordSecs < 10 ? '0' + recordSecs : recordSecs}`;
+                if (recordSecs >= 15) {
+                    stopRecordingBtn.click();
+                }
+            }, 1000);
+        };
+    }
+
+    if (stopRecordingBtn) {
+        stopRecordingBtn.onclick = () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(recordInterval);
+            videoRecorderBlock.style.display = 'none';
+            startRecordingBtn.style.display = 'inline-block';
+            stopRecordingBtn.style.display = 'none';
+        };
+    }
+
+    if (cancelRecordingBtn) {
+        cancelRecordingBtn.onclick = () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(recordInterval);
+            stopCameraStream();
+            videoRecorderBlock.style.display = 'none';
+            startRecordingBtn.style.display = 'inline-block';
+            stopRecordingBtn.style.display = 'none';
+        };
+    }
+
+    const removeCircleBtn = document.getElementById('removeCircleBtn');
+    if (removeCircleBtn) {
+        removeCircleBtn.onclick = () => {
+            currentCircleBase64 = null;
+            document.getElementById('circlePreviewBox').style.display = 'none';
+        };
+    }
+
+    // 3. Отправка запечатанного вызова с мультимедиа
     document.getElementById('openChallengeBtn').onclick = () => document.getElementById('challengeModal').style.display = 'flex';
-    document.getElementById('closeChallengeBtn').onclick = () => document.getElementById('challengeModal').style.display = 'none';
+    
+    document.getElementById('closeChallengeBtn').onclick = () => {
+        document.getElementById('challengeModal').style.display = 'none';
+        stopCameraStream();
+    };
+
     document.getElementById('sendChallengeBtn').onclick = () => {
-        const val = document.getElementById('challengeInput').value;
-        sendChallenge(pairCode, userRole, val);
+        const text = document.getElementById('challengeInput').value.trim();
+        if (!text && !currentPhotoBase64 && !currentCircleBase64) {
+            alert('❌ Напишите текст или прикрепите фото/видеокружочек!');
+            return;
+        }
+
+        const payload = {
+            text: text || '💌 Запечатанный секретный конверт',
+            photo: currentPhotoBase64 || null,
+            circle: currentCircleBase64 || null,
+            timestamp: Date.now()
+        };
+
+        sendChallenge(pairCode, userRole, payload);
+
+        document.getElementById('challengeInput').value = '';
+        currentPhotoBase64 = null;
+        currentCircleBase64 = null;
+        document.getElementById('photoPreviewBox').style.display = 'none';
+        document.getElementById('circlePreviewBox').style.display = 'none';
         document.getElementById('challengeModal').style.display = 'none';
     };
+
+    // 4. Получение и распечатывание секретного конверта
+    initChallengeListener(pairCode, userRole === 'p1' ? 'p2' : 'p1', (data) => {
+        const incomingBox = document.getElementById('incomingChallengeBox');
+        if (data) {
+            incomingBox.style.display = 'block';
+
+            let textContent = typeof data === 'string' ? data : (data.text || '');
+            document.getElementById('incomingChallengeText').innerText = textContent;
+
+            const mediaArea = document.getElementById('incomingChallengeMediaArea');
+            mediaArea.innerHTML = '';
+
+            if (typeof data === 'object' && data !== null) {
+                if (data.photo) {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = data.photo;
+                    imgEl.style.cssText = 'max-width:100%; max-height:220px; border-radius:12px; border:2px solid var(--accent-gold); margin-top:8px;';
+                    mediaArea.appendChild(imgEl);
+                }
+                if (data.circle) {
+                    const circleWrap = document.createElement('div');
+                    circleWrap.className = 'telegram-circle-wrapper';
+                    circleWrap.style.margin = '10px auto';
+                    circleWrap.innerHTML = `<video class="telegram-circle-video" src="${data.circle}" controls autoplay loop playsinline></video>`;
+                    mediaArea.appendChild(circleWrap);
+                }
+            }
+
+            document.getElementById('incomingChallengeBlurArea').style.filter = 'blur(8px)';
+            document.getElementById('selfDestructTimerLabel').style.display = 'none';
+            document.getElementById('revealChallengeBtn').style.display = 'block';
+        } else {
+            incomingBox.style.display = 'none';
+        }
+    });
+
     document.getElementById('revealChallengeBtn').onclick = () => {
-        document.getElementById('incomingChallengeText').style.filter = 'none';
+        document.getElementById('incomingChallengeBlurArea').style.filter = 'none';
+        document.getElementById('revealChallengeBtn').style.display = 'none';
+
+        const timerLabel = document.getElementById('selfDestructTimerLabel');
+        const countdownEl = document.getElementById('destructCountdown');
+        let timeLeft = 60;
+
+        if (timerLabel && countdownEl) {
+            timerLabel.style.display = 'block';
+            countdownEl.innerText = timeLeft;
+
+            if (destructInterval) clearInterval(destructInterval);
+            destructInterval = setInterval(() => {
+                timeLeft--;
+                countdownEl.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(destructInterval);
+                    const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+                    clearPartnerChallenge(pairCode, partnerRole);
+                    showToastNotification('💣 Временное Медиа Уничтожено', 'Фото и видеокружочек удалены из системы.', 'warning');
+                }
+            }, 1000);
+        }
     };
+
 
     // 3D-Слот Рулетка
     document.getElementById('openWheelBtn').onclick = () => document.getElementById('wheelModal').style.display = 'flex';

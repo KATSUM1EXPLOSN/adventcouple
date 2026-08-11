@@ -68,16 +68,25 @@ export function redeemShopItem(itemId, pairCode, userRole) {
     }
 }
 
-export function sendChallenge(pairCode, userRole, text) {
-    if (!text.trim()) return;
-    sendChallengeToDb(pairCode, userRole, text.trim());
-    alert("💌 Секретный вызов отправлен партнеру!");
+import { savePointsToDb, saveShopRedemptionToDb, sendChallengeToDb, listenChallengeFromDb, deleteChallengeFromDb } from '../firebase.js';
+
+export function sendChallenge(pairCode, userRole, challengePayload) {
+    if (!challengePayload) return;
+    sendChallengeToDb(pairCode, userRole, challengePayload);
+    alert("💌 Секретный конверт с фото/видео запечатан и отправлен партнеру!");
 }
 
 export function initChallengeListener(pairCode, partnerRole, onChallengeReceived) {
-    listenChallengeFromDb(pairCode, partnerRole, (challengeText) => {
-        if (challengeText) {
-            onChallengeReceived(challengeText);
+    listenChallengeFromDb(pairCode, partnerRole, (challengeData) => {
+        if (challengeData) {
+            onChallengeReceived(challengeData);
+        } else {
+            onChallengeReceived(null);
         }
     });
 }
+
+export function clearPartnerChallenge(pairCode, partnerRole) {
+    deleteChallengeFromDb(pairCode, partnerRole);
+}
+
