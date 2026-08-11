@@ -227,7 +227,7 @@ function renderCheatSheets() {
         <details class="anatomy-spoiler">
             <summary>🗺️ Анатомическая схема клитора и вульвы (Спойлер)</summary>
             <div class="anatomy-content">
-                <img class="anatomy-img" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80" alt="Анатомия Клитора">
+                <img class="anatomy-img" src="./img/clitoris_anatomy.jpg" alt="Анатомия Клитора">
                 <b>Ключевые точки стимуляции:</b><br>
                 • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний.<br>
                 • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см.
@@ -239,7 +239,7 @@ function renderCheatSheets() {
         <details class="anatomy-spoiler">
             <summary>🗺️ Анатомическая схема пениса и уздечки (Спойлер)</summary>
             <div class="anatomy-content">
-                <img class="anatomy-img" src="https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80" alt="Анатомия Пениса">
+                <img class="anatomy-img" src="./img/penis_anatomy.png" alt="Анатомия Пениса">
                 <b>Ключевые точки стимуляции:</b><br>
                 • <b>Уздечка:</b> Треугольная зона снизу под головкой.<br>
                 • <b>Промежность (Шов):</b> Зона между мошонкой и анусом.
@@ -247,6 +247,7 @@ function renderCheatSheets() {
         </details>
     ` + cheatMinItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p><div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div></div>`).join('');
 }
+
 
 function setupEventListeners() {
     document.getElementById('saveEnterBtn').onclick = () => {
