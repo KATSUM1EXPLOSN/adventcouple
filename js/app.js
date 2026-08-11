@@ -1,7 +1,7 @@
 import { monthNames, daysInCurrentMonth, currentYear, currentMonth } from './config.js';
 import { getTasksForMonth } from './data/database.js';
 import { lingerieItems, toysItems, cheatKunItems, cheatMinItems } from './data/extras.js';
-import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip } from './data/interactive.js';
+import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip, achievementsData } from './data/interactive.js';
 import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes, saveStatusToDb, listenPartnerStatus, saveFeedbackToDb, listenFeedbackFromDb } from './firebase.js';
 import { checkBiometricSupport, registerBiometrics, authenticateBiometrics } from './auth.js';
 import { getCouplePoints, addCouplePoints, triggerConfetti, shareAchievement, shopItems, redeemShopItem, sendChallenge, initChallengeListener } from './services/gamification.js';
@@ -76,10 +76,10 @@ function updatePointsDisplay() {
 
 function startSync() {
     initSync(pairCode, selectedCategory, userRole, {
-        onP1Completed: (val) => { p1Completed = val; renderGrid(); },
-        onP2Completed: (val) => { p2Completed = val; renderGrid(); },
-        onP1Fav: (val) => { p1Fav = val; renderGrid(); },
-        onP2Fav: (val) => { p2Fav = val; renderGrid(); }
+        onP1Completed: (val) => { p1Completed = val || []; renderGrid(); },
+        onP2Completed: (val) => { p2Completed = val || []; renderGrid(); },
+        onP1Fav: (val) => { p1Fav = val || []; renderGrid(); },
+        onP2Fav: (val) => { p2Fav = val || []; renderGrid(); }
     });
 
     const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
@@ -253,7 +253,7 @@ function setupEventListeners() {
 
     // Отметка прохождения + Начисление Couple Points + Дневник
     document.getElementById('completeBtn').onclick = () => {
-        let myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
+        let myCompleted = (userRole === 'p1') ? [...p1Completed] : [...p2Completed];
         const feedbackText = document.getElementById('feedbackInput').value.trim();
 
         if (!myCompleted.includes(currentDay)) {
@@ -277,6 +277,24 @@ function setupEventListeners() {
         document.getElementById('modal').style.display = 'none';
     };
 
+    // Переключатель Избранного (⭐)
+    document.getElementById('modalFavBtn').onclick = () => {
+        let myFav = (userRole === 'p1') ? [...p1Fav] : [...p2Fav];
+        
+        if (myFav.includes(currentDay)) {
+            myFav = myFav.filter(d => d !== currentDay);
+        } else {
+            myFav.push(currentDay);
+        }
+
+        if (userRole === 'p1') p1Fav = myFav;
+        else p2Fav = myFav;
+
+        saveFavToDb(pairCode, userRole, myFav);
+        document.getElementById('modalFavBtn').innerText = myFav.includes(currentDay) ? '⭐' : '☆';
+        renderGrid();
+    };
+
     // Звезды рейтинга в карточке
     document.querySelectorAll('#ratingStars span').forEach(star => {
         star.onclick = (e) => {
@@ -286,6 +304,20 @@ function setupEventListeners() {
             });
         };
     });
+
+    // Кнопка Ачивки
+    document.getElementById('openAchievementsBtn').onclick = () => {
+        const list = document.getElementById('achievementsList');
+        list.innerHTML = achievementsData.map(a => `
+            <div class="cheat-item">
+                <h4>${a.icon} ${a.title}</h4>
+                <p>${a.desc}</p>
+            </div>
+        `).join('');
+        document.getElementById('achievementsModal').style.display = 'flex';
+    };
+    document.getElementById('closeAchievementsBtn').onclick = () => document.getElementById('achievementsModal').style.display = 'none';
+    document.getElementById('closeAchievementsBtnMain').onclick = () => document.getElementById('achievementsModal').style.display = 'none';
 
     // Магазин Желаний
     document.getElementById('openShopBtn').onclick = () => {
@@ -398,9 +430,23 @@ function setupEventListeners() {
     document.getElementById('closeToysBtn').onclick = () => document.getElementById('toysModal').style.display = 'none';
     document.getElementById('closeToysBtnMain').onclick = () => document.getElementById('toysModal').style.display = 'none';
 
+    // Кнопка Гайд (Мастер-Гайд) и табы внутри него
     document.getElementById('openCheatBtn').onclick = () => document.getElementById('cheatSheetModal').style.display = 'flex';
     document.getElementById('closeCheatSheetBtn').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
     document.getElementById('closeCheatSheetBtnMain').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
+
+    document.getElementById('btnKun').onclick = () => {
+        document.getElementById('btnKun').classList.add('active');
+        document.getElementById('btnMin').classList.remove('active');
+        document.getElementById('cheatKunBlock').style.display = 'block';
+        document.getElementById('cheatMinBlock').style.display = 'none';
+    };
+    document.getElementById('btnMin').onclick = () => {
+        document.getElementById('btnMin').classList.add('active');
+        document.getElementById('btnKun').classList.remove('active');
+        document.getElementById('cheatKunBlock').style.display = 'none';
+        document.getElementById('cheatMinBlock').style.display = 'block';
+    };
 
     document.getElementById('openStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'flex';
     document.getElementById('closeStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'none';
