@@ -358,19 +358,115 @@ function setupEventListeners() {
         };
     });
 
+    function renderAchievementsModal(catFilter = 'all') {
+        const bothCompleted = p1Completed.filter(d => p2Completed.includes(d));
+        const bothFav = p1Fav.filter(d => p2Fav.includes(d));
+        const synergy = Math.round((bothCompleted.length / (monthTasks.length || 30)) * 100);
+
+        const completedTasks = monthTasks.filter(t => bothCompleted.includes(t.day));
+        const oralCount = completedTasks.filter(t => (t.category || '').includes('Оральный') || (t.category || '').includes('Кунилингус') || (t.category || '').includes('Минет')).length;
+        const kamasutraCount = completedTasks.filter(t => (t.rawTags || '').includes('ноги на плечах') || (t.rawTags || '').includes('прямой угол') || (t.category || '').includes('Камасутра')).length;
+        const extremeCount = completedTasks.filter(t => (t.rawTags || '').includes('машина') || (t.rawTags || '').includes('Авто') || (t.rawTags || '').includes('экстрим') || (t.rawTags || '').includes('На диване') || (t.rawTags || '').includes('На стуле')).length;
+        const bdsmCount = completedTasks.filter(t => (t.rawTags || '').includes('BDSM') || (t.rawTags || '').includes('анальный') || (t.rawTags || '').includes('доминирование')).length;
+
+        const itemsToRender = achievementsData.filter(a => catFilter === 'all' || a.cat === catFilter);
+
+        const listHtml = itemsToRender.map(a => {
+            let isUnlocked = false;
+
+            if (a.id === 'first_step') isUnlocked = bothCompleted.length >= 3;
+            else if (a.id === 'explorers') isUnlocked = bothCompleted.length >= 10;
+            else if (a.id === 'fire_union') isUnlocked = bothCompleted.length >= 18;
+            else if (a.id === 'masters') isUnlocked = bothCompleted.length >= 25;
+            else if (a.id === 'full_month') isUnlocked = bothCompleted.length >= 30;
+
+            else if (a.id === 'first_fav') isUnlocked = bothFav.length >= 1;
+            else if (a.id === 'fav_collector') isUnlocked = bothFav.length >= 5;
+            else if (a.id === 'perfect_harmony') isUnlocked = synergy >= 80;
+            else if (a.id === 'feedback_note') isUnlocked = bothCompleted.length >= 5;
+
+            else if (a.id === 'auto_romance') isUnlocked = extremeCount >= 1;
+            else if (a.id === 'mirror_magic') isUnlocked = extremeCount >= 1;
+            else if (a.id === 'water_passion') isUnlocked = extremeCount >= 1;
+            else if (a.id === 'public_edging') isUnlocked = extremeCount >= 1;
+
+            else if (a.id === 'oral_master') isUnlocked = oralCount >= 5;
+            else if (a.id === 'kamasutra_guru') isUnlocked = kamasutraCount >= 5;
+            else if (a.id === 'bdsm_sub') isUnlocked = bdsmCount >= 3;
+            else if (a.id === 'point_g_touch') isUnlocked = bothCompleted.length >= 1;
+
+            else if (a.id === 'wheel_spinner') isUnlocked = true;
+            else if (a.id === 'first_coupon') isUnlocked = true;
+            else if (a.id === 'challenge_sent') isUnlocked = true;
+
+            return `
+                <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                    <div class="achievement-icon-box">${isUnlocked ? a.icon : '🔒'}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-title">
+                            ${a.title}
+                            ${isUnlocked ? '<span style="font-size:0.75rem; color:var(--accent-gold);">✅ Открыто</span>' : ''}
+                        </div>
+                        <div class="achievement-desc">${a.desc}</div>
+                    </div>
+                    <div class="achievement-reward-tag">+${a.points} CP</div>
+                </div>
+            `;
+        }).join('');
+
+        const listContainer = document.getElementById('achievementsList');
+        if (listContainer) listContainer.innerHTML = listHtml;
+
+        const totalUnlocked = achievementsData.filter(a => {
+            if (a.id === 'first_step') return bothCompleted.length >= 3;
+            if (a.id === 'explorers') return bothCompleted.length >= 10;
+            if (a.id === 'fire_union') return bothCompleted.length >= 18;
+            if (a.id === 'masters') return bothCompleted.length >= 25;
+            if (a.id === 'full_month') return bothCompleted.length >= 30;
+            if (a.id === 'first_fav') return bothFav.length >= 1;
+            if (a.id === 'fav_collector') return bothFav.length >= 5;
+            if (a.id === 'perfect_harmony') return synergy >= 80;
+            if (a.id === 'oral_master') return oralCount >= 5;
+            if (a.id === 'kamasutra_guru') return kamasutraCount >= 5;
+            if (a.id === 'bdsm_sub') return bdsmCount >= 3;
+            if (['wheel_spinner', 'first_coupon', 'challenge_sent'].includes(a.id)) return true;
+            return false;
+        }).length;
+
+        const percent = Math.round((totalUnlocked / achievementsData.length) * 100);
+        const progressText = document.getElementById('achievementsProgressText');
+        const progressFill = document.getElementById('achievementsProgressFill');
+        if (progressText) progressText.innerText = `${totalUnlocked} / ${achievementsData.length} (${percent}%)`;
+        if (progressFill) progressFill.style.width = `${percent}%`;
+    }
+
     // Кнопка Ачивки
     document.getElementById('openAchievementsBtn').onclick = () => {
-        const list = document.getElementById('achievementsList');
-        list.innerHTML = achievementsData.map(a => `
-            <div class="cheat-item">
-                <h4>${a.icon} ${a.title}</h4>
-                <p>${a.desc}</p>
-            </div>
-        `).join('');
+        renderAchievementsModal('all');
         document.getElementById('achievementsModal').style.display = 'flex';
     };
     document.getElementById('closeAchievementsBtn').onclick = () => document.getElementById('achievementsModal').style.display = 'none';
     document.getElementById('closeAchievementsBtnMain').onclick = () => document.getElementById('achievementsModal').style.display = 'none';
+
+    const achTabsMap = {
+        achTabAll: 'all',
+        achTabProgress: 'progress',
+        achTabSynergy: 'synergy',
+        achTabExtreme: 'extreme',
+        achTabMastery: 'mastery'
+    };
+
+    Object.keys(achTabsMap).forEach(tabId => {
+        const btn = document.getElementById(tabId);
+        if (btn) {
+            btn.onclick = () => {
+                document.querySelectorAll('#achievementsModal .cheat-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderAchievementsModal(achTabsMap[tabId]);
+            };
+        }
+    });
+
 
     // Магазин Желаний
     document.getElementById('openShopBtn').onclick = () => {

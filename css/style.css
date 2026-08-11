@@ -1078,3 +1078,86 @@ h1 {
     padding: 0 4px;
 }
 
+/* ==========================================
+   11. СТИЛИ ТРОФЕЕВ И ЗАЛА СЛАВЫ
+   ========================================== */
+.achievement-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-card.unlocked {
+    background: rgba(226, 176, 126, 0.1);
+    border-color: var(--accent-gold);
+    box-shadow: 0 4px 18px var(--glow-gold);
+}
+
+.achievement-card.locked {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.achievement-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.achievement-card.unlocked .achievement-icon-box {
+    background: var(--accent-gold);
+    color: #0f0d13;
+    box-shadow: 0 0 12px var(--glow-gold);
+}
+
+.achievement-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.achievement-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.achievement-card.unlocked .achievement-title {
+    color: var(--accent-gold);
+}
+
+.achievement-desc {
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    margin-top: 2px;
+}
+
+.achievement-reward-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-rose);
+    background: rgba(230, 126, 144, 0.15);
+    padding: 3px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(230, 126, 144, 0.3);
+    white-space: nowrap;
+}
+
+

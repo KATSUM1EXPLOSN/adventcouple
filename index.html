@@ -211,15 +211,33 @@
         </div>
     </div>
 
-    <!-- Модалка 1: Ачивки и Шеринг -->
+    <!-- Модалка 1: Зал Славы и Трофеи Любви -->
     <div class="modal-overlay" id="achievementsModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 540px;">
             <button class="close-btn" id="closeAchievementsBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🏆 Достижения и Награды</h3>
-            <div id="achievementsList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
-            <button class="btn-primary" id="closeAchievementsBtnMain" style="margin-top:15px;">Отлично 🔥</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🏆 Зал Славы & Трофеи Любви</h3>
+            
+            <div class="analytics-card-glow" style="margin-bottom:15px; padding:12px 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:0.85rem; font-weight:700;">
+                    <span style="color:var(--accent-gold);">Прогресс разблокировки трофеев:</span>
+                    <span id="achievementsProgressText" style="color:var(--accent-rose);">0 / 20 (0%)</span>
+                </div>
+                <div class="progress-bar" style="height:10px;"><div class="progress-fill" id="achievementsProgressFill" style="width:0%;"></div></div>
+            </div>
+
+            <div class="guide-tabs-scroll" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px; border-bottom:1px solid var(--border);">
+                <button class="cheat-tab-btn active" id="achTabAll">🌟 Все (20)</button>
+                <button class="cheat-tab-btn" id="achTabProgress">🗓️ Дни & Стрик</button>
+                <button class="cheat-tab-btn" id="achTabSynergy">💖 Совпадения</button>
+                <button class="cheat-tab-btn" id="achTabExtreme">🏎️ Локации</button>
+                <button class="cheat-tab-btn" id="achTabMastery">😈 Мастерство</button>
+            </div>
+
+            <div id="achievementsList" style="max-height: 52vh; overflow-y: auto; display:flex; flex-direction:column; gap:10px; padding-right:4px;"></div>
+            <button class="btn-primary" id="closeAchievementsBtnMain" style="margin-top:15px;">Продолжаем собирать трофеи! 🔥</button>
         </div>
     </div>
+
 
     <!-- Модалка 2: Магазин Желаний (Couple Points) -->
     <div class="modal-overlay" id="shopModal">
