@@ -48,6 +48,13 @@
 </head>
 <body>
 
+    <!-- Живой Анимированный Фон (Ambient Soft Orbs) -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
     <header>
         <h1>🔥 Чувственный Календарь</h1>
         <div class="month-title" id="monthTitle"></div>
@@ -59,6 +66,7 @@
             </div>
         </div>
     </header>
+
 
     <!-- ЭКРАН 1: ГЛАВНАЯ СТРАНИЦА -->
     <div class="landing-screen" id="landingScreen">
@@ -137,8 +145,10 @@
                 <button class="btn-secondary" id="openStatusBtn">💬 Статус</button>
                 <button class="btn-secondary" id="openMusicBtn">🎵 Плейлист</button>
                 <button class="btn-secondary" id="favFilterBtn">⭐</button>
+                <button class="btn-secondary" id="themeQuickBtn" title="Сменить атмосферную тему">🎨 Тема</button>
                 <button class="btn-secondary" id="openSettingsBtn" title="Настройки и Бэкап">⚙️</button>
             </div>
+
 
             <div class="progress-bar-container">
                 <div class="progress-text">
@@ -263,9 +273,20 @@
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">⚙️ Настройки и Безопасность</h3>
             
             <div class="cheat-item">
+                <h4>🎨 Атмосферная Тема Оформления</h4>
+                <p style="font-size:0.8rem; margin-bottom:8px;">Выберите визуальный стиль под ваш вечер:</p>
+                <div class="theme-selector-grid">
+                    <button class="theme-option-btn active" data-theme="gold">🌟 Золотая Роскошь</button>
+                    <button class="theme-option-btn" data-theme="orchid">🍇 Бархатная Орхидея</button>
+                    <button class="theme-option-btn" data-theme="ruby">🍷 Шампанское & Рубин</button>
+                </div>
+            </div>
+
+            <div class="cheat-item">
                 <h4>🔒 Режим «Паника» (Stealth)</h4>
                 <p>Тройной тап по экрану, клавиша Esc или кнопка 🛡️ мгновенно маскируют сайт под Список Покупок.</p>
             </div>
+
 
             <div class="cheat-item">
                 <h4>💾 Резервное копирование</h4>

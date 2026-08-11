@@ -23,7 +23,22 @@ let currentRating = 0;
 let onlyFavFilter = false;
 let myVotes = {};
 
+function applyTheme(themeName) {
+    if (!themeName) themeName = localStorage.getItem('userTheme') || 'gold';
+    document.documentElement.setAttribute('data-theme', themeName);
+    localStorage.setItem('userTheme', themeName);
+
+    document.querySelectorAll('.theme-option-btn').forEach(btn => {
+        if (btn.getAttribute('data-theme') === themeName) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    applyTheme();
     document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
 
     setupUIElements();
@@ -55,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showLandingScreen();
     }
 });
+
 
 function getActiveMonthKey() {
     const targetDate = new Date(currentYear, currentMonth + activeMonthOffset, 1);
@@ -539,6 +555,21 @@ function setupEventListeners() {
         renderGrid();
     };
 
+    // Выбор темы оформления
+    const themesList = ['gold', 'orchid', 'ruby'];
+    document.getElementById('themeQuickBtn').onclick = () => {
+        const currentTheme = localStorage.getItem('userTheme') || 'gold';
+        const nextIndex = (themesList.indexOf(currentTheme) + 1) % themesList.length;
+        applyTheme(themesList[nextIndex]);
+    };
+
+    document.querySelectorAll('.theme-option-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            const theme = e.target.getAttribute('data-theme');
+            applyTheme(theme);
+        };
+    });
+
     document.getElementById('favFilterBtn').onclick = () => {
         onlyFavFilter = !onlyFavFilter;
         const btn = document.getElementById('favFilterBtn');
@@ -547,3 +578,4 @@ function setupEventListeners() {
         renderGrid();
     };
 }
+

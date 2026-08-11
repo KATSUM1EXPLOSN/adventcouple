@@ -1,16 +1,53 @@
 /* ==========================================
-   1. БАЗОВЫЕ ПЕРЕМЕННЫЕ И СБРОС СТИЛЕЙ
+   1. ТЕМАТИЧЕСКИЕ ПЕРЕМЕННЫЕ И ДИЗАЙН-СИСТЕМА
    ========================================== */
 :root {
-    --bg-color: #0f0d13;
-    --card-bg: #181420;
-    --card-hover: #231c30;
+    --bg-color: #0b090f;
+    --card-bg: rgba(24, 20, 32, 0.65);
+    --card-hover: rgba(38, 30, 52, 0.85);
+    --modal-bg: rgba(18, 14, 26, 0.88);
     --accent-gold: #e2b07e;
     --accent-rose: #e67e90;
     --accent-purple: #a374db;
     --text-main: #f5f0fa;
     --text-sub: #a89fbe;
-    --border: rgba(226, 176, 126, 0.2);
+    --border: rgba(226, 176, 126, 0.25);
+    --glow-gold: rgba(226, 176, 126, 0.25);
+    --glow-rose: rgba(230, 126, 144, 0.35);
+    --glow-purple: rgba(163, 116, 219, 0.3);
+    --glass-blur: blur(16px);
+}
+
+[data-theme="orchid"] {
+    --bg-color: #080512;
+    --card-bg: rgba(20, 13, 38, 0.65);
+    --card-hover: rgba(35, 22, 66, 0.85);
+    --modal-bg: rgba(15, 9, 31, 0.9);
+    --accent-gold: #bf71ff;
+    --accent-rose: #ff5277;
+    --accent-purple: #00f3ff;
+    --text-main: #f7efff;
+    --text-sub: #a595cf;
+    --border: rgba(191, 113, 255, 0.3);
+    --glow-gold: rgba(191, 113, 255, 0.3);
+    --glow-rose: rgba(255, 82, 119, 0.38);
+    --glow-purple: rgba(0, 243, 255, 0.3);
+}
+
+[data-theme="ruby"] {
+    --bg-color: #100408;
+    --card-bg: rgba(36, 12, 20, 0.65);
+    --card-hover: rgba(60, 20, 32, 0.85);
+    --modal-bg: rgba(26, 8, 14, 0.9);
+    --accent-gold: #f7d794;
+    --accent-rose: #ff3b5c;
+    --accent-purple: #ff793f;
+    --text-main: #fff5f6;
+    --text-sub: #caa0a7;
+    --border: rgba(255, 59, 92, 0.3);
+    --glow-gold: rgba(247, 215, 148, 0.3);
+    --glow-rose: rgba(255, 59, 92, 0.38);
+    --glow-purple: rgba(255, 121, 63, 0.3);
 }
 
 * { 
@@ -29,6 +66,9 @@ body {
     align-items: center;
     min-height: 100vh;
     user-select: none;
+    position: relative;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 h1, h2, h3, h4 { 
@@ -36,7 +76,64 @@ h1, h2, h3, h4 {
 }
 
 /* ==========================================
-   2. ШАПКА И ДАШБОРД
+   2. ЖИВОЙ АНИМИРОВАННЫЙ ФОН (AMBIENT ORBS)
+   ========================================== */
+.ambient-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(85px);
+    opacity: 0.4;
+    animation: floatOrb 20s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-rose), transparent 70%);
+    top: -80px;
+    left: -80px;
+    animation-duration: 22s;
+}
+
+.orb-2 {
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, var(--accent-purple), transparent 70%);
+    bottom: -120px;
+    right: -100px;
+    animation-duration: 18s;
+    animation-delay: -6s;
+}
+
+.orb-3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, var(--accent-gold), transparent 70%);
+    top: 40%;
+    left: 30%;
+    animation-duration: 26s;
+    animation-delay: -12s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(45px, 65px) scale(1.15); }
+    100% { transform: translate(-35px, -45px) scale(0.9); }
+}
+
+/* ==========================================
+   3. ШАПКА И СИНХРОНИЗАЦИЯ
    ========================================== */
 header { 
     text-align: center; 
@@ -47,25 +144,27 @@ header {
 
 h1 { 
     color: var(--accent-gold); 
-    font-size: 1.8rem; 
+    font-size: 1.9rem; 
     margin: 0 0 4px 0; 
+    text-shadow: 0 0 20px var(--glow-gold);
+    letter-spacing: 0.5px;
 }
 
 .month-title { 
     color: var(--accent-rose); 
     font-size: 1rem; 
     font-weight: 600; 
-    margin-bottom: 8px; 
+    margin-bottom: 10px; 
     text-transform: capitalize; 
 }
 
 .sync-badge {
-    background: rgba(230, 126, 144, 0.15);
+    background: rgba(230, 126, 144, 0.12);
     border: 1px solid var(--accent-rose);
     color: var(--accent-rose);
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 0.8rem;
     margin: 0 auto 15px auto;
     display: flex;
     align-items: center;
@@ -73,21 +172,29 @@ h1 {
     gap: 10px;
     width: 100%;
     max-width: 500px;
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .pwa-btn {
-    background: rgba(226, 176, 126, 0.2);
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--accent-gold);
     color: var(--accent-gold);
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 0.7rem;
+    padding: 5px 10px;
+    border-radius: 9px;
+    font-size: 0.72rem;
     font-weight: bold;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pwa-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
 }
 
 /* ==========================================
-   3. ФОРМЫ И ЭКРАН ВХОДА
+   4. ФОРМЫ И ЭКРАН ВХОДА
    ========================================== */
 .landing-screen { 
     display: flex; 
@@ -101,18 +208,20 @@ h1 {
 .welcome-card { 
     background: var(--card-bg); 
     border: 1px solid var(--border); 
-    border-radius: 20px; 
-    padding: 25px 20px; 
+    border-radius: 24px; 
+    padding: 28px 22px; 
     width: 100%; 
     text-align: center; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.12); 
 }
 
 .info-box { 
     background: rgba(226, 176, 126, 0.08); 
-    border: 1px solid var(--accent-gold); 
-    border-radius: 14px; 
-    padding: 15px; 
+    border: 1px solid var(--border); 
+    border-radius: 16px; 
+    padding: 16px; 
     margin-bottom: 20px; 
     font-size: 0.85rem; 
     line-height: 1.5; 
@@ -136,34 +245,48 @@ h1 {
 .form-control { 
     width: 100%; 
     padding: 14px; 
-    background: #0d0a12; 
+    background: rgba(13, 10, 18, 0.7); 
     border: 1px solid var(--border); 
     border-radius: 12px; 
     color: #fff; 
     font-family: inherit; 
     font-size: 0.95rem; 
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 12px var(--glow-gold);
 }
 
 .btn-primary { 
     width: 100%; 
     padding: 16px; 
-    background: linear-gradient(135deg, var(--accent-gold), #c48c56); 
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose)); 
     border: none; 
-    border-radius: 12px; 
+    border-radius: 14px; 
     color: #0f0d13; 
     font-weight: 700; 
     cursor: pointer; 
     margin-top: 10px; 
     font-size: 1.05rem; 
-    box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3); 
+    box-shadow: 0 4px 20px var(--glow-gold); 
+    transition: all 0.25s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px var(--glow-rose);
+    filter: brightness(1.08);
 }
 
 .btn-faceid { 
-    background: rgba(163, 116, 219, 0.25); 
+    background: rgba(163, 116, 219, 0.2); 
     border: 1px solid var(--accent-purple); 
     color: var(--accent-purple); 
     padding: 18px; 
-    border-radius: 14px; 
+    border-radius: 16px; 
     width: 100%; 
     font-weight: bold; 
     font-size: 1rem; 
@@ -173,22 +296,36 @@ h1 {
     align-items: center; 
     justify-content: center; 
     gap: 10px; 
-    box-shadow: 0 0 15px rgba(163, 116, 219, 0.2); 
+    box-shadow: 0 0 20px var(--glow-purple); 
+    transition: all 0.25s ease;
+}
+
+.btn-faceid:hover {
+    background: rgba(163, 116, 219, 0.3);
+    transform: translateY(-2px);
 }
 
 .btn-secondary { 
-    background: rgba(226, 176, 126, 0.15); 
-    border: 1px solid var(--accent-gold); 
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid var(--border); 
     color: var(--accent-gold); 
-    padding: 8px 12px; 
-    border-radius: 10px; 
+    padding: 9px 14px; 
+    border-radius: 12px; 
     cursor: pointer; 
-    font-size: 0.8rem; 
+    font-size: 0.82rem; 
     font-weight: 600; 
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-gold);
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px var(--glow-gold);
 }
 
 /* ==========================================
-   4. ДАШБОРД И СЕТКА КАЛЕНДАРЯ
+   5. ДАШБОРД И ПРОГРЕСС-БАР С ПЕРЕЛИВОМ
    ========================================== */
 .calendar-screen { 
     width: 100%; 
@@ -202,12 +339,15 @@ h1 {
     width: 100%; 
     display: flex; 
     flex-direction: column; 
-    gap: 12px; 
+    gap: 14px; 
     background: var(--card-bg); 
-    padding: 15px 20px; 
-    border-radius: 16px; 
+    padding: 18px 22px; 
+    border-radius: 20px; 
     border: 1px solid var(--border); 
     margin-bottom: 20px; 
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
 }
 
 .dash-top { 
@@ -231,93 +371,147 @@ h1 {
 .progress-text { 
     font-size: 0.85rem; 
     color: var(--text-sub); 
-    margin-bottom: 5px; 
+    margin-bottom: 6px; 
     display: flex; 
     justify-content: space-between; 
 }
 
 .progress-bar { 
-    height: 8px; 
-    background: #0d0a12; 
-    border-radius: 4px; 
+    height: 10px; 
+    background: rgba(0, 0, 0, 0.4); 
+    border-radius: 6px; 
     overflow: hidden; 
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .progress-fill { 
     height: 100%; 
     width: 0%; 
-    background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); 
-    transition: width 0.3s; 
+    background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold), var(--accent-purple)); 
+    background-size: 200% 100%;
+    border-radius: 6px; 
+    transition: width 0.5s ease-out; 
+    animation: progressShimmer 4s linear infinite;
+    box-shadow: 0 0 12px var(--glow-rose);
+}
+
+@keyframes progressShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .achievement-badge { 
-    background: rgba(163, 116, 219, 0.2); 
+    background: rgba(163, 116, 219, 0.18); 
     border: 1px solid var(--accent-purple); 
     color: var(--accent-purple); 
-    padding: 6px 12px; 
-    border-radius: 10px; 
-    font-size: 0.8rem; 
+    padding: 7px 14px; 
+    border-radius: 12px; 
+    font-size: 0.82rem; 
     text-align: center; 
     font-weight: 600; 
+    box-shadow: 0 0 12px var(--glow-purple);
 }
 
-/* БАЛЛЫ СТРАСТИ (COUPLE POINTS) */
 .points-badge {
-    background: rgba(226, 176, 126, 0.2);
+    background: rgba(226, 176, 126, 0.18);
     border: 1px solid var(--accent-gold);
     color: var(--accent-gold);
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-size: 0.85rem;
+    padding: 7px 16px;
+    border-radius: 14px;
+    font-size: 0.88rem;
     font-weight: 700;
+    box-shadow: 0 0 12px var(--glow-gold);
 }
 
-/* СЕТКА КАЛЕНДАРЯ И КАРТОЧКИ */
+/* ==========================================
+   6. СЕТКА КАЛЕНДАРЯ И 3D-КАРТОЧКИ
+   ========================================== */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 12px;
+    gap: 14px;
     width: 100%;
+    perspective: 1000px;
 }
 
 .day-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 8px;
+    border-radius: 16px;
+    padding: 14px 10px;
     text-align: center;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    min-height: 125px;
+    min-height: 135px;
     position: relative;
-    transition: transform 0.2s, background 0.2s;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform-style: preserve-3d;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
 
 .day-card:hover {
     background-color: var(--card-hover);
-    transform: translateY(-2px);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.5), 0 0 18px var(--glow-gold);
 }
 
-/* Статусы выполнения (Рамки и подсветка) */
+.day-card:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.day-number {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--text-main);
+    margin: 4px 0;
+}
+
+.day-category {
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.day-role {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 8px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Свечение и подсветка карточек */
 .day-card.completed-p1 { 
     border: 2px solid var(--accent-gold); 
+    box-shadow: 0 0 18px var(--glow-gold);
 }
 .day-card.completed-p2 { 
     border: 2px solid var(--accent-purple); 
+    box-shadow: 0 0 18px var(--glow-purple);
 }
 .day-card.completed-both { 
     border: 2px solid var(--accent-rose); 
-    background: rgba(230, 126, 144, 0.1); 
+    background: rgba(230, 126, 144, 0.15); 
+    box-shadow: 0 0 25px var(--glow-rose);
+    animation: heartPulse 3s infinite ease-in-out;
 }
 
-/* Бейджики с галочками выполнения на карточке */
+@keyframes heartPulse {
+    0%, 100% { box-shadow: 0 0 15px var(--glow-rose); }
+    50% { box-shadow: 0 0 30px var(--glow-rose), 0 0 10px var(--accent-rose); }
+}
+
 .status-badge {
-    font-size: 0.6rem;
-    padding: 2px 5px;
-    border-radius: 4px;
+    font-size: 0.62rem;
+    padding: 2px 6px;
+    border-radius: 5px;
     font-weight: bold;
     margin-bottom: 2px;
 }
@@ -337,11 +531,10 @@ h1 {
     border: 1px solid var(--accent-rose);
 }
 
-/* Теги избранного (М, Ж, М+Ж) */
 .fav-tag { 
-    font-size: 0.55rem; 
-    padding: 2px 5px; 
-    border-radius: 4px; 
+    font-size: 0.58rem; 
+    padding: 2px 6px; 
+    border-radius: 5px; 
     position: absolute; 
     top: 6px; 
     right: 6px; 
@@ -361,7 +554,23 @@ h1 {
 }
 
 /* ==========================================
-   5. МОДАЛЬНЫЕ ОКНА (СКРЫТЫ ПО УМОЛЧАНИЮ)
+   7. СЕЛЕКТОР МЕСЯЦЕВ
+   ========================================== */
+.month-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+    background: var(--card-bg);
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    backdrop-filter: var(--glass-blur);
+}
+
+/* ==========================================
+   8. МОДАЛЬНЫЕ ОКНА
    ========================================== */
 .modal-overlay {
     position: fixed;
@@ -369,25 +578,34 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(8, 6, 10, 0.92);
-    backdrop-filter: blur(8px);
+    background: rgba(5, 4, 8, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: none;
     justify-content: center;
     align-items: center;
     padding: 20px;
     z-index: 1000;
+    animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal-content {
-    background: var(--card-bg);
-    border: 1px solid var(--accent-gold);
-    border-radius: 20px;
-    padding: 25px;
+    background: var(--modal-bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 26px;
     max-width: 480px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
     position: relative;
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.12);
 }
 
 .close-btn {
@@ -399,6 +617,11 @@ h1 {
     color: var(--text-sub);
     font-size: 1.8rem;
     cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--accent-rose);
 }
 
 .fav-toggle-btn {
@@ -414,10 +637,11 @@ h1 {
 .modal-img-container {
     width: 100%;
     height: 200px;
-    border-radius: 14px;
+    border-radius: 16px;
     margin: 15px 0;
     overflow: hidden;
     border: 1px solid var(--border);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
 }
 
 .modal-img-container img {
@@ -426,24 +650,7 @@ h1 {
     object-fit: cover;
 }
 
-/* ==========================================
-   6. СЕЛЕКТОР МЕСЯЦЕВ
-   ========================================== */
-.month-selector {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 15px;
-    background: var(--card-bg);
-    padding: 8px 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-}
-
-/* ==========================================
-   7. 3D СЛОТ-БАРАБАНЫ РУЛЕТКИ
-   ========================================== */
+/* 3D Слот Рулетка */
 .slot-machine {
     display: flex;
     gap: 10px;
@@ -453,15 +660,16 @@ h1 {
 
 .slot-reel {
     flex: 1;
-    background: #0d0a12;
+    background: rgba(13, 10, 18, 0.7);
     border: 1px solid var(--accent-gold);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 15px 8px;
     min-height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
 }
 
 .slot-label {
@@ -478,53 +686,52 @@ h1 {
     transition: transform 0.1s;
 }
 
-/* ==========================================
-   8. АНАЛИТИКА И ВСПОМОГАТЕЛЬНЫЕ БЛОКИ
-   ========================================== */
 .analytics-box {
-    background: #120f1a;
+    background: rgba(18, 15, 26, 0.7);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 14px;
+    padding: 14px;
     text-align: center;
 }
 
-.analytics-box h4 {
-    margin: 0 0 10px 0;
-    font-size: 0.85rem;
-    color: var(--accent-gold);
-}
-
-canvas {
-    max-width: 100%;
-    height: auto;
-}
-
 .cheat-item {
-    background: #120f1a;
+    background: rgba(18, 15, 26, 0.7);
     border-left: 3px solid var(--accent-gold);
-    padding: 12px;
+    padding: 14px;
     margin-bottom: 12px;
-    border-radius: 0 10px 10px 0;
+    border-radius: 0 12px 12px 0;
     text-align: left;
 }
 
-.cheat-item h4 {
-    margin: 0 0 6px 0;
-    color: var(--accent-gold);
-    font-size: 0.95rem;
+.theme-selector-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
-.cheat-item p {
-    margin: 0 0 8px 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
+.theme-option-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
     color: var(--text-main);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
 }
 
-/* ==========================================
-   9. STEALTH MODE (МАСКИРОВКА)
-   ========================================== */
+.theme-option-btn.active, .theme-option-btn:hover {
+    border-color: var(--accent-gold);
+    background: rgba(226, 176, 126, 0.2);
+    box-shadow: 0 0 12px var(--glow-gold);
+}
+
+/* Stealth Screen */
 .stealth-screen {
     position: fixed;
     top: 0;
