@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
     <title>Интимный Календарь</title>
 
+    <!-- PWA & iOS Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Compat CDN) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -210,16 +211,6 @@
             font-weight: 600;
         }
 
-        .points-badge {
-            background: rgba(226, 176, 126, 0.2);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -284,50 +275,10 @@
         .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
         .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        .vote-options { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
-        .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
-
-        .cheat-tab-btn { flex: 1; padding: 8px; background: #0d0a12; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-        .cheat-tab-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 176, 126, 0.15); }
-        
         .cheat-item { background: #120f1a; border-left: 3px solid var(--accent-gold); padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0; text-align: left; }
         .cheat-item h4 { margin: 0 0 6px 0; color: var(--accent-gold); font-size: 0.95rem; }
         .cheat-item p { margin: 0 0 8px 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
-        .cheat-links { display: flex; gap: 10px; flex-wrap: wrap; }
-        .cheat-link { font-size: 0.75rem; color: var(--accent-rose); text-decoration: none; font-weight: 600; }
 
-        details.anatomy-spoiler {
-            background: #0d0a12;
-            border: 1px solid var(--accent-purple);
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        details.anatomy-spoiler summary {
-            cursor: pointer;
-            font-weight: 700;
-            color: var(--accent-purple);
-            font-size: 0.85rem;
-            outline: none;
-        }
-        .anatomy-content {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            line-height: 1.5;
-            color: var(--text-sub);
-        }
-        .anatomy-img {
-            width: 100%;
-            height: 180px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin: 8px 0;
-            border: 1px solid var(--border);
-        }
-
-        /* STEALTH MODE (МАСКИРОВКА) */
         .stealth-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #121212; color: #e0e0e0; display: none;
@@ -346,7 +297,6 @@
         .stealth-header h2 { font-family: sans-serif !important; font-size: 1.1rem; color: #e0e0e0; margin: 0; }
         .shopping-list { display: flex; flex-direction: column; gap: 12px; text-align: left; }
         .shopping-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #ccc; cursor: pointer; }
-        .shopping-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #666; }
     </style>
 </head>
 <body>
@@ -355,10 +305,10 @@
         <h1>🔥 Чувственный Календарь</h1>
         <div class="month-title" id="monthTitle"></div>
         <div class="sync-badge">
-            <span id="syncBadgeText">📲 Режим синхронизации</span>
+            <span id="syncBadgeText">📲 Подключение...</span>
             <div style="display:flex; gap:6px;">
-                <button class="pwa-btn" id="panicBtn" title="Быстрая маскировка" style="border-color: #888; color: #aaa;">🛡️</button>
-                <button class="pwa-btn" id="openPwaBtn">📲 На экран</button>
+                <button class="pwa-btn" onclick="toggleStealthMode()" title="Быстрая маскировка" style="border-color: #888; color: #aaa;">🛡️</button>
+                <button class="pwa-btn" onclick="openModal('pwaModal')">📲 На экран</button>
             </div>
         </div>
     </header>
@@ -373,7 +323,7 @@
 
             <div id="biometricLockBlock" style="display: none; margin-bottom: 15px;">
                 <p style="color: var(--accent-purple); font-size: 0.85rem; font-weight: 600;">🔒 Приложение защищено биометрией</p>
-                <button class="btn-faceid" id="faceIdBtn">
+                <button class="btn-faceid" onclick="authenticateBiometrics()">
                     👤 Подтвердить Face ID / Touch ID
                 </button>
             </div>
@@ -410,8 +360,8 @@
                     </select>
                 </div>
 
-                <button class="btn-primary" id="saveEnterBtn">Войти в Календарь 🔥</button>
-                <button class="btn-secondary" id="enableBiometricBtn" style="margin-top: 12px; width: 100%; display: none;">
+                <button class="btn-primary" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
+                <button class="btn-secondary" id="enableBiometricBtn" onclick="registerBiometrics()" style="margin-top: 12px; width: 100%; display: none;">
                     🔒 Включить Face ID / Touch ID для входа
                 </button>
             </div>
@@ -423,21 +373,16 @@
         <div class="dashboard" id="dashboard">
             <div class="dash-top">
                 <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
-                <div class="points-badge" id="pointsDisplay">🔥 0 CP</div>
             </div>
             
             <div class="dash-actions">
-                <button class="btn-secondary" id="refreshBtn" title="Обновить данные">🔄</button>
-                <button class="btn-secondary" id="openShopBtn" style="border-color: var(--accent-gold); color: var(--accent-gold);">🛍️ Магазин</button>
-                <button class="btn-secondary" id="openChallengeBtn">💌 Вызов</button>
-                <button class="btn-secondary" id="openCheatBtn" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Гайд</button>
-                <button class="btn-secondary" id="openLingerieBtn">👙 Белье</button>
-                <button class="btn-secondary" id="openToysBtn">🧸 Игрушки</button>
-                <button class="btn-secondary" id="openGeneratorBtn">🔮 Совпадения</button>
-                <button class="btn-secondary" id="openStatusBtn">💬 Статус</button>
-                <button class="btn-secondary" id="openMusicBtn">🎵 Плейлист</button>
-                <button class="btn-secondary" id="favFilterBtn">⭐</button>
-                <button class="btn-secondary" id="resetSettingsBtn" title="Вернуться в настройки">⚙️</button>
+                <button class="btn-secondary" onclick="forceRefreshData()">🔄 Обновить</button>
+                <button class="btn-secondary" onclick="openModal('cheatSheetModal')" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Гайд</button>
+                <button class="btn-secondary" onclick="openModal('lingerieModal')">👙 Белье</button>
+                <button class="btn-secondary" onclick="openModal('toysModal')">🧸 Игрушки</button>
+                <button class="btn-secondary" onclick="openModal('statusModal')">💬 Статус</button>
+                <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
+                <button class="btn-secondary" onclick="resetSettings()">⚙️ Настройки</button>
             </div>
 
             <div class="progress-bar-container">
@@ -453,10 +398,10 @@
     </div>
 
     <!-- МОДАЛЬНЫЕ ОКНА -->
-    <div class="modal-overlay" id="modal">
+    <div class="modal-overlay" id="taskModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeTaskModalBtn">&times;</button>
-            <button class="fav-toggle-btn" id="modalFavBtn">☆</button>
+            <button class="close-btn" onclick="closeModal('taskModal')">&times;</button>
+            <button class="fav-toggle-btn" id="modalFavBtn" onclick="toggleCurrentFav()">☆</button>
             <h3 id="modalTitle" style="color:var(--accent-gold); margin-top:0;"></h3>
             <div id="modalRole" style="font-size:0.85rem; margin-bottom:10px;"></div>
             <div class="modal-img-container">
@@ -464,159 +409,343 @@
             </div>
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            <button class="btn-primary" id="completeBtn" style="margin-top:20px;">Отметить пройденным (+50 CP) ✓</button>
+            <button class="btn-primary" id="completeBtn" onclick="toggleComplete()" style="margin-top:20px;">Отметить пройденным ✓</button>
         </div>
     </div>
 
-    <!-- Магазин Желаний -->
-    <div class="modal-overlay" id="shopModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeShopBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🛍️ Магазин Желаний</h3>
-            <p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">Тратьте Couple Points (CP) на исполнения желаний!</p>
-            <div id="shopList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
-        </div>
-    </div>
-
-    <!-- Вызовы (Дуэли) -->
-    <div class="modal-overlay" id="challengeModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeChallengeBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💌 Секретный Вызов</h3>
-            <div class="form-group" style="margin-top:15px;">
-                <label>Отправить новый секретный вызов партнеру:</label>
-                <input type="text" class="form-control" id="challengeInput" placeholder="Например: Держи меня за руку весь вечер...">
-            </div>
-            <button class="btn-primary" id="sendChallengeBtn">Запечатать и Отправить 💌</button>
-        </div>
-    </div>
-
-    <!-- PWA -->
     <div class="modal-overlay" id="pwaModal">
         <div class="modal-content">
-            <button class="close-btn" id="closePwaBtn">&times;</button>
+            <button class="close-btn" onclick="closeModal('pwaModal')">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📱 Установка на Главный Экран</h3>
             <div class="cheat-item">
                 <h4>🍎 Для iPhone (Safari):</h4>
-                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>2. Прокрутите вниз и выберите <b>«На экран "Домой"»</b> ➕.<br>3. Нажмите «Добавить» в правом верхнем углу.</p>
+                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>2. Выберите <b>«На экран "Домой"»</b> ➕.</p>
             </div>
             <div class="cheat-item">
                 <h4>🤖 Для Android (Chrome):</h4>
-                <p>1. Нажмите меню <b>«Три точки»</b> в правом верхнем углу браузера.<br>2. Выберите <b>«Добавить на гл. экран»</b> или <b>«Установить приложение»</b>.<br>3. Подтвердите добавление.</p>
+                <p>1. Нажмите меню <b>«Три точки»</b> вверху.<br>2. Выберите <b>«Добавить на гл. экран»</b>.</p>
             </div>
-            <button class="btn-primary" id="closePwaBtnMain">Понятно, спасибо! 👍</button>
+            <button class="btn-primary" onclick="closeModal('pwaModal')">Понятно 👍</button>
         </div>
     </div>
 
-    <!-- Белье -->
     <div class="modal-overlay" id="lingerieModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeLingerieBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">👙 Энциклопедия Нижнего Белья</h3>
-            <div id="lingerieContent"></div>
-            <button class="btn-primary" id="closeLingerieBtnMain">Понятно ✨</button>
+            <button class="close-btn" onclick="closeModal('lingerieModal')">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">👙 Энциклопедия Белья</h3>
+            <div class="cheat-item"><h4>1. Открытый доступ (Ouvert)</h4><p>Идеально для быстрой интриги и авто.</p></div>
+            <div class="cheat-item"><h4>2. Кружевное боди</h4><p>Корректирует силуэт, создавая властный образ.</p></div>
+            <button class="btn-primary" onclick="closeModal('lingerieModal')">Понятно ✨</button>
         </div>
     </div>
 
-    <!-- Игрушки -->
     <div class="modal-overlay" id="toysModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeToysBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🧸 Энциклопедия Интимных Игрушек</h3>
-            <div id="toysContent"></div>
-            <button class="btn-primary" id="closeToysBtnMain">Понятно ✨</button>
+            <button class="close-btn" onclick="closeModal('toysModal')">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🧸 Интимные Игрушки</h3>
+            <div class="cheat-item"><h4>1. Вакуумный стимулятор</h4><p>Использовать строго с водным лубрикантом.</p></div>
+            <div class="cheat-item"><h4>2. Виброкольцо</h4><p>Продлевает эрекцию и стимулирует клитор.</p></div>
+            <button class="btn-primary" onclick="closeModal('toysModal')">Понятно ✨</button>
         </div>
     </div>
 
-    <!-- Совпадения -->
-    <div class="modal-overlay" id="generatorModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeGeneratorBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0;">🔮 Генератор Совпадений</h3>
-            <p style="font-size:0.85rem; color:var(--text-sub);">Отметьте желания анонимно. Приложение откроет только те практики, где ваши ответы совпадут!</p>
-            <div id="surveyContainer" style="max-height: 50vh; overflow-y: auto;"></div>
-            <button class="btn-primary" id="checkMatchesBtn" style="margin-top:15px;">Найти Совпадения ✨</button>
-        </div>
-    </div>
-
-    <!-- Гайд по оральным ласкам -->
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Мастер-Гайд по Оральным Ласкам</h3>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="cheat-tab-btn active" id="btnKun">🌹 Для Неё (10 техник)</button>
-                <button class="cheat-tab-btn" id="btnMin">👑 Для Него (10 техник)</button>
-            </div>
-            <div id="cheatKunBlock"></div>
-            <div id="cheatMinBlock" style="display:none;"></div>
-            <button class="btn-primary" id="closeCheatSheetBtnMain" style="margin-top:10px;">Применяем! 🔥</button>
+            <button class="close-btn" onclick="closeModal('cheatSheetModal')">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Гайд по Оральным Ласкам</h3>
+            <div class="cheat-item"><h4>1. Техника «Восьмерка»</h4><p>Плавные движения языком вокруг клитора со сменяющимся ритмом.</p></div>
+            <div class="cheat-item"><h4>2. Акцент на Уздечку</h4><p>Быстрые касания плоской стороной языка самой чувствительной зоны.</p></div>
+            <button class="btn-primary" onclick="closeModal('cheatSheetModal')">Применяем! 🔥</button>
         </div>
     </div>
 
-    <!-- Статус -->
     <div class="modal-overlay" id="statusModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeStatusBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💬 Ваш Интимный Статус</h3>
-            <div class="form-group" style="margin-top:15px;">
-                <label>Выберите статус:</label>
+            <button class="close-btn" onclick="closeModal('statusModal')">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💬 Ваш Статус</h3>
+            <div class="form-group">
                 <select class="form-control" id="statusSelect">
-                    <option value="❤️ Хочу нежности и поцелуев">❤️ Хочу нежности и поцелуев</option>
-                    <option value="🔥 Готов(а) к горячим экспериментам">🔥 Готов(а) к горячим экспериментам</option>
-                    <option value="😈 Настрой на BDSM / Доминирование">😈 Настрой на BDSM / Доминирование</option>
-                    <option value="😴 Устал(а), нужен просто массаж">😴 Устал(а), нужен просто массаж</option>
-                    <option value="🎁 Приготовил(а) для тебя сюрприз">🎁 Приготовил(а) для тебя сюрприз</option>
+                    <option value="❤️ Хочу нежности">❤️ Хочу нежности</option>
+                    <option value="🔥 Готов(а) к экспериментам">🔥 Готов(а) к экспериментам</option>
+                    <option value="😴 Устал(а), нужен массаж">😴 Устал(а), нужен массаж</option>
                 </select>
             </div>
-            <button class="btn-primary" id="saveStatusBtn">Обновить Мой Статус 📲</button>
+            <button class="btn-primary" onclick="saveStatus()">Обновить Статус 📲</button>
         </div>
     </div>
 
-    <!-- Музыка -->
-    <div class="modal-overlay" id="musicModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeMusicBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🎵 Атмосферная Музыка</h3>
-            
-            <div class="cheat-item">
-                <h4>🎷 Romantic & Chill (Для классики)</h4>
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX6V1q18M2A9L?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            </div>
-            <div class="cheat-item">
-                <h4>🔥 Dark Sensual & Rhythm (Для BDSM)</h4>
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX2A2938v9D4m?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            </div>
-            <button class="btn-primary" id="closeMusicBtnMain">Отлично 🎧</button>
-        </div>
-    </div>
-
-    <!-- МАСКИРОВОЧНЫЙ ЭКРАН (STEALTH / PANIC MODE) -->
+    <!-- МАСКИРОВОЧНЫЙ ЭКРАН (STEALTH) -->
     <div class="stealth-screen" id="stealthScreen">
         <div class="stealth-card">
             <div class="stealth-header">
                 <h2>📝 Мои Заметки и Покупки</h2>
-                <button class="pwa-btn" id="unpanicBtn" style="border-color: #555; color: #888;">🛡️</button>
+                <button class="pwa-btn" onclick="toggleStealthMode()" style="border-color: #555; color: #888;">🛡️</button>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Список продуктов на неделю:</p>
-            
             <div class="shopping-list">
                 <label class="shopping-item"><input type="checkbox" checked> Молоко 3.2% (2 пачки)</label>
                 <label class="shopping-item"><input type="checkbox" checked> Хлеб цельнозерновой</label>
                 <label class="shopping-item"><input type="checkbox"> Яйца C0 (10 шт)</label>
                 <label class="shopping-item"><input type="checkbox"> Филе куриное (1 кг)</label>
-                <label class="shopping-item"><input type="checkbox"> Сыр Твердый (200г)</label>
-                <label class="shopping-item"><input type="checkbox"> Яблоки Гала (1.5 кг)</label>
-                <label class="shopping-item"><input type="checkbox"> Кофе в зернах</label>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <input type="text" class="form-control" placeholder="Добавить новый пункт..." style="background:#1a1a1a; border-color:#333; color:#ccc;">
             </div>
         </div>
     </div>
 
-    <!-- Главный контроллер JS -->
-    <script type="module" src="js/app.js"></script>
+    <script>
+        // ИНИЦИАЛИЗАЦИЯ FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHsmF5VKef6zOmUft_pLRAHoSph4cIsUg",
+            authDomain: "adventcouple-4fd17.firebaseapp.com",
+            databaseURL: "https://adventcouple-4fd17-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "adventcouple-4fd17",
+            storageBucket: "adventcouple-4fd17.firebasestorage.app",
+            messagingSenderId: "546937107365",
+            appId: "1:546937107365:web:281b443fee202d9d28ae4c"
+        };
+
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch(e) {}
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+        const monthKey = `${currentYear}_${currentMonth}`;
+
+        document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
+
+        const imgPool = [
+            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80"
+        ];
+
+        // БАЗА 800 ПОЗ
+        const database = {
+            classic: Array.from({length: 200}, (_, i) => ({ id: `c_${i+1}`, title: `Классика №${i+1}`, lead: "🤝 Оба на равных", task: `Нежная романтическая практика №${i+1}.`, tip: "Сохраняйте медленный темп." })),
+            female_lead: Array.from({length: 200}, (_, i) => ({ id: `f_${i+1}`, title: `Доминирование №${i+1}`, lead: "👑 Она — Ведущая", task: `Она полностью берет контроль №${i+1}.`, tip: "Подчиняйтесь командам." })),
+            kamasutra: Array.from({length: 200}, (_, i) => ({ id: `k_${i+1}`, title: `Камасутра №${i+1}`, lead: "🤝 Оба на равных", task: `Уникальная поза Камасутры №${i+1}.`, tip: "Используйте подушку." })),
+            bdsm: Array.from({length: 200}, (_, i) => ({ id: `b_${i+1}`, title: `BDSM №${i+1}`, lead: "👑 Он — Ведущий", task: `Практика с ограничением движений №${i+1}.`, tip: "Оговорите стоп-слово." }))
+        };
+
+        function getTasksForMonth(category, code) {
+            let pool = database[category] || database.classic;
+            let seed = 0;
+            for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
+            
+            const result = [];
+            for (let day = 1; day <= daysInCurrentMonth; day++) {
+                const base = pool[(day - 1 + seed) % pool.length];
+                result.push({
+                    day: day,
+                    id: base.id,
+                    title: `${day < 10 ? '0' + day : day}. ${base.title}`,
+                    category: category,
+                    lead: base.lead,
+                    roleClass: base.lead.includes("Она") ? "role-f" : "role-m",
+                    img: imgPool[day % imgPool.length],
+                    task: base.task,
+                    tip: base.tip
+                });
+            }
+            return result;
+        }
+
+        let pairCode = localStorage.getItem('pairCode') || '';
+        let userRole = localStorage.getItem('userRole') || 'p1';
+        let selectedCategory = localStorage.getItem('userCat') || 'balanced';
+        let monthTasks = [];
+        let p1Completed = [], p2Completed = [], p1Fav = [], p2Fav = [];
+        let currentDay = null;
+        let onlyFavFilter = false;
+
+        window.onload = function() {
+            checkBiometricSupport();
+            if (pairCode) {
+                document.getElementById('pairCodeInput').value = pairCode;
+                document.getElementById('userRoleSelect').value = userRole;
+                document.getElementById('preferenceSelect').value = selectedCategory;
+
+                if (localStorage.getItem('biometricsEnabled') === 'true') {
+                    showLandingScreen();
+                    authenticateBiometrics();
+                } else {
+                    showCalendarScreen();
+                }
+            } else {
+                showLandingScreen();
+            }
+        };
+
+        function showLandingScreen() {
+            document.getElementById('landingScreen').style.display = 'flex';
+            document.getElementById('calendarScreen').style.display = 'none';
+        }
+
+        function showCalendarScreen() {
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('calendarScreen').style.display = 'flex';
+            monthTasks = getTasksForMonth(selectedCategory, pairCode);
+            initSync();
+            renderGrid();
+        }
+
+        function saveSettingsAndEnter() {
+            const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
+            if (!rawCode || rawCode.length < 4) {
+                alert("❌ Введите уникальный код минимум из 4 символов!");
+                return;
+            }
+            pairCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
+            userRole = document.getElementById('userRoleSelect').value;
+            selectedCategory = document.getElementById('preferenceSelect').value;
+
+            localStorage.setItem('pairCode', pairCode);
+            localStorage.setItem('userRole', userRole);
+            localStorage.setItem('userCat', selectedCategory);
+
+            showCalendarScreen();
+        }
+
+        function resetSettings() {
+            document.getElementById('formSetupBlock').style.display = 'block';
+            showLandingScreen();
+        }
+
+        function initSync() {
+            if (!db || !pairCode) return;
+            document.getElementById('syncBadgeText').innerText = `🟢 Код: [ ${pairCode} ]`;
+            
+            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
+                p1Completed = snapshot.val() || [];
+                renderGrid();
+            });
+            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).on('value', (snapshot) => {
+                p2Completed = snapshot.val() || [];
+                renderGrid();
+            });
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            monthTasks.forEach(task => {
+                const hasP1 = p1Completed.includes(task.day);
+                const hasP2 = p2Completed.includes(task.day);
+
+                const card = document.createElement('div');
+                let statusClass = (hasP1 && hasP2) ? 'completed-both' : (hasP1 ? 'completed-p1' : (hasP2 ? 'completed-p2' : ''));
+                card.className = `day-card ${statusClass}`;
+                card.innerHTML = `
+                    <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
+                    <div class="day-category">${task.category}</div>
+                    <div class="day-role ${task.roleClass}">${task.lead.split(' ')[1] || ''}</div>
+                `;
+                card.onclick = () => openTaskModal(task);
+                grid.appendChild(card);
+            });
+            updateProgress();
+        }
+
+        function openTaskModal(task) {
+            currentDay = task.day;
+            document.getElementById('modalTitle').innerText = task.title;
+            document.getElementById('modalRole').innerText = task.lead;
+            document.getElementById('modalImg').src = task.img;
+            document.getElementById('modalTask').innerText = task.task;
+            document.getElementById('modalTip').innerText = task.tip;
+            openModal('taskModal');
+        }
+
+        function toggleComplete() {
+            let myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
+            if (myCompleted.includes(currentDay)) {
+                myCompleted = myCompleted.filter(d => d !== currentDay);
+            } else {
+                myCompleted.push(currentDay);
+            }
+
+            if (userRole === 'p1') p1Completed = myCompleted;
+            else p2Completed = myCompleted;
+
+            if (db && pairCode) {
+                db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(myCompleted);
+            }
+            renderGrid();
+            closeModal('taskModal');
+        }
+
+        function updateProgress() {
+            const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
+            const percent = Math.round((bothCount / daysInCurrentMonth) * 100);
+            document.getElementById('progressText').innerText = `Совместный прогресс: ${bothCount} / ${daysInCurrentMonth}`;
+            document.getElementById('progressPercent').innerText = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function toggleStealthMode() {
+            const el = document.getElementById('stealthScreen');
+            el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function checkBiometricSupport() {
+            if (window.PublicKeyCredential) {
+                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(available => {
+                    if (available) {
+                        if (localStorage.getItem('biometricsEnabled') === 'true') {
+                            document.getElementById('biometricLockBlock').style.display = 'block';
+                            document.getElementById('formSetupBlock').style.display = 'none';
+                        } else {
+                            document.getElementById('enableBiometricBtn').style.display = 'block';
+                        }
+                    }
+                });
+            }
+        }
+
+        function registerBiometrics() {
+            navigator.credentials.create({
+                publicKey: {
+                    challenge: new Uint8Array([1, 2, 3, 4]),
+                    rp: { name: "Календарь" },
+                    user: { id: new Uint8Array([1, 2, 3, 4]), name: "User", displayName: "User" },
+                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                    timeout: 60000
+                }
+            }).then(() => {
+                localStorage.setItem('biometricsEnabled', 'true');
+                alert("🎉 Вход по Face ID включен!");
+                document.getElementById('biometricLockBlock').style.display = 'block';
+                document.getElementById('formSetupBlock').style.display = 'none';
+            });
+        }
+
+        function authenticateBiometrics() {
+            navigator.credentials.get({
+                publicKey: { challenge: new Uint8Array([1, 2, 3, 4]), timeout: 60000 }
+            }).then(() => showCalendarScreen());
+        }
+
+        function forceRefreshData() {
+            initSync();
+            renderGrid();
+        }
+
+        function saveStatus() {
+            const val = document.getElementById('statusSelect').value;
+            if (db && pairCode) db.ref(`pairs/${pairCode}/status/${userRole}`).set(val);
+            alert("Статус сохранен!");
+            closeModal('statusModal');
+        }
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleStealthMode(); });
+    </script>
 </body>
 </html>
