@@ -1,6 +1,6 @@
 /* ==========================================
    1. БАЗОВЫЕ ПЕРЕМЕННЫЕ И СБРОС СТИЛЕЙ
-   ================================---------- */
+   ========================================== */
 :root {
     --bg-color: #0f0d13;
     --card-bg: #181420;
@@ -13,7 +13,10 @@
     --border: rgba(226, 176, 126, 0.2);
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+}
 
 body {
     font-family: 'Montserrat', -apple-system, sans-serif;
@@ -28,14 +31,33 @@ body {
     user-select: none;
 }
 
-h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+h1, h2, h3, h4 { 
+    font-family: 'Playfair Display', serif; 
+}
 
 /* ==========================================
    2. ШАПКА И ДАШБОРД
-   ================================---------- */
-header { text-align: center; max-width: 700px; margin-bottom: 15px; width: 100%; }
-h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
-.month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
+   ========================================== */
+header { 
+    text-align: center; 
+    max-width: 700px; 
+    margin-bottom: 15px; 
+    width: 100%; 
+}
+
+h1 { 
+    color: var(--accent-gold); 
+    font-size: 1.8rem; 
+    margin: 0 0 4px 0; 
+}
+
+.month-title { 
+    color: var(--accent-rose); 
+    font-size: 1rem; 
+    font-weight: 600; 
+    margin-bottom: 8px; 
+    text-transform: capitalize; 
+}
 
 .sync-badge {
     background: rgba(230, 126, 144, 0.15);
@@ -65,8 +87,192 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
 }
 
 /* ==========================================
-   3. СЕТКА КАЛЕНДАРЯ И ОТМЕТКИ (ИСПРАВЛЕНО)
-   ================================---------- */
+   3. ФОРМЫ И ЭКРАН ВХОДА
+   ========================================== */
+.landing-screen { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 100%; 
+    max-width: 500px; 
+    margin-top: 10px; 
+}
+
+.welcome-card { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border); 
+    border-radius: 20px; 
+    padding: 25px 20px; 
+    width: 100%; 
+    text-align: center; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+}
+
+.info-box { 
+    background: rgba(226, 176, 126, 0.08); 
+    border: 1px solid var(--accent-gold); 
+    border-radius: 14px; 
+    padding: 15px; 
+    margin-bottom: 20px; 
+    font-size: 0.85rem; 
+    line-height: 1.5; 
+    color: var(--text-main); 
+    text-align: left; 
+}
+
+.form-group { 
+    margin-bottom: 18px; 
+    text-align: left; 
+}
+
+.form-group label { 
+    display: block; 
+    font-size: 0.85rem; 
+    color: var(--text-sub); 
+    margin-bottom: 8px; 
+    font-weight: 500; 
+}
+
+.form-control { 
+    width: 100%; 
+    padding: 14px; 
+    background: #0d0a12; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    color: #fff; 
+    font-family: inherit; 
+    font-size: 0.95rem; 
+}
+
+.btn-primary { 
+    width: 100%; 
+    padding: 16px; 
+    background: linear-gradient(135deg, var(--accent-gold), #c48c56); 
+    border: none; 
+    border-radius: 12px; 
+    color: #0f0d13; 
+    font-weight: 700; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    font-size: 1.05rem; 
+    box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3); 
+}
+
+.btn-faceid { 
+    background: rgba(163, 116, 219, 0.25); 
+    border: 1px solid var(--accent-purple); 
+    color: var(--accent-purple); 
+    padding: 18px; 
+    border-radius: 14px; 
+    width: 100%; 
+    font-weight: bold; 
+    font-size: 1rem; 
+    cursor: pointer; 
+    margin-top: 15px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+    box-shadow: 0 0 15px rgba(163, 116, 219, 0.2); 
+}
+
+.btn-secondary { 
+    background: rgba(226, 176, 126, 0.15); 
+    border: 1px solid var(--accent-gold); 
+    color: var(--accent-gold); 
+    padding: 8px 12px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+}
+
+/* ==========================================
+   4. ДАШБОРД И СЕТКА КАЛЕНДАРЯ
+   ========================================== */
+.calendar-screen { 
+    width: 100%; 
+    max-width: 900px; 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.dashboard { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    background: var(--card-bg); 
+    padding: 15px 20px; 
+    border-radius: 16px; 
+    border: 1px solid var(--border); 
+    margin-bottom: 20px; 
+}
+
+.dash-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+}
+
+.dash-actions { 
+    display: flex; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+}
+
+.progress-bar-container { 
+    width: 100%; 
+}
+
+.progress-text { 
+    font-size: 0.85rem; 
+    color: var(--text-sub); 
+    margin-bottom: 5px; 
+    display: flex; 
+    justify-content: space-between; 
+}
+
+.progress-bar { 
+    height: 8px; 
+    background: #0d0a12; 
+    border-radius: 4px; 
+    overflow: hidden; 
+}
+
+.progress-fill { 
+    height: 100%; 
+    width: 0%; 
+    background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); 
+    transition: width 0.3s; 
+}
+
+.achievement-badge { 
+    background: rgba(163, 116, 219, 0.2); 
+    border: 1px solid var(--accent-purple); 
+    color: var(--accent-purple); 
+    padding: 6px 12px; 
+    border-radius: 10px; 
+    font-size: 0.8rem; 
+    text-align: center; 
+    font-weight: 600; 
+}
+
+/* БАЛЛЫ СТРАСТИ (COUPLE POINTS) */
+.points-badge {
+    background: rgba(226, 176, 126, 0.2);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* СЕТКА КАЛЕНДАРЯ И КАРТОЧКИ */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -90,29 +296,62 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     transition: transform 0.2s, background 0.2s;
 }
 
-.day-card:hover { background-color: var(--card-hover); }
+.day-card:hover {
+    background-color: var(--card-hover);
+    transform: translateY(-2px);
+}
 
-/* Цвета отметки прохождения */
-.day-card.completed-p1 { border: 2px solid var(--accent-gold); }
-.day-card.completed-p2 { border: 2px solid var(--accent-purple); }
-.day-card.completed-both { border: 2px solid var(--accent-rose); background: rgba(230, 126, 144, 0.1); }
+/* Статусы выполнения (Рамки и подсветка) */
+.day-card.completed-p1 { 
+    border: 2px solid var(--accent-gold); 
+}
+.day-card.completed-p2 { 
+    border: 2px solid var(--accent-purple); 
+}
+.day-card.completed-both { 
+    border: 2px solid var(--accent-rose); 
+    background: rgba(230, 126, 144, 0.1); 
+}
 
-/* Теги Избранного */
-.fav-tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 6px; position: absolute; top: 8px; right: 8px; font-weight: bold; }
-.fav-p1 { background: var(--accent-gold); color: #000; }
-.fav-p2 { background: var(--accent-purple); color: #fff; }
-.fav-both { background: var(--accent-rose); color: #fff; }
+/* Теги избранного (М, Ж, М+Ж) */
+.fav-tag { 
+    font-size: 0.6rem; 
+    padding: 3px 6px; 
+    border-radius: 6px; 
+    position: absolute; 
+    top: 6px; 
+    right: 6px; 
+    font-weight: bold; 
+}
+.fav-p1 { 
+    background: var(--accent-gold); 
+    color: #000; 
+}
+.fav-p2 { 
+    background: var(--accent-purple); 
+    color: #fff; 
+}
+.fav-both { 
+    background: var(--accent-rose); 
+    color: #fff; 
+}
 
 /* ==========================================
-   4. МОДАЛЬНЫЕ ОКНА (ОБЯЗАТЕЛЬНО display: none)
-   ================================---------- */
+   5. МОДАЛЬНЫЕ ОКНА (СКРЫТЫ ПО УМОЛЧАНИЮ)
+   ========================================== */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(8, 6, 10, 0.92);
     backdrop-filter: blur(8px);
-    display: none; /* Исправлено: скрыты по умолчанию */
-    justify-content: center; align-items: center; padding: 20px; z-index: 1000;
+    display: none; /* Исправлено: скрыты, пока не вызваны */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 1000;
 }
 
 .modal-content {
@@ -120,43 +359,208 @@ h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
     border: 1px solid var(--accent-gold);
     border-radius: 20px;
     padding: 25px;
-    max-width: 480px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.fav-toggle-btn {
+    position: absolute;
+    top: 18px;
+    right: 50px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.modal-img-container {
+    width: 100%;
+    height: 200px;
+    border-radius: 14px;
+    margin: 15px 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.modal-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* ==========================================
-   5. ОСТАЛЬНЫЕ КОМПОНЕНТЫ
-   ================================---------- */
+   6. СЕЛЕКТОР МЕСЯЦЕВ
+   ========================================== */
 .month-selector {
-    display: flex; justify-content: space-between; align-items: center;
-    width: 100%; margin-bottom: 15px; background: var(--card-bg);
-    padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border);
-}
-
-.points-badge {
-    background: rgba(226, 176, 126, 0.2);
-    border: 1px solid var(--accent-gold);
-    color: var(--accent-gold);
-    padding: 6px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+    background: var(--card-bg);
+    padding: 8px 12px;
     border-radius: 12px;
-    font-size: 0.85rem; font-weight: 700;
+    border: 1px solid var(--border);
 }
 
-.slot-machine { display: flex; gap: 10px; margin: 20px 0; justify-content: center; }
+/* ==========================================
+   7. 3D СЛОТ-БАРАБАНЫ РУЛЕТКИ
+   ================================---------- */
+.slot-machine {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    justify-content: center;
+}
+
 .slot-reel {
-    flex: 1; background: #0d0a12; border: 1px solid var(--accent-gold);
-    border-radius: 12px; padding: 15px 8px; min-height: 100px;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    flex: 1;
+    background: #0d0a12;
+    border: 1px solid var(--accent-gold);
+    border-radius: 12px;
+    padding: 15px 8px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.analytics-box { background: #120f1a; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.slot-label {
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.slot-value {
+    font-size: 0.82rem;
+    font-weight: bold;
+    color: var(--text-main);
+    transition: transform 0.1s;
+}
+
+/* ==========================================
+   8. АНАЛИТИКА И ВСПОМОГАТЕЛЬНЫЕ БЛОКИ
+   ================================---------- */
+.analytics-box {
+    background: #120f1a;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
+.analytics-box h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    color: var(--accent-gold);
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+}
 
 .cheat-item {
-    background: #120f1a; border-left: 3px solid var(--accent-gold);
-    padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0;
+    background: #120f1a;
+    border-left: 3px solid var(--accent-gold);
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 0 10px 10px 0;
+    text-align: left;
 }
 
+.cheat-item h4 {
+    margin: 0 0 6px 0;
+    color: var(--accent-gold);
+    font-size: 0.95rem;
+}
+
+.cheat-item p {
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+/* ==========================================
+   9. STEALTH MODE (МАСКИРОВКА)
+   ========================================== */
 .stealth-screen {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: #121212; color: #e0e0e0; display: none;
-    justify-content: center; align-items: flex-start; z-index: 99999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #121212;
+    color: #e0e0e0;
+    display: none;
+    justify-content: center;
+    align-items: flex-start;
+    padding: calc(20px + env(safe-area-inset-top)) 15px 30px 15px;
+    z-index: 99999;
+    overflow-y: auto;
+}
+
+.stealth-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.stealth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.stealth-header h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 1.1rem;
+    color: #e0e0e0;
+    margin: 0;
+}
+
+.shopping-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.shopping-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.shopping-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #666;
 }
