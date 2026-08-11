@@ -56,6 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function getActiveMonthKey() {
+    const targetDate = new Date(currentYear, currentMonth + activeMonthOffset, 1);
+    return `${targetDate.getFullYear()}_${targetDate.getMonth()}`;
+}
+
 function showLandingScreen() {
     document.getElementById('landingScreen').style.display = 'flex';
     document.getElementById('calendarScreen').style.display = 'none';
@@ -64,7 +69,7 @@ function showLandingScreen() {
 function showCalendarScreen() {
     document.getElementById('landingScreen').style.display = 'none';
     document.getElementById('calendarScreen').style.display = 'flex';
-    monthTasks = getTasksForMonth(selectedCategory, pairCode);
+    monthTasks = getTasksForMonth(selectedCategory, pairCode, activeMonthOffset);
     startSync();
     renderGrid();
     updatePointsDisplay();
@@ -75,7 +80,8 @@ function updatePointsDisplay() {
 }
 
 function startSync() {
-    initSync(pairCode, selectedCategory, userRole, {
+    const currentMKey = getActiveMonthKey();
+    initSync(pairCode, selectedCategory, currentMKey, {
         onP1Completed: (val) => { p1Completed = val || []; renderGrid(); },
         onP2Completed: (val) => { p2Completed = val || []; renderGrid(); },
         onP1Fav: (val) => { p1Fav = val || []; renderGrid(); },
@@ -152,6 +158,10 @@ function renderGrid() {
 
 function openModal(task) {
     currentDay = task.day;
+    currentRating = 0;
+    document.getElementById('feedbackInput').value = '';
+    document.querySelectorAll('#ratingStars span').forEach(s => s.innerText = '☆');
+
     document.getElementById('modalTitle').innerText = task.title;
     document.getElementById('modalRole').innerText = task.lead;
     document.getElementById('modalImg').src = task.img;
@@ -174,9 +184,11 @@ function openModal(task) {
 
     // Загрузка мнений партнера в дневник впечатлений
     const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
-    listenFeedbackFromDb(pairCode, selectedCategory, partnerRole, currentDay, (fb) => {
+    const currentMKey = getActiveMonthKey();
+    listenFeedbackFromDb(pairCode, selectedCategory, currentMKey, currentDay, partnerRole, (fb) => {
         if (fb) {
-            document.getElementById('partnerFeedbackBox').innerText = `💬 Партнер: ${'★'.repeat(fb.rating)} "${fb.text}"`;
+            const stars = fb.rating > 0 ? '★'.repeat(fb.rating) + ' ' : '';
+            document.getElementById('partnerFeedbackBox').innerText = `💬 Партнер: ${stars}"${fb.text || ''}"`;
         } else {
             document.getElementById('partnerFeedbackBox').innerText = `Партнер еще не оставил отзыв.`;
         }
@@ -186,10 +198,11 @@ function openModal(task) {
 }
 
 function updateProgress() {
+    const totalDays = monthTasks.length || daysInCurrentMonth;
     const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
-    const percent = Math.round((bothCount / daysInCurrentMonth) * 100);
+    const percent = Math.round((bothCount / totalDays) * 100) || 0;
     
-    document.getElementById('progressText').innerText = `Совместный прогресс: ${bothCount} / ${daysInCurrentMonth} дней`;
+    document.getElementById('progressText').innerText = `Совместный прогресс: ${bothCount} / ${totalDays} дней`;
     document.getElementById('progressPercent').innerText = `${percent}%`;
     document.getElementById('progressFill').style.width = `${percent}%`;
 
@@ -277,15 +290,17 @@ function setupEventListeners() {
         if (userRole === 'p1') p1Completed = myCompleted;
         else p2Completed = myCompleted;
 
-        saveCompletedToDb(pairCode, selectedCategory, userRole, myCompleted);
+        const currentMKey = getActiveMonthKey();
+        saveCompletedToDb(pairCode, selectedCategory, currentMKey, userRole, myCompleted);
         if (currentRating > 0 || feedbackText) {
-            saveFeedbackToDb(pairCode, selectedCategory, userRole, currentDay, currentRating, feedbackText);
+            saveFeedbackToDb(pairCode, selectedCategory, currentMKey, currentDay, userRole, currentRating, feedbackText);
         }
 
         renderGrid();
         updatePointsDisplay();
         document.getElementById('modal').style.display = 'none';
     };
+
 
     // Переключатель Избранного (⭐)
     document.getElementById('modalFavBtn').onclick = () => {
@@ -394,16 +409,23 @@ function setupEventListeners() {
     document.getElementById('prevMonthBtn').onclick = () => {
         activeMonthOffset--;
         updateMonthLabel();
+        monthTasks = getTasksForMonth(selectedCategory, pairCode, activeMonthOffset);
+        startSync();
+        renderGrid();
     };
     document.getElementById('nextMonthBtn').onclick = () => {
         activeMonthOffset++;
         updateMonthLabel();
+        monthTasks = getTasksForMonth(selectedCategory, pairCode, activeMonthOffset);
+        startSync();
+        renderGrid();
     };
 
     function updateMonthLabel() {
         const targetDate = new Date(currentYear, currentMonth + activeMonthOffset, 1);
         document.getElementById('currentMonthLabel').innerText = `${monthNames[targetDate.getMonth()]} ${targetDate.getFullYear()}`;
     }
+
 
     // Stealth Mode & Экспорт/Импорт
     document.getElementById('panicBtn').onclick = toggleStealthMode;
@@ -470,9 +492,49 @@ function setupEventListeners() {
     document.getElementById('closeMusicBtn').onclick = () => document.getElementById('musicModal').style.display = 'none';
     document.getElementById('closeMusicBtnMain').onclick = () => document.getElementById('musicModal').style.display = 'none';
 
+    // Генератор Совпадений
+    document.getElementById('openGeneratorBtn').onclick = () => {
+        const surveyContainer = document.getElementById('surveyContainer');
+        const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+        let partnerVotes = {};
+
+        fetchPartnerVotes(pairCode, partnerRole, (pv) => {
+            partnerVotes = pv || {};
+        });
+
+        surveyContainer.innerHTML = monthTasks.map(t => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem;">
+                <span>${t.title}</span>
+                <input type="checkbox" class="vote-checkbox" data-day="${t.day}" ${myVotes[t.day] ? 'checked' : ''}>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.vote-checkbox').forEach(cb => {
+            cb.onchange = (e) => {
+                const day = e.target.getAttribute('data-day');
+                myVotes[day] = e.target.checked;
+                saveVotesToDb(pairCode, userRole, myVotes);
+            };
+        });
+
+        document.getElementById('checkMatchesBtn').onclick = () => {
+            const matches = monthTasks.filter(t => myVotes[t.day] && partnerVotes[t.day]);
+            if (matches.length > 0) {
+                triggerConfetti();
+                alert(`🎉 Совпадения найдены! (${matches.length})\n\n` + matches.map(m => `• ${m.title}`).join('\n'));
+            } else {
+                alert("Пока совпадений не найдено. Отметьте больше карточек и попросите партнера заполнить опрос!");
+            }
+        };
+
+        document.getElementById('generatorModal').style.display = 'flex';
+    };
+    document.getElementById('closeGeneratorBtn').onclick = () => document.getElementById('generatorModal').style.display = 'none';
+
+
     document.getElementById('refreshBtn').onclick = () => {
+        monthTasks = getTasksForMonth(selectedCategory, pairCode, activeMonthOffset);
         startSync();
-        monthTasks = getTasksForMonth(selectedCategory, pairCode);
         renderGrid();
     };
 

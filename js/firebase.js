@@ -10,25 +10,55 @@ try {
     console.error("Firebase initialization error:", e);
 }
 
+let p1CompRef = null;
+let p2CompRef = null;
+let p1FavRef = null;
+let p2FavRef = null;
+let statusRef = null;
+let challengeRef = null;
+let feedbackRef = null;
+
+function normalizeArray(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) {
+        return val.filter(item => item !== null && item !== undefined);
+    }
+    if (typeof val === 'object') {
+        return Object.values(val).filter(item => item !== null && item !== undefined);
+    }
+    return [];
+}
+
 // Синхронизация отметок прохождения и избранного
 export function initSync(pairCode, selectedCategory, monthKey, callbacks) {
     if (!db || !pairCode) return;
 
-    db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
-        if (callbacks.onP1Completed) callbacks.onP1Completed(snapshot.val() || []);
+    // Отписка от прошлых слушателей
+    if (p1CompRef) p1CompRef.off();
+    if (p2CompRef) p2CompRef.off();
+    if (p1FavRef) p1FavRef.off();
+    if (p2FavRef) p2FavRef.off();
+
+    p1CompRef = db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`);
+    p2CompRef = db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`);
+    p1FavRef = db.ref(`pairs/${pairCode}/fav/p1`);
+    p2FavRef = db.ref(`pairs/${pairCode}/fav/p2`);
+
+    p1CompRef.on('value', (snapshot) => {
+        if (callbacks.onP1Completed) callbacks.onP1Completed(normalizeArray(snapshot.val()));
     });
-    db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).on('value', (snapshot) => {
-        if (callbacks.onP2Completed) callbacks.onP2Completed(snapshot.val() || []);
+    p2CompRef.on('value', (snapshot) => {
+        if (callbacks.onP2Completed) callbacks.onP2Completed(normalizeArray(snapshot.val()));
     });
-    db.ref(`pairs/${pairCode}/fav/p1`).on('value', (snapshot) => {
-        if (callbacks.onP1Fav) callbacks.onP1Fav(snapshot.val() || []);
+    p1FavRef.on('value', (snapshot) => {
+        if (callbacks.onP1Fav) callbacks.onP1Fav(normalizeArray(snapshot.val()));
     });
-    db.ref(`pairs/${pairCode}/fav/p2`).on('value', (snapshot) => {
-        if (callbacks.onP2Fav) callbacks.onP2Fav(snapshot.val() || []);
+    p2FavRef.on('value', (snapshot) => {
+        if (callbacks.onP2Fav) callbacks.onP2Fav(normalizeArray(snapshot.val()));
     });
 }
 
-// Исправлено: Фильтрация undefined перед отправкой
+// Сохранение пройденных дней
 export function saveCompletedToDb(pairCode, selectedCategory, monthKey, userRole, completedArray) {
     if (db && pairCode) {
         const cleanArray = (completedArray || []).filter(item => item !== undefined && item !== null);
@@ -36,6 +66,7 @@ export function saveCompletedToDb(pairCode, selectedCategory, monthKey, userRole
     }
 }
 
+// Сохранение избранного
 export function saveFavToDb(pairCode, userRole, favArray) {
     if (db && pairCode) {
         const cleanArray = (favArray || []).filter(item => item !== undefined && item !== null);
@@ -52,25 +83,29 @@ export function saveStatusToDb(pairCode, userRole, statusText) {
 
 export function listenPartnerStatus(pairCode, partnerRole, callback) {
     if (db && pairCode) {
-        db.ref(`pairs/${pairCode}/status/${partnerRole}`).on('value', (snapshot) => {
+        if (statusRef) statusRef.off();
+        statusRef = db.ref(`pairs/${pairCode}/status/${partnerRole}`);
+        statusRef.on('value', (snapshot) => {
             callback(snapshot.val() || 'Статус не установлен');
         });
     }
 }
 
 // Дневник впечатлений
-export function saveFeedbackToDb(pairCode, selectedCategory, day, userRole, rating, text) {
+export function saveFeedbackToDb(pairCode, selectedCategory, monthKey, day, userRole, rating, text) {
     if (db && pairCode && day !== undefined) {
-        db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${userRole}`).set({ 
+        db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/feedback/${day}/${userRole}`).set({ 
             rating: rating || 0, 
             text: text || "" 
         });
     }
 }
 
-export function listenFeedbackFromDb(pairCode, selectedCategory, day, partnerRole, callback) {
+export function listenFeedbackFromDb(pairCode, selectedCategory, monthKey, day, partnerRole, callback) {
     if (db && pairCode && day !== undefined) {
-        db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${partnerRole}`).on('value', (snapshot) => {
+        if (feedbackRef) feedbackRef.off();
+        feedbackRef = db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/feedback/${day}/${partnerRole}`);
+        feedbackRef.on('value', (snapshot) => {
             callback(snapshot.val() || null);
         });
     }
@@ -102,7 +137,9 @@ export function sendChallengeToDb(pairCode, userRole, challengeText) {
 
 export function listenChallengeFromDb(pairCode, partnerRole, callback) {
     if (db && pairCode) {
-        db.ref(`pairs/${pairCode}/challenge/${partnerRole}`).on('value', (snapshot) => {
+        if (challengeRef) challengeRef.off();
+        challengeRef = db.ref(`pairs/${pairCode}/challenge/${partnerRole}`);
+        challengeRef.on('value', (snapshot) => {
             callback(snapshot.val() || '');
         });
     }
@@ -123,3 +160,4 @@ export function fetchPartnerVotes(pairCode, partnerRole, callback) {
         });
     }
 }
+

@@ -44,7 +44,7 @@ export const database = {
     }))
 };
 
-export function getTasksForMonth(category, code) {
+export function getTasksForMonth(category, code, monthOffset = 0) {
     let pool = [];
     if (category === 'balanced') {
         pool = [
@@ -57,9 +57,14 @@ export function getTasksForMonth(category, code) {
         pool = [...(database[category] || database.classic)];
     }
 
+    const targetDate = new Date(currentYear, currentMonth + monthOffset, 1);
+    const targetYear = targetDate.getFullYear();
+    const targetMonth = targetDate.getMonth();
+    const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+
     let seed = 0;
     for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
-    seed = seed * 31 + currentYear * 12 + currentMonth;
+    seed = seed * 31 + targetYear * 12 + targetMonth;
 
     const shuffledPool = [...pool];
     for (let i = shuffledPool.length - 1; i > 0; i--) {
@@ -68,7 +73,7 @@ export function getTasksForMonth(category, code) {
     }
 
     const result = [];
-    for (let day = 1; day <= daysInCurrentMonth; day++) {
+    for (let day = 1; day <= daysInTargetMonth; day++) {
         const goldSecret = goldCardsList.find(g => g.day === day);
         
         if (goldSecret) {
@@ -108,3 +113,4 @@ export function getTasksForMonth(category, code) {
     }
     return result;
 }
+
