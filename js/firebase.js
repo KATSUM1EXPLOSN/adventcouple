@@ -1,9 +1,11 @@
 // js/firebase.js
 
-// Инициализация базы данных (предполагается, что firebase уже подключен через CDN в index.html)
+// Безопасное получение ссылки на базу данных, инициализированную в index.html
 let db = null;
 try {
-    db = firebase.database();
+    if (typeof firebase !== 'undefined' && firebase.database) {
+        db = firebase.database();
+    }
 } catch (e) {
     console.error("Firebase initialization error:", e);
 }
