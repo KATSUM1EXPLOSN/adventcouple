@@ -435,9 +435,10 @@ function setupEventListeners() {
     // Аналитика
     document.getElementById('openAnalyticsBtn').onclick = () => {
         document.getElementById('analyticsModal').style.display = 'flex';
-        renderAnalyticsCharts(p1Completed, p2Completed, monthTasks);
+        renderAnalyticsCharts(p1Completed, p2Completed, p1Fav, p2Fav, monthTasks);
     };
     document.getElementById('closeAnalyticsBtn').onclick = () => document.getElementById('analyticsModal').style.display = 'none';
+
 
     // Листание Архива Месяцев
     document.getElementById('prevMonthBtn').onclick = () => {
