@@ -258,8 +258,8 @@ function setupEventListeners() {
 
         if (!myCompleted.includes(currentDay)) {
             myCompleted.push(currentDay);
-            addCouplePoints(50, pairCode, userRole); // Начисление 50 CP
-            triggerConfetti(); // Конфетти при разблокировке!
+            addCouplePoints(50, pairCode, userRole);
+            triggerConfetti();
         } else {
             myCompleted = myCompleted.filter(d => d !== currentDay);
         }
@@ -371,7 +371,8 @@ function setupEventListeners() {
     document.getElementById('closeSettingsBtn').onclick = () => document.getElementById('settingsModal').style.display = 'none';
     document.getElementById('changeSettingsBtn').onclick = () => {
         document.getElementById('settingsModal').style.display = 'none';
-        resetSettings();
+        document.getElementById('formSetupBlock').style.display = 'block';
+        showLandingScreen();
     };
 
     document.getElementById('exportDataBtn').onclick = () => exportEncryptedData(pairCode);
@@ -427,38 +428,3 @@ function setupEventListeners() {
         renderGrid();
     };
 }
-// Делаем функции доступными для глобальных onclick в index.html
-import { saveSettingsAndEnter, resetSettings, forceRefreshData, toggleFavFilter } from './app.js'; // (или ваши текущие импорты)
-// А также привязываем основные обработчики к window:
-window.saveSettingsAndEnter = function() {
-    // Ваша логика сохранения и входа
-    const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
-    if (!rawCode || rawCode.length < 4) { 
-        alert("❌ Введите уникальный код минимум из 4 символов!"); 
-        return; 
-    }
-    window.pairCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
-    window.userRole = document.getElementById('userRoleSelect').value;
-    window.selectedCategory = document.getElementById('preferenceSelect').value;
-
-    localStorage.setItem('pairCode', window.pairCode);
-    localStorage.setItem('userRole', window.userRole);
-    localStorage.setItem('userCat', window.selectedCategory);
-
-    showCalendarScreen();
-};
-
-window.resetSettings = function() {
-    document.getElementById('formSetupBlock').style.display = 'block';
-    showLandingScreen();
-};
-
-window.openModal = function(id) { 
-    const modal = document.getElementById(id);
-    if(modal) modal.style.display = 'flex'; 
-};
-
-window.closeModal = function(id) { 
-    const modal = document.getElementById(id);
-    if(modal) modal.style.display = 'none'; 
-};
