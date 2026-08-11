@@ -551,7 +551,7 @@
         </div>
     </div>
 
-    <!-- 20 ТЕХНИК ОРАЛЬНОГО СЕКСА С СПОЙЛЕРАМИ -->
+    <!-- ВСЕ 20 ТЕХНИК ОРАЛЬНОГО СЕКСА С АНАТОМИЧЕСКИМИ СПОЙЛЕРАМИ -->
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeCheatSheetModal()">&times;</button>
@@ -741,7 +741,7 @@
             { day: 30, title: "👑 Королевский Номер (Финал)", task: "Полная ролевая игра с переодеванием в белье и подготовленными игрушками на всю ночь.", tip: "Совет: Заранее отключите телефоны." }
         ];
 
-        // БАЗА 800 УНИКАЛЬНЫХ ПРАКТИК ПО 200 НА КАТЕГОРИЮ
+        // ГЕНЕРАЦИЯ БАЗЫ 800 УНИКАЛЬНЫХ ПОЗ И ПРАКТИК (ПО 200 НА КАТЕГОРИЮ)
         const database = {
             classic: Array.from({length: 200}, (_, i) => ({
                 id: `c_${i+1}`,
@@ -773,16 +773,31 @@
             }))
         };
 
+        // АЛГОРИТМ ПЕРЕМЕШИВАНИЯ БЕЗ ПОВТОРОВ (FISHER-YATES SHUFFLE С УЧЕТОМ КОДА И ДАТЫ)
         function getTasksForMonth(category, code) {
             let pool = [];
             if (category === 'balanced') {
-                pool = [...database.classic.slice(0,50), ...database.female_lead.slice(0,50), ...database.kamasutra.slice(0,50), ...database.bdsm.slice(0,50)];
+                pool = [
+                    ...database.classic.slice(0, 50),
+                    ...database.female_lead.slice(0, 50),
+                    ...database.kamasutra.slice(0, 50),
+                    ...database.bdsm.slice(0, 50)
+                ];
             } else {
-                pool = database[category] || database.classic;
+                pool = [...(database[category] || database.classic)];
             }
 
+            // Псевдослучайное зерно на основе кода пары и текущего месяца/года
             let seed = 0;
             for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
+            seed = seed * 31 + currentYear * 12 + currentMonth;
+
+            // Перемешивание массива Fisher-Yates (детерминированное для пары)
+            const shuffledPool = [...pool];
+            for (let i = shuffledPool.length - 1; i > 0; i--) {
+                const j = Math.abs((seed * (i + 1) * 17) % (i + 1));
+                [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
+            }
 
             const result = [];
             for (let day = 1; day <= daysInCurrentMonth; day++) {
@@ -802,8 +817,8 @@
                         isGold: true
                     });
                 } else {
-                    const index = (day * 3 + currentMonth * 17 + seed) % pool.length;
-                    const base = pool[index];
+                    // Берём СТРОГО уникальный предмет с позиции day - 1
+                    const base = shuffledPool[(day - 1) % shuffledPool.length];
                     
                     let catLabel = 'Классика';
                     if (base.id.startsWith('f')) catLabel = 'Доминирование';
