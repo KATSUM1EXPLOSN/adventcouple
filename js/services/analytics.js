@@ -1,12 +1,18 @@
 export function renderAnalyticsCharts(p1Completed = [], p2Completed = [], p1Fav = [], p2Fav = [], monthTasks = []) {
-    const totalDays = monthTasks.length || 30;
+    const safeTasks = Array.isArray(monthTasks) ? monthTasks : [];
+    const safeP1Comp = Array.isArray(p1Completed) ? p1Completed : [];
+    const safeP2Comp = Array.isArray(p2Completed) ? p2Completed : [];
+    const safeP1Fav = Array.isArray(p1Fav) ? p1Fav : [];
+    const safeP2Fav = Array.isArray(p2Fav) ? p2Fav : [];
 
-    renderSynergyCircle(p1Completed, p2Completed, totalDays);
-    renderCoupleArchetype(p1Completed, p2Completed, monthTasks);
-    renderHeatmap(p1Completed, p2Completed, p1Fav, p2Fav, totalDays);
-    renderWeekdayChart(p1Completed, p2Completed, monthTasks);
-    renderTopPoses(p1Completed, p2Completed, p1Fav, p2Fav, monthTasks);
-    renderCoupleForecast(p1Completed, p2Completed, monthTasks);
+    const totalDays = safeTasks.length || 30;
+
+    try { renderSynergyCircle(safeP1Comp, safeP2Comp, totalDays); } catch (e) { console.error('Synergy circle error:', e); }
+    try { renderCoupleArchetype(safeP1Comp, safeP2Comp, safeTasks); } catch (e) { console.error('Couple archetype error:', e); }
+    try { renderHeatmap(safeP1Comp, safeP2Comp, safeP1Fav, safeP2Fav, totalDays); } catch (e) { console.error('Heatmap error:', e); }
+    try { renderWeekdayChart(safeP1Comp, safeP2Comp, safeTasks); } catch (e) { console.error('Weekday chart error:', e); }
+    try { renderTopPoses(safeP1Comp, safeP2Comp, safeP1Fav, safeP2Fav, safeTasks); } catch (e) { console.error('Top poses error:', e); }
+    try { renderCoupleForecast(safeP1Comp, safeP2Comp, safeTasks); } catch (e) { console.error('Couple forecast error:', e); }
 }
 
 function renderSynergyCircle(p1Completed, p2Completed, totalDays) {
@@ -31,7 +37,7 @@ function renderCoupleArchetype(p1Completed, p2Completed, monthTasks) {
     if (!titleEl || !descEl) return;
 
     const bothDays = p1Completed.filter(d => p2Completed.includes(d));
-    const completedTasks = monthTasks.filter(t => bothDays.includes(t.day) || p1Completed.includes(t.day) || p2Completed.includes(t.day));
+    const completedTasks = monthTasks.filter(t => t && (bothDays.includes(t.day) || p1Completed.includes(t.day) || p2Completed.includes(t.day)));
 
     if (completedTasks.length === 0) {
         titleEl.innerText = "✨ Чувственный Старт";
@@ -39,16 +45,15 @@ function renderCoupleArchetype(p1Completed, p2Completed, monthTasks) {
         return;
     }
 
-    // Подсчет преобладающих направлений
     const categoriesCount = {};
     completedTasks.forEach(t => {
-        const cat = t.category || 'Классика';
+        const cat = (t && t.category) ? t.category : 'Классика';
         categoriesCount[cat] = (categoriesCount[cat] || 0) + 1;
     });
 
     const topCategory = Object.keys(categoriesCount).sort((a, b) => categoriesCount[b] - categoriesCount[a])[0] || '';
 
-    if (topCategory.includes('Оральный') || topCategory.includes('Кунилингус')) {
+    if (topCategory.includes('Оральный') || topCategory.includes('Кунилингус') || topCategory.includes('Минет')) {
         titleEl.innerText = "🌹 Мастера Нежных Ласк";
         descEl.innerText = "Ваша пара ставит во главу угла абсолютное оральное удовольствие и трепетные прикосновения.";
     } else if (topCategory.includes('Наездница') || topCategory.includes('Доминирование')) {
@@ -108,7 +113,6 @@ function renderWeekdayChart(p1Completed, p2Completed, monthTasks) {
 
     const completedDays = [...new Set([...p1Completed, ...p2Completed])];
     
-    // Рассчитываем день недели для каждого пройденного дня
     const now = new Date();
     completedDays.forEach(day => {
         const d = new Date(now.getFullYear(), now.getMonth(), day);
@@ -129,7 +133,6 @@ function renderWeekdayChart(p1Completed, p2Completed, monthTasks) {
         const x = paddingLeft + i * (barWidth + barGap);
         const y = height - 25 - barH;
 
-        // Градиент столбцов
         const grad = ctx.createLinearGradient(x, y, x, y + barH);
         if (count === Math.max(...weekdayCounts) && count > 0) {
             grad.addColorStop(0, '#e67e90');
@@ -141,18 +144,20 @@ function renderWeekdayChart(p1Completed, p2Completed, monthTasks) {
 
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, barH, [6, 6, 0, 0]);
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(x, y, barWidth, barH, [6, 6, 0, 0]);
+        } else {
+            ctx.rect(x, y, barWidth, barH);
+        }
         ctx.fill();
 
-        // Текст значения над столбцом
         ctx.fillStyle = '#f5f0fa';
-        ctx.font = 'bold 11px Montserrat';
+        ctx.font = 'bold 11px Montserrat, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(count > 0 ? count : '0', x + barWidth / 2, y - 5);
 
-        // День недели под столбцом
         ctx.fillStyle = '#a89fbe';
-        ctx.font = '10px Montserrat';
+        ctx.font = '10px Montserrat, sans-serif';
         ctx.fillText(daysName[i], x + barWidth / 2, height - 8);
     });
 }
@@ -162,33 +167,33 @@ function renderTopPoses(p1Completed, p2Completed, p1Fav, p2Fav, monthTasks) {
     if (!container) return;
     container.innerHTML = '';
 
-    // Топ формируется из взаимных избранных или взаимно пройденных дней
     const bothFav = p1Fav.filter(d => p2Fav.includes(d));
     const bothComp = p1Completed.filter(d => p2Completed.includes(d));
     const priorityDays = [...new Set([...bothFav, ...bothComp])];
 
-    let topTasks = monthTasks.filter(t => priorityDays.includes(t.day));
+    let topTasks = monthTasks.filter(t => t && priorityDays.includes(t.day));
     if (topTasks.length < 3) {
         const otherFavs = [...new Set([...p1Fav, ...p2Fav, ...p1Completed, ...p2Completed])];
-        const extraTasks = monthTasks.filter(t => otherFavs.includes(t.day) && !priorityDays.includes(t.day));
+        const extraTasks = monthTasks.filter(t => t && otherFavs.includes(t.day) && !priorityDays.includes(t.day));
         topTasks = [...topTasks, ...extraTasks];
     }
 
     if (topTasks.length === 0) {
-        topTasks = monthTasks.slice(0, 3); // По умолчанию первые 3
+        topTasks = monthTasks.slice(0, 3);
     } else {
         topTasks = topTasks.slice(0, 3);
     }
 
     topTasks.forEach((task, idx) => {
+        if (!task) return;
         const row = document.createElement('div');
         row.className = 'top-pose-row';
         row.innerHTML = `
             <div style="font-weight:800; font-size:1.1rem; color:var(--accent-gold); width:20px;">#${idx + 1}</div>
-            <img class="top-pose-thumb" src="${task.img}" alt="${task.title}">
+            <img class="top-pose-thumb" src="${task.img || ''}" alt="${task.title || 'Поза'}">
             <div class="top-pose-info">
-                <div class="top-pose-title">${task.title}</div>
-                <div class="top-pose-sub">${task.category} • ${task.lead}</div>
+                <div class="top-pose-title">${task.title || 'Поза'}</div>
+                <div class="top-pose-sub">${task.category || 'Комбо'} • ${task.lead || 'Вместе'}</div>
             </div>
         `;
         container.appendChild(row);
