@@ -816,6 +816,42 @@ function setupEventListeners() {
         showLandingScreen();
     };
 
+    // Кнопки Входа и Биометрии на Главном Экране
+    const saveEnterBtn = document.getElementById('saveEnterBtn');
+    if (saveEnterBtn) {
+        saveEnterBtn.onclick = () => {
+            const inputCode = document.getElementById('pairCodeInput').value.trim();
+            if (!inputCode) {
+                alert('❌ Пожалуйста, введите секретный Код Пары!');
+                return;
+            }
+            pairCode = inputCode.toUpperCase();
+            userRole = document.getElementById('userRoleSelect').value;
+            selectedCategory = document.getElementById('preferenceSelect').value;
+
+            localStorage.setItem('pairCode', pairCode);
+            localStorage.setItem('userRole', userRole);
+            localStorage.setItem('userCat', selectedCategory);
+
+            showCalendarScreen();
+        };
+    }
+
+    const faceIdBtn = document.getElementById('faceIdBtn');
+    if (faceIdBtn) {
+        faceIdBtn.onclick = () => {
+            authenticateBiometrics(showCalendarScreen);
+        };
+    }
+
+    const enableBiometricBtn = document.getElementById('enableBiometricBtn');
+    if (enableBiometricBtn) {
+        enableBiometricBtn.onclick = () => {
+            registerBiometrics(pairCode);
+        };
+    }
+
+
     document.getElementById('exportDataBtn').onclick = () => exportEncryptedData(pairCode);
     document.getElementById('importDataBtn').onclick = () => document.getElementById('importFileInput').click();
     document.getElementById('importFileInput').onchange = (e) => {
