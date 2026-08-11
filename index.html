@@ -411,18 +411,26 @@
     </div>
 
     <div class="modal-overlay" id="cheatSheetModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 580px;">
             <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Мастер-Гайд по Оральным Ласкам</h3>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="cheat-tab-btn active" id="btnKun">🌹 Для Неё (10 техник)</button>
-                <button class="cheat-tab-btn" id="btnMin">👑 Для Него (10 техник)</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Энциклопедия Страсти (Medow Club Guides)</h3>
+            
+            <div class="guide-tabs-scroll" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:15px; border-bottom:1px solid var(--border);">
+                <button class="cheat-tab-btn active" id="btnKun">🌹 Куни (17 техник)</button>
+                <button class="cheat-tab-btn" id="btnMin">👑 Минет (Продвинутый)</button>
+                <button class="cheat-tab-btn" id="btnAni">🍑 Анилингус (Римминг)</button>
+                <button class="cheat-tab-btn" id="btnErgM">🧠 17 Зон Мужчины</button>
+                <button class="cheat-tab-btn" id="btnErgW">💎 5 Зон Женщины</button>
+                <button class="cheat-tab-btn" id="btnPointG">🎯 Точка G & A</button>
+                <button class="cheat-tab-btn" id="btnPrem">🪷 10 Игр Камасутры</button>
+                <button class="cheat-tab-btn" id="btnWords">💬 73 Слова Фраз</button>
             </div>
-            <div id="cheatKunBlock"></div>
-            <div id="cheatMinBlock" style="display:none;"></div>
-            <button class="btn-primary" id="closeCheatSheetBtnMain" style="margin-top:10px;">Применяем! 🔥</button>
+
+            <div id="guideContentBox" style="max-height: 55vh; overflow-y: auto; padding-right:5px;"></div>
+            <button class="btn-primary" id="closeCheatSheetBtnMain" style="margin-top:15px;">Применяем на практике! 🔥</button>
         </div>
     </div>
+
 
     <div class="modal-overlay" id="statusModal">
         <div class="modal-content">

@@ -1,6 +1,7 @@
 import { monthNames, daysInCurrentMonth, currentYear, currentMonth } from './config.js';
 import { getTasksForMonth } from './data/database.js';
-import { lingerieItems, toysItems, cheatKunItems, cheatMinItems } from './data/extras.js';
+import { lingerieItems, toysItems, cheatKunItems, cheatMinItems, cheatAnilingusItems, cheatErogenousMItems, cheatErogenousWItems, cheatPreludeItems, cheatWordsItems, cheatPointGItems } from './data/extras.js';
+
 import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip, achievementsData } from './data/interactive.js';
 import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes, saveStatusToDb, listenPartnerStatus, saveFeedbackToDb, listenFeedbackFromDb } from './firebase.js';
 import { checkBiometricSupport, registerBiometrics, authenticateBiometrics } from './auth.js';
@@ -489,31 +490,65 @@ function setupEventListeners() {
 
     document.getElementById('closeTaskModalBtn').onclick = () => document.getElementById('modal').style.display = 'none';
 
-    document.getElementById('openLingerieBtn').onclick = () => document.getElementById('lingerieModal').style.display = 'flex';
+    function renderGuideItems(items) {
+        const box = document.getElementById('guideContentBox');
+        if (!box) return;
+        box.innerHTML = (items || []).map(item => `
+            <div class="cheat-item" style="margin-bottom:12px; padding:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px;">
+                <h4 style="color:var(--accent-gold); margin:0 0 6px 0; font-size:0.92rem;">${item.title}</h4>
+                <div style="font-size:0.83rem; line-height:1.45; color:var(--text-main);">${item.text}</div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('openLingerieBtn').onclick = () => {
+        document.getElementById('lingerieModal').style.display = 'flex';
+        document.getElementById('lingerieContent').innerHTML = lingerieItems.map(i => `
+            <div class="cheat-item" style="margin-bottom:10px;"><h4 style="color:var(--accent-gold);">${i.title}</h4><p>${i.text}</p></div>
+        `).join('');
+    };
     document.getElementById('closeLingerieBtn').onclick = () => document.getElementById('lingerieModal').style.display = 'none';
     document.getElementById('closeLingerieBtnMain').onclick = () => document.getElementById('lingerieModal').style.display = 'none';
 
-    document.getElementById('openToysBtn').onclick = () => document.getElementById('toysModal').style.display = 'flex';
+    document.getElementById('openToysBtn').onclick = () => {
+        document.getElementById('toysModal').style.display = 'flex';
+        document.getElementById('toysContent').innerHTML = toysItems.map(i => `
+            <div class="cheat-item" style="margin-bottom:10px;"><h4 style="color:var(--accent-purple);">${i.title}</h4><p>${i.text}</p></div>
+        `).join('');
+    };
     document.getElementById('closeToysBtn').onclick = () => document.getElementById('toysModal').style.display = 'none';
     document.getElementById('closeToysBtnMain').onclick = () => document.getElementById('toysModal').style.display = 'none';
 
-    // Кнопка Гайд (Мастер-Гайд) и табы внутри него
-    document.getElementById('openCheatBtn').onclick = () => document.getElementById('cheatSheetModal').style.display = 'flex';
+    // Кнопка Гайд (Энциклопедия Страсти Medow Club) и 8 табов
+    document.getElementById('openCheatBtn').onclick = () => {
+        document.getElementById('cheatSheetModal').style.display = 'flex';
+        renderGuideItems(cheatKunItems);
+    };
     document.getElementById('closeCheatSheetBtn').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
     document.getElementById('closeCheatSheetBtnMain').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
 
-    document.getElementById('btnKun').onclick = () => {
-        document.getElementById('btnKun').classList.add('active');
-        document.getElementById('btnMin').classList.remove('active');
-        document.getElementById('cheatKunBlock').style.display = 'block';
-        document.getElementById('cheatMinBlock').style.display = 'none';
+    const guideMap = {
+        btnKun: cheatKunItems,
+        btnMin: cheatMinItems,
+        btnAni: cheatAnilingusItems,
+        btnErgM: cheatErogenousMItems,
+        btnErgW: cheatErogenousWItems,
+        btnPointG: cheatPointGItems,
+        btnPrem: cheatPreludeItems,
+        btnWords: cheatWordsItems
     };
-    document.getElementById('btnMin').onclick = () => {
-        document.getElementById('btnMin').classList.add('active');
-        document.getElementById('btnKun').classList.remove('active');
-        document.getElementById('cheatKunBlock').style.display = 'none';
-        document.getElementById('cheatMinBlock').style.display = 'block';
-    };
+
+    Object.keys(guideMap).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.onclick = () => {
+                document.querySelectorAll('.guide-tabs-scroll .cheat-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderGuideItems(guideMap[btnId]);
+            };
+        }
+    });
+
 
     document.getElementById('openStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'flex';
     document.getElementById('closeStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'none';
