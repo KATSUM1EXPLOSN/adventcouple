@@ -250,37 +250,13 @@ function updateProgress() {
 }
 
 function setupUIElements() {
-    document.getElementById('lingerieContent').innerHTML = lingerieItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p></div>`).join('');
-    document.getElementById('toysContent').innerHTML = toysItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p></div>`).join('');
+    const ling = document.getElementById('lingerieContent');
+    if (ling) ling.innerHTML = lingerieItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p></div>`).join('');
 
-    renderCheatSheets();
+    const toys = document.getElementById('toysContent');
+    if (toys) toys.innerHTML = toysItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p></div>`).join('');
 }
 
-function renderCheatSheets() {
-    document.getElementById('cheatKunBlock').innerHTML = `
-        <details class="anatomy-spoiler">
-            <summary>🗺️ Анатомическая схема клитора и вульвы (Спойлер)</summary>
-            <div class="anatomy-content">
-                <img class="anatomy-img" src="./img/clitoris_anatomy.jpg" alt="Анатомия Клитора">
-                <b>Ключевые точки стимуляции:</b><br>
-                • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний.<br>
-                • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см.
-            </div>
-        </details>
-    ` + cheatKunItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p><div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div></div>`).join('');
-
-    document.getElementById('cheatMinBlock').innerHTML = `
-        <details class="anatomy-spoiler">
-            <summary>🗺️ Анатомическая схема пениса и уздечки (Спойлер)</summary>
-            <div class="anatomy-content">
-                <img class="anatomy-img" src="./img/penis_anatomy.png" alt="Анатомия Пениса">
-                <b>Ключевые точки стимуляции:</b><br>
-                • <b>Уздечка:</b> Треугольная зона снизу под головкой.<br>
-                • <b>Промежность (Шов):</b> Зона между мошонкой и анусом.
-            </div>
-        </details>
-    ` + cheatMinItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p><div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div></div>`).join('');
-}
 
 
 function setupEventListeners() {
@@ -490,10 +466,36 @@ function setupEventListeners() {
 
     document.getElementById('closeTaskModalBtn').onclick = () => document.getElementById('modal').style.display = 'none';
 
-    function renderGuideItems(items) {
+    function renderGuideItems(items, anatomyType = null) {
         const box = document.getElementById('guideContentBox');
         if (!box) return;
-        box.innerHTML = (items || []).map(item => `
+
+        let anatomyHtml = '';
+        if (anatomyType === 'kun') {
+            anatomyHtml = `
+            <details class="anatomy-spoiler" style="margin-bottom:12px;">
+                <summary>🗺️ Анатомическая схема клитора и вульвы (Спойлер)</summary>
+                <div class="anatomy-content">
+                    <img class="anatomy-img" src="./img/clitoris_anatomy.jpg" alt="Анатомия Клитора">
+                    <b>Ключевые точки стимуляции:</b><br>
+                    • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний.<br>
+                    • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см.
+                </div>
+            </details>`;
+        } else if (anatomyType === 'min') {
+            anatomyHtml = `
+            <details class="anatomy-spoiler" style="margin-bottom:12px;">
+                <summary>🗺️ Анатомическая схема пениса и уздечки (Спойлер)</summary>
+                <div class="anatomy-content">
+                    <img class="anatomy-img" src="./img/penis_anatomy.png" alt="Анатомия Пениса">
+                    <b>Ключевые точки стимуляции:</b><br>
+                    • <b>Уздечка:</b> Треугольная зона снизу под головкой.<br>
+                    • <b>Промежность (Шов):</b> Зона между мошонкой и анусом.
+                </div>
+            </details>`;
+        }
+
+        box.innerHTML = anatomyHtml + (items || []).map(item => `
             <div class="cheat-item" style="margin-bottom:12px; padding:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px;">
                 <h4 style="color:var(--accent-gold); margin:0 0 6px 0; font-size:0.92rem;">${item.title}</h4>
                 <div style="font-size:0.83rem; line-height:1.45; color:var(--text-main);">${item.text}</div>
@@ -522,20 +524,20 @@ function setupEventListeners() {
     // Кнопка Гайд (Энциклопедия Страсти Medow Club) и 8 табов
     document.getElementById('openCheatBtn').onclick = () => {
         document.getElementById('cheatSheetModal').style.display = 'flex';
-        renderGuideItems(cheatKunItems);
+        renderGuideItems(cheatKunItems, 'kun');
     };
     document.getElementById('closeCheatSheetBtn').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
     document.getElementById('closeCheatSheetBtnMain').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
 
     const guideMap = {
-        btnKun: cheatKunItems,
-        btnMin: cheatMinItems,
-        btnAni: cheatAnilingusItems,
-        btnErgM: cheatErogenousMItems,
-        btnErgW: cheatErogenousWItems,
-        btnPointG: cheatPointGItems,
-        btnPrem: cheatPreludeItems,
-        btnWords: cheatWordsItems
+        btnKun: { items: cheatKunItems, type: 'kun' },
+        btnMin: { items: cheatMinItems, type: 'min' },
+        btnAni: { items: cheatAnilingusItems },
+        btnErgM: { items: cheatErogenousMItems },
+        btnErgW: { items: cheatErogenousWItems },
+        btnPointG: { items: cheatPointGItems },
+        btnPrem: { items: cheatPreludeItems },
+        btnWords: { items: cheatWordsItems }
     };
 
     Object.keys(guideMap).forEach(btnId => {
@@ -544,10 +546,11 @@ function setupEventListeners() {
             btn.onclick = () => {
                 document.querySelectorAll('.guide-tabs-scroll .cheat-tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                renderGuideItems(guideMap[btnId]);
+                renderGuideItems(guideMap[btnId].items, guideMap[btnId].type);
             };
         }
     });
+
 
 
     document.getElementById('openStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'flex';
