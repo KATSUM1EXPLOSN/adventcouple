@@ -1,19 +1,25 @@
 import { monthNames, daysInCurrentMonth, currentYear, currentMonth } from './config.js';
 import { getTasksForMonth } from './data/database.js';
 import { lingerieItems, toysItems, cheatKunItems, cheatMinItems } from './data/extras.js';
-import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes } from './firebase.js';
+import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip } from './data/interactive.js';
+import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes, saveStatusToDb, listenPartnerStatus, saveFeedbackToDb, listenFeedbackFromDb } from './firebase.js';
 import { checkBiometricSupport, registerBiometrics, authenticateBiometrics } from './auth.js';
+import { getCouplePoints, addCouplePoints, triggerConfetti, shareAchievement, shopItems, redeemShopItem, sendChallenge, initChallengeListener } from './services/gamification.js';
+import { renderAnalyticsCharts } from './services/analytics.js';
+import { initStealthAndSecurity, toggleStealthMode, exportEncryptedData, importEncryptedData } from './services/security.js';
 
 let pairCode = localStorage.getItem('pairCode') || '';
 let userRole = localStorage.getItem('userRole') || 'p1';
 let selectedCategory = localStorage.getItem('userCat') || 'balanced';
 let monthTasks = [];
+let activeMonthOffset = 0; // Для листания архива месяцев
 
 let p1Completed = [];
 let p2Completed = [];
 let p1Fav = [];
 let p2Fav = [];
 let currentDay = null;
+let currentRating = 0;
 let onlyFavFilter = false;
 let myVotes = {};
 
@@ -22,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupUIElements();
     setupEventListeners();
+    initStealthAndSecurity();
 
     checkBiometricSupport(pairCode, {
         onBiometricsActive: () => {
@@ -60,6 +67,11 @@ function showCalendarScreen() {
     monthTasks = getTasksForMonth(selectedCategory, pairCode);
     startSync();
     renderGrid();
+    updatePointsDisplay();
+}
+
+function updatePointsDisplay() {
+    document.getElementById('pointsDisplay').innerText = `🔥 ${getCouplePoints()} CP`;
 }
 
 function startSync() {
@@ -68,6 +80,20 @@ function startSync() {
         onP2Completed: (val) => { p2Completed = val; renderGrid(); },
         onP1Fav: (val) => { p1Fav = val; renderGrid(); },
         onP2Fav: (val) => { p2Fav = val; renderGrid(); }
+    });
+
+    const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+    listenPartnerStatus(pairCode, partnerRole, (partnerStatus) => {
+        if (partnerStatus && partnerStatus !== 'Статус не установлен') {
+            document.getElementById('syncBadgeText').innerText = `💬 Партнер: ${partnerStatus}`;
+        }
+    });
+
+    initChallengeListener(pairCode, partnerRole, (text) => {
+        if (text) {
+            document.getElementById('incomingChallengeBox').style.display = 'block';
+            document.getElementById('incomingChallengeText').innerText = text;
+        }
     });
 }
 
@@ -120,15 +146,32 @@ function openModal(task) {
     document.getElementById('modalRole').innerText = task.lead;
     document.getElementById('modalImg').src = task.img;
     document.getElementById('modalTask').innerText = task.task;
-    document.getElementById('modalTip').innerText = task.tip;
     
+    document.getElementById('modalTip').innerHTML = `
+        ${task.tip}
+        <br><br>
+        <button class="btn-secondary" id="audioGuideBtn" style="margin-top:5px; width:100%;">🔊 Озвучить подсказку</button>
+    `;
+    document.getElementById('audioGuideBtn').onclick = () => speakTaskTip(task.title, task.task);
+
     const myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
     const isDone = myCompleted.includes(task.day);
-    document.getElementById('completeBtn').innerText = isDone ? 'Отменить отметку ✖' : 'Отметить пройденным ✓';
+    document.getElementById('completeBtn').innerText = isDone ? 'Отменить отметку ✖' : 'Отметить пройденным (+50 CP) ✓';
 
     const myFav = (userRole === 'p1') ? p1Fav : p2Fav;
     const isFav = myFav.includes(task.day);
     document.getElementById('modalFavBtn').innerText = isFav ? '⭐' : '☆';
+
+    // Загрузка мнений партнера в дневник впечатлений
+    const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+    listenFeedbackFromDb(pairCode, selectedCategory, partnerRole, currentDay, (fb) => {
+        if (fb) {
+            document.getElementById('partnerFeedbackBox').innerText = `💬 Партнер: ${'★'.repeat(fb.rating)} "${fb.text}"`;
+        } else {
+            document.getElementById('partnerFeedbackBox').innerText = `Партнер еще не оставил отзыв.`;
+        }
+    });
+
     document.getElementById('modal').style.display = 'flex';
 }
 
@@ -150,28 +193,14 @@ function updateProgress() {
 }
 
 function setupUIElements() {
-    const lingerieContainer = document.getElementById('lingerieContent');
-    lingerieContainer.innerHTML = lingerieItems.map(item => `
-        <div class="cheat-item">
-            <h4>${item.title}</h4>
-            <p>${item.text}</p>
-        </div>
-    `).join('');
-
-    const toysContainer = document.getElementById('toysContent');
-    toysContainer.innerHTML = toysItems.map(item => `
-        <div class="cheat-item">
-            <h4>${item.title}</h4>
-            <p>${item.text}</p>
-        </div>
-    `).join('');
+    document.getElementById('lingerieContent').innerHTML = lingerieItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p></div>`).join('');
+    document.getElementById('toysContent').innerHTML = toysItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p></div>`).join('');
 
     renderCheatSheets();
 }
 
 function renderCheatSheets() {
-    const kunBlock = document.getElementById('cheatKunBlock');
-    kunBlock.innerHTML = `
+    document.getElementById('cheatKunBlock').innerHTML = `
         <details class="anatomy-spoiler">
             <summary>🗺️ Анатомическая схема клитора и вульвы (Спойлер)</summary>
             <div class="anatomy-content">
@@ -181,16 +210,9 @@ function renderCheatSheets() {
                 • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см.
             </div>
         </details>
-    ` + cheatKunItems.map(item => `
-        <div class="cheat-item">
-            <h4>${item.title}</h4>
-            <p>${item.text}</p>
-            <div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div>
-        </div>
-    `).join('');
+    ` + cheatKunItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p><div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div></div>`).join('');
 
-    const minBlock = document.getElementById('cheatMinBlock');
-    minBlock.innerHTML = `
+    document.getElementById('cheatMinBlock').innerHTML = `
         <details class="anatomy-spoiler">
             <summary>🗺️ Анатомическая схема пениса и уздечки (Спойлер)</summary>
             <div class="anatomy-content">
@@ -200,26 +222,18 @@ function renderCheatSheets() {
                 • <b>Промежность (Шов):</b> Зона между мошонкой и анусом.
             </div>
         </details>
-    ` + cheatMinItems.map(item => `
-        <div class="cheat-item">
-            <h4>${item.title}</h4>
-            <p>${item.text}</p>
-            <div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div>
-        </div>
-    `).join('');
+    ` + cheatMinItems.map(item => `<div class="cheat-item"><h4>${item.title}</h4><p>${item.text}</p><div class="cheat-links"><a class="cheat-link" href="${item.link}" target="_blank">▶️ YouTube</a></div></div>`).join('');
 }
 
 function setupEventListeners() {
     document.getElementById('saveEnterBtn').onclick = () => {
         const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
         if (!rawCode || rawCode.length < 4) {
-            alert("❌ Код пары слишком короткий! Введите уникальный код минимум из 4 символов.");
-            document.getElementById('pairCodeInput').focus();
+            alert("❌ Код пары слишком короткий!");
             return;
         }
 
-        const sanitizedCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
-        pairCode = sanitizedCode;
+        pairCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
         userRole = document.getElementById('userRoleSelect').value;
         selectedCategory = document.getElementById('preferenceSelect').value;
 
@@ -237,81 +251,138 @@ function setupEventListeners() {
         document.getElementById('formSetupBlock').style.display = 'none';
     });
 
+    // Отметка прохождения + Начисление Couple Points + Дневник
     document.getElementById('completeBtn').onclick = () => {
         let myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
-        if (myCompleted.includes(currentDay)) {
-            myCompleted = myCompleted.filter(d => d !== currentDay);
-        } else {
+        const feedbackText = document.getElementById('feedbackInput').value.trim();
+
+        if (!myCompleted.includes(currentDay)) {
             myCompleted.push(currentDay);
+            addCouplePoints(50, pairCode, userRole); // Начисление 50 CP
+            triggerConfetti(); // Конфетти при разблокировке!
+        } else {
+            myCompleted = myCompleted.filter(d => d !== currentDay);
         }
 
         if (userRole === 'p1') p1Completed = myCompleted;
         else p2Completed = myCompleted;
 
         saveCompletedToDb(pairCode, selectedCategory, userRole, myCompleted);
+        if (currentRating > 0 || feedbackText) {
+            saveFeedbackToDb(pairCode, selectedCategory, userRole, currentDay, currentRating, feedbackText);
+        }
+
         renderGrid();
+        updatePointsDisplay();
         document.getElementById('modal').style.display = 'none';
     };
 
-    document.getElementById('modalFavBtn').onclick = () => {
-        let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-        if (myFav.includes(currentDay)) {
-            myFav = myFav.filter(d => d !== currentDay);
-        } else {
-            myFav.push(currentDay);
-        }
+    // Звезды рейтинга в карточке
+    document.querySelectorAll('#ratingStars span').forEach(star => {
+        star.onclick = (e) => {
+            currentRating = parseInt(e.target.getAttribute('data-star'));
+            document.querySelectorAll('#ratingStars span').forEach((s, idx) => {
+                s.innerText = idx < currentRating ? '★' : '☆';
+            });
+        };
+    });
 
-        if (userRole === 'p1') p1Fav = myFav;
-        else p2Fav = myFav;
+    // Магазин Желаний
+    document.getElementById('openShopBtn').onclick = () => {
+        const shopList = document.getElementById('shopList');
+        shopList.innerHTML = shopItems.map(item => `
+            <div class="cheat-item">
+                <h4>${item.title} (${item.cost} CP)</h4>
+                <p>${item.desc}</p>
+                <button class="btn-primary buy-shop-btn" data-id="${item.id}" style="padding:8px; font-size:0.8rem; margin-top:5px;">Купить за ${item.cost} CP 🔥</button>
+            </div>
+        `).join('');
 
-        saveFavToDb(pairCode, userRole, myFav);
-        document.getElementById('modalFavBtn').innerText = myFav.includes(currentDay) ? '⭐' : '☆';
-        renderGrid();
+        document.querySelectorAll('.buy-shop-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                const itemId = e.target.getAttribute('data-id');
+                if (redeemShopItem(itemId, pairCode, userRole)) {
+                    updatePointsDisplay();
+                    document.getElementById('shopModal').style.display = 'none';
+                }
+            };
+        });
+
+        document.getElementById('shopModal').style.display = 'flex';
+    };
+    document.getElementById('closeShopBtn').onclick = () => document.getElementById('shopModal').style.display = 'none';
+
+    // Вызовы (Дуэли)
+    document.getElementById('openChallengeBtn').onclick = () => document.getElementById('challengeModal').style.display = 'flex';
+    document.getElementById('closeChallengeBtn').onclick = () => document.getElementById('challengeModal').style.display = 'none';
+    document.getElementById('sendChallengeBtn').onclick = () => {
+        const val = document.getElementById('challengeInput').value;
+        sendChallenge(pairCode, userRole, val);
+        document.getElementById('challengeModal').style.display = 'none';
+    };
+    document.getElementById('revealChallengeBtn').onclick = () => {
+        document.getElementById('incomingChallengeText').style.filter = 'none';
     };
 
-    document.getElementById('resetSettingsBtn').onclick = () => {
-        document.getElementById('formSetupBlock').style.display = 'block';
-        showLandingScreen();
-    };
-
-    document.getElementById('refreshBtn').onclick = () => {
-        if (pairCode) {
-            startSync();
-            monthTasks = getTasksForMonth(selectedCategory, pairCode);
-            renderGrid();
-        }
-    };
-
-    document.getElementById('favFilterBtn').onclick = () => {
-        onlyFavFilter = !onlyFavFilter;
-        const btn = document.getElementById('favFilterBtn');
-        btn.style.background = onlyFavFilter ? 'var(--accent-gold)' : 'rgba(226, 176, 126, 0.15)';
-        btn.style.color = onlyFavFilter ? '#0f0d13' : 'var(--accent-gold)';
-        renderGrid();
-    };
-
-    document.getElementById('spinRouletteBtn').onclick = () => {
-        const bothCompleted = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).map(t => t.day);
-        const available = monthTasks.filter(t => !bothCompleted.includes(t.day));
-        if (available.length === 0) {
-            alert("Все дни пройдены обоими партнерами!");
-            return;
-        }
+    // 3D-Слот Рулетка
+    document.getElementById('openWheelBtn').onclick = () => document.getElementById('wheelModal').style.display = 'flex';
+    document.getElementById('closeWheelBtn').onclick = () => document.getElementById('wheelModal').style.display = 'none';
+    document.getElementById('spinSlotsBtn').onclick = () => {
         let count = 0;
         const interval = setInterval(() => {
-            const randomTask = available[Math.floor(Math.random() * available.length)];
-            document.querySelectorAll('.day-card').forEach(c => c.classList.remove('highlight'));
-            const el = document.getElementById(`card-day-${randomTask.day}`);
-            if (el) el.classList.add('highlight');
+            document.getElementById('slotLoc').innerText = wheelLocations[Math.floor(Math.random() * wheelLocations.length)];
+            document.getElementById('slotLing').innerText = wheelLingeries[Math.floor(Math.random() * wheelLingeries.length)];
+            document.getElementById('slotStyle').innerText = wheelStyles[Math.floor(Math.random() * wheelStyles.length)];
             count++;
-            if (count >= 12) {
+            if (count > 15) {
                 clearInterval(interval);
-                setTimeout(() => openModal(randomTask), 300);
+                triggerConfetti();
             }
         }, 100);
     };
 
-    // Окна / Модалки
+    // Аналитика
+    document.getElementById('openAnalyticsBtn').onclick = () => {
+        document.getElementById('analyticsModal').style.display = 'flex';
+        renderAnalyticsCharts(p1Completed, p2Completed, monthTasks);
+    };
+    document.getElementById('closeAnalyticsBtn').onclick = () => document.getElementById('analyticsModal').style.display = 'none';
+
+    // Листание Архива Месяцев
+    document.getElementById('prevMonthBtn').onclick = () => {
+        activeMonthOffset--;
+        updateMonthLabel();
+    };
+    document.getElementById('nextMonthBtn').onclick = () => {
+        activeMonthOffset++;
+        updateMonthLabel();
+    };
+
+    function updateMonthLabel() {
+        const targetDate = new Date(currentYear, currentMonth + activeMonthOffset, 1);
+        document.getElementById('currentMonthLabel').innerText = `${monthNames[targetDate.getMonth()]} ${targetDate.getFullYear()}`;
+    }
+
+    // Stealth Mode & Экспорт/Импорт
+    document.getElementById('panicBtn').onclick = toggleStealthMode;
+    document.getElementById('unpanicBtn').onclick = toggleStealthMode;
+
+    document.getElementById('openSettingsBtn').onclick = () => document.getElementById('settingsModal').style.display = 'flex';
+    document.getElementById('closeSettingsBtn').onclick = () => document.getElementById('settingsModal').style.display = 'none';
+    document.getElementById('changeSettingsBtn').onclick = () => {
+        document.getElementById('settingsModal').style.display = 'none';
+        resetSettings();
+    };
+
+    document.getElementById('exportDataBtn').onclick = () => exportEncryptedData(pairCode);
+    document.getElementById('importDataBtn').onclick = () => document.getElementById('importFileInput').click();
+    document.getElementById('importFileInput').onchange = (e) => {
+        if (e.target.files.length > 0) {
+            importEncryptedData(e.target.files[0], () => showCalendarScreen());
+        }
+    };
+
+    // Вспомогательные окна
     document.getElementById('openPwaBtn').onclick = () => document.getElementById('pwaModal').style.display = 'flex';
     document.getElementById('closePwaBtn').onclick = () => document.getElementById('pwaModal').style.display = 'none';
     document.getElementById('closePwaBtnMain').onclick = () => document.getElementById('pwaModal').style.display = 'none';
@@ -330,92 +401,29 @@ function setupEventListeners() {
     document.getElementById('closeCheatSheetBtn').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
     document.getElementById('closeCheatSheetBtnMain').onclick = () => document.getElementById('cheatSheetModal').style.display = 'none';
 
-    document.getElementById('btnKun').onclick = () => {
-        document.getElementById('cheatKunBlock').style.display = 'block';
-        document.getElementById('cheatMinBlock').style.display = 'none';
-        document.getElementById('btnKun').classList.add('active');
-        document.getElementById('btnMin').classList.remove('active');
+    document.getElementById('openStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'flex';
+    document.getElementById('closeStatusBtn').onclick = () => document.getElementById('statusModal').style.display = 'none';
+    document.getElementById('saveStatusBtn').onclick = () => {
+        saveStatusToDb(pairCode, userRole, document.getElementById('statusSelect').value);
+        alert("Статус отправлен партнеру!");
+        document.getElementById('statusModal').style.display = 'none';
     };
 
-    document.getElementById('btnMin').onclick = () => {
-        document.getElementById('cheatKunBlock').style.display = 'none';
-        document.getElementById('cheatMinBlock').style.display = 'block';
-        document.getElementById('btnMin').classList.add('active');
-        document.getElementById('btnKun').classList.remove('active');
+    document.getElementById('openMusicBtn').onclick = () => document.getElementById('musicModal').style.display = 'flex';
+    document.getElementById('closeMusicBtn').onclick = () => document.getElementById('musicModal').style.display = 'none';
+    document.getElementById('closeMusicBtnMain').onclick = () => document.getElementById('musicModal').style.display = 'none';
+
+    document.getElementById('refreshBtn').onclick = () => {
+        startSync();
+        monthTasks = getTasksForMonth(selectedCategory, pairCode);
+        renderGrid();
     };
 
-    document.getElementById('openGeneratorBtn').onclick = () => {
-        const container = document.getElementById('surveyContainer');
-        container.innerHTML = '';
-        monthTasks.forEach(task => {
-            const div = document.createElement('div');
-            div.style.marginBottom = "15px";
-            div.style.background = "#120f1a";
-            div.style.padding = "10px";
-            div.style.borderRadius = "10px";
-            div.innerHTML = `
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold);">${task.title}</div>
-                <div class="vote-options">
-                    <button class="btn-vote" data-id="${task.id}" data-val="yes">Да 🔥</button>
-                    <button class="btn-vote" data-id="${task.id}" data-val="maybe">Возможно 💭</button>
-                    <button class="btn-vote" data-id="${task.id}" data-val="no">Нет ❌</button>
-                </div>
-            `;
-            container.appendChild(div);
-        });
-
-        document.querySelectorAll('.btn-vote').forEach(btn => {
-            btn.onclick = (e) => {
-                const taskId = e.target.getAttribute('data-id');
-                const val = e.target.getAttribute('data-val');
-                myVotes[taskId] = val;
-
-                const parent = e.target.parentElement;
-                parent.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('selected'));
-                e.target.classList.add('selected');
-            };
-        });
-
-        document.getElementById('generatorModal').style.display = 'flex';
-    };
-
-    document.getElementById('closeGeneratorBtn').onclick = () => document.getElementById('generatorModal').style.display = 'none';
-
-    document.getElementById('checkMatchesBtn').onclick = () => {
-        if (!pairCode) {
-            alert("Укажите Код Пары в настройках!");
-            return;
-        }
-
-        saveVotesToDb(pairCode, userRole, myVotes);
-
-        const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
-        fetchPartnerVotes(pairCode, partnerRole, (partnerVotes) => {
-            let matchesCount = 0;
-            let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-
-            monthTasks.forEach(task => {
-                const myV = myVotes[task.id];
-                const pV = partnerVotes[task.id];
-                
-                if ((myV === 'yes' && pV === 'yes') || (myV === 'yes' && pV === 'maybe') || (myV === 'maybe' && pV === 'yes')) {
-                    if (!myFav.includes(task.day)) myFav.push(task.day);
-                    matchesCount++;
-                }
-            });
-
-            if (userRole === 'p1') p1Fav = myFav;
-            else p2Fav = myFav;
-
-            saveFavToDb(pairCode, userRole, myFav);
-            renderGrid();
-            document.getElementById('generatorModal').style.display = 'none';
-
-            if (matchesCount > 0) {
-                alert(`🔥 Найдено совпадений: ${matchesCount}! Они добавлены в ваше Избранное ⭐`);
-            } else {
-                alert("Партнер еще не прошел опрос. Данные обновятся, когда партнер сделает свой выбор!");
-            }
-        });
+    document.getElementById('favFilterBtn').onclick = () => {
+        onlyFavFilter = !onlyFavFilter;
+        const btn = document.getElementById('favFilterBtn');
+        btn.style.background = onlyFavFilter ? 'var(--accent-gold)' : 'rgba(226, 176, 126, 0.15)';
+        btn.style.color = onlyFavFilter ? '#0f0d13' : 'var(--accent-gold)';
+        renderGrid();
     };
 }
