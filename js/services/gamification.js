@@ -1,6 +1,7 @@
-import { savePointsToDb, saveShopRedemptionToDb, sendChallengeToDb, listenChallengeFromDb } from '../firebase.js';
+import { savePointsToDb, saveShopRedemptionToDb, sendChallengeToDb, listenChallengeFromDb, deleteChallengeFromDb } from '../firebase.js';
 
 let points = parseInt(localStorage.getItem('couplePoints') || '0');
+
 
 export function getCouplePoints() { return points; }
 
@@ -67,9 +68,7 @@ export function redeemShopItem(itemId, pairCode, userRole) {
         return false;
     }
 }
-
-import { savePointsToDb, saveShopRedemptionToDb, sendChallengeToDb, listenChallengeFromDb, deleteChallengeFromDb } from '../firebase.js';
-
+}
 export function sendChallenge(pairCode, userRole, challengePayload) {
     if (!challengePayload) return;
     sendChallengeToDb(pairCode, userRole, challengePayload);
