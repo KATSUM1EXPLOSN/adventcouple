@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -19,11 +18,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     
-    <!-- Подключаем стили -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -33,7 +34,10 @@
         <div class="month-title" id="monthTitle"></div>
         <div class="sync-badge">
             <span id="syncBadgeText">📲 Режим синхронизации</span>
-            <button class="pwa-btn" id="openPwaBtn">📲 На экран</button>
+            <div style="display:flex; gap:6px;">
+                <button class="pwa-btn" id="panicBtn" title="Быстрая маскировка" style="border-color: #888; color: #aaa;">🛡️</button>
+                <button class="pwa-btn" id="openPwaBtn">📲 На экран</button>
+            </div>
         </div>
     </header>
 
@@ -97,17 +101,26 @@
         <div class="dashboard" id="dashboard">
             <div class="dash-top">
                 <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
-                <div class="dash-actions">
-                    <button class="btn-secondary" id="refreshBtn" title="Обновить данные">🔄 Обновить</button>
-                    <button class="btn-secondary" id="openCheatBtn" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
-                    <button class="btn-secondary" id="openLingerieBtn">👙 Белье</button>
-                    <button class="btn-secondary" id="openToysBtn">🧸 Игрушки</button>
-                    <button class="btn-secondary" id="openGeneratorBtn">🔮 Совпадения</button>
-                    <button class="btn-secondary" id="spinRouletteBtn">🎲 Рулетка</button>
-                    <button class="btn-secondary" id="favFilterBtn">⭐</button>
-                    <button class="btn-secondary" id="resetSettingsBtn" title="Вернуться в настройки">⚙️</button>
-                </div>
+                <div class="points-badge" id="pointsDisplay">🔥 0 CP</div>
             </div>
+            
+            <div class="dash-actions">
+                <button class="btn-secondary" id="refreshBtn" title="Обновить данные">🔄</button>
+                <button class="btn-secondary" id="openAchievementsBtn" style="border-color: var(--accent-purple); color: var(--accent-purple);">🏆 Ачивки</button>
+                <button class="btn-secondary" id="openShopBtn" style="border-color: var(--accent-gold); color: var(--accent-gold);">🛍️ Магазин</button>
+                <button class="btn-secondary" id="openChallengeBtn">💌 Вызов</button>
+                <button class="btn-secondary" id="openWheelBtn">🎰 Рулетка 3x</button>
+                <button class="btn-secondary" id="openAnalyticsBtn">📊 Аналитика</button>
+                <button class="btn-secondary" id="openCheatBtn" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Гайд</button>
+                <button class="btn-secondary" id="openLingerieBtn">👙 Белье</button>
+                <button class="btn-secondary" id="openToysBtn">🧸 Игрушки</button>
+                <button class="btn-secondary" id="openGeneratorBtn">🔮 Совпадения</button>
+                <button class="btn-secondary" id="openStatusBtn">💬 Статус</button>
+                <button class="btn-secondary" id="openMusicBtn">🎵 Плейлист</button>
+                <button class="btn-secondary" id="favFilterBtn">⭐</button>
+                <button class="btn-secondary" id="openSettingsBtn" title="Настройки и Бэкап">⚙️</button>
+            </div>
+
             <div class="progress-bar-container">
                 <div class="progress-text">
                     <span id="progressText">Прогресс пары: 0 / 30</span>
@@ -117,27 +130,19 @@
             </div>
         </div>
 
+        <!-- Переключатель архива месяцев -->
+        <div class="month-selector">
+            <button class="btn-secondary" id="prevMonthBtn">◄ Пред. месяц</button>
+            <span id="currentMonthLabel" style="font-weight:bold; color:var(--accent-gold); font-size:0.9rem;">Текущий месяц</span>
+            <button class="btn-secondary" id="nextMonthBtn">След. месяц ►</button>
+        </div>
+
         <div class="calendar-grid" id="grid"></div>
     </div>
 
-    <!-- Модальные окна -->
-    <div class="modal-overlay" id="pwaModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closePwaBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📱 Установка на Главный Экран</h3>
-            <p style="font-size:0.85rem; color:var(--text-sub); text-align:left;">Используйте веб-сайт как полноценное приложение без браузерных панелей:</p>
-            <div class="cheat-item">
-                <h4>🍎 Для iPhone (Safari):</h4>
-                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>2. Прокрутите вниз и выберите <b>«На экран "Домой"»</b> ➕.<br>3. Нажмите «Добавить» в правом верхнем углу.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>🤖 Для Android (Chrome):</h4>
-                <p>1. Нажмите меню <b>«Три точки»</b> в правом верхнем углу браузера.<br>2. Выберите <b>«Добавить на гл. экран»</b> или <b>«Установить приложение»</b>.<br>3. Подтвердите добавление.</p>
-            </div>
-            <button class="btn-primary" id="closePwaBtnMain">Понятно, спасибо! 👍</button>
-        </div>
-    </div>
+    <!-- МОДАЛЬНЫЕ ОКНА -->
 
+    <!-- Модалка задания с дневником впечатлений -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" id="closeTaskModalBtn">&times;</button>
@@ -149,7 +154,128 @@
             </div>
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            <button class="btn-primary" id="completeBtn" style="margin-top:20px;">Отметить пройденным ✓</button>
+            
+            <!-- Дневник впечатлений -->
+            <div class="feedback-section" style="margin-top:15px; text-align:left; background:rgba(0,0,0,0.2); padding:12px; border-radius:12px;">
+                <h4 style="margin:0 0 8px 0; color:var(--accent-rose); font-size:0.85rem;">📝 Дневник впечатлений пары</h4>
+                <div class="rating-stars" id="ratingStars" style="font-size:1.2rem; cursor:pointer; margin-bottom:8px;">
+                    <span data-star="1">☆</span><span data-star="2">☆</span><span data-star="3">☆</span><span data-star="4">☆</span><span data-star="5">☆</span>
+                </div>
+                <textarea class="form-control" id="feedbackInput" rows="2" placeholder="Оставьте личный отзыв о практике..." style="font-size:0.8rem;"></textarea>
+                <div id="partnerFeedbackBox" style="font-size:0.75rem; color:var(--accent-purple); margin-top:6px; font-style:italic;"></div>
+            </div>
+
+            <button class="btn-primary" id="completeBtn" style="margin-top:15px;">Отметить пройденным (+50 CP) ✓</button>
+        </div>
+    </div>
+
+    <!-- Модалка 1: Ачивки и Шеринг -->
+    <div class="modal-overlay" id="achievementsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeAchievementsBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🏆 Достижения и Награды</h3>
+            <div id="achievementsList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
+            <button class="btn-primary" id="closeAchievementsBtnMain" style="margin-top:15px;">Отлично 🔥</button>
+        </div>
+    </div>
+
+    <!-- Модалка 2: Магазин Желаний (Couple Points) -->
+    <div class="modal-overlay" id="shopModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeShopBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🛍️ Магазин Желаний</h3>
+            <p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">Тратьте заработанные Couple Points (CP) на исполнения желаний!</p>
+            <div id="shopList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
+        </div>
+    </div>
+
+    <!-- Модалка 3: Дневные Вызовы (Дуэли) -->
+    <div class="modal-overlay" id="challengeModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeChallengeBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💌 Секретный Вызов</h3>
+            <div id="incomingChallengeBox" class="cheat-item" style="display:none; border-left-color:var(--accent-rose);">
+                <h4 style="color:var(--accent-rose);">📩 У вас есть закрытый конверт!</h4>
+                <p id="incomingChallengeText" style="filter: blur(4px); transition: filter 0.3s;">Секретное задание от партнера</p>
+                <button class="btn-secondary" id="revealChallengeBtn" style="margin-top:8px;">Открыть конверт 🔓</button>
+            </div>
+            <div class="form-group" style="margin-top:15px;">
+                <label>Отправить новый секретный вызов партнеру:</label>
+                <input type="text" class="form-control" id="challengeInput" placeholder="Например: Держи меня за руку весь вечер...">
+            </div>
+            <button class="btn-primary" id="sendChallengeBtn">Запечатать и Отправить 💌</button>
+        </div>
+    </div>
+
+    <!-- Модалка 4: 3D-Слот Барабаны (Рулетка) -->
+    <div class="modal-overlay" id="wheelModal">
+        <div class="modal-content" style="text-align:center;">
+            <button class="close-btn" id="closeWheelBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0;">🎰 Генератор Вечера</h3>
+            <div class="slot-machine">
+                <div class="slot-reel"><div class="slot-label">Локация</div><div class="slot-value" id="slotLoc">???</div></div>
+                <div class="slot-reel"><div class="slot-label">Белье</div><div class="slot-value" id="slotLing">???</div></div>
+                <div class="slot-reel"><div class="slot-label">Игрушка / Поза</div><div class="slot-value" id="slotStyle">???</div></div>
+            </div>
+            <button class="btn-primary" id="spinSlotsBtn" style="margin-top:15px;">Крутить Барабаны! 🎲</button>
+        </div>
+    </div>
+
+    <!-- Модалка 5: Аналитика и Инфографика -->
+    <div class="modal-overlay" id="analyticsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeAnalyticsBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📊 Аналитика Пары</h3>
+            <div class="analytics-box">
+                <h4>🗓️ Активность по дням недели</h4>
+                <canvas id="weekdayChart" width="300" height="150"></canvas>
+            </div>
+            <div class="analytics-box" style="margin-top:15px;">
+                <h4>🔥 Предпочтения Категорий</h4>
+                <canvas id="categoriesChart" width="300" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка 6: Настройки, Бэкап и Экспорт -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">⚙️ Настройки и Безопасность</h3>
+            
+            <div class="cheat-item">
+                <h4>🔒 Режим «Паника» (Stealth)</h4>
+                <p>Тройной тап по экрану, клавиша Esc или кнопка 🛡️ мгновенно маскируют сайт под Список Покупок.</p>
+            </div>
+
+            <div class="cheat-item">
+                <h4>💾 Резервное копирование</h4>
+                <p>Экспортируйте прогресс в зашифрованный `.couple` файл или восстановите данные.</p>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="btn-secondary" id="exportDataBtn">Зашифровать и Скачать</button>
+                    <button class="btn-secondary" id="importDataBtn">Импорт из файла</button>
+                    <input type="file" id="importFileInput" style="display:none;" accept=".couple,.json">
+                </div>
+            </div>
+
+            <button class="btn-primary" id="changeSettingsBtn" style="margin-top:10px;">Изменить профиль пары</button>
+        </div>
+    </div>
+
+    <!-- Другие вспомогательные модалки (PWA, Белье, Игрушки, Гайд, Статус, Музыка) -->
+    <div class="modal-overlay" id="pwaModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closePwaBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📱 Установка на Главный Экран</h3>
+            <div class="cheat-item">
+                <h4>🍎 Для iPhone (Safari):</h4>
+                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>2. Прокрутите вниз и выберите <b>«На экран "Домой"»</b> ➕.<br>3. Нажмите «Добавить» в правом верхнем углу.</p>
+            </div>
+            <div class="cheat-item">
+                <h4>🤖 Для Android (Chrome):</h4>
+                <p>1. Нажмите меню <b>«Три точки»</b> в правом верхнем углу браузера.<br>2. Выберите <b>«Добавить на гл. экран»</b> или <b>«Установить приложение»</b>.<br>3. Подтвердите добавление.</p>
+            </div>
+            <button class="btn-primary" id="closePwaBtnMain">Понятно, спасибо! 👍</button>
         </div>
     </div>
 
@@ -192,6 +318,66 @@
             <div id="cheatKunBlock"></div>
             <div id="cheatMinBlock" style="display:none;"></div>
             <button class="btn-primary" id="closeCheatSheetBtnMain" style="margin-top:10px;">Применяем! 🔥</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="statusModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeStatusBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💬 Ваш Интимный Статус</h3>
+            <div class="form-group" style="margin-top:15px;">
+                <label>Выберите статус:</label>
+                <select class="form-control" id="statusSelect">
+                    <option value="❤️ Хочу нежности и поцелуев">❤️ Хочу нежности и поцелуев</option>
+                    <option value="🔥 Готов(а) к горячим экспериментам">🔥 Готов(а) к горячим экспериментам</option>
+                    <option value="😈 Настрой на BDSM / Доминирование">😈 Настрой на BDSM / Доминирование</option>
+                    <option value="😴 Устал(а), нужен просто массаж">😴 Устал(а), нужен просто массаж</option>
+                    <option value="🎁 Приготовил(а) для тебя сюрприз">🎁 Приготовил(а) для тебя сюрприз</option>
+                </select>
+            </div>
+            <button class="btn-primary" id="saveStatusBtn">Обновить Мой Статус 📲</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="musicModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeMusicBtn">&times;</button>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🎵 Атмосферная Музыка</h3>
+            
+            <div class="cheat-item">
+                <h4>🎷 Romantic & Chill (Для классики)</h4>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX6V1q18M2A9L?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <div class="cheat-item">
+                <h4>🔥 Dark Sensual & Rhythm (Для BDSM)</h4>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX2A2938v9D4m?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <button class="btn-primary" id="closeMusicBtnMain">Отлично 🎧</button>
+        </div>
+    </div>
+
+    <!-- МАСКИРОВОЧНЫЙ ЭКРАН (STEALTH / PANIC MODE) -->
+    <div class="stealth-screen" id="stealthScreen">
+        <div class="stealth-card">
+            <div class="stealth-header">
+                <h2>📝 Мои Заметки и Покупки</h2>
+                <button class="pwa-btn" id="unpanicBtn" style="border-color: #555; color: #888;">🛡️</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Список продуктов на неделю:</p>
+            
+            <div class="shopping-list">
+                <label class="shopping-item"><input type="checkbox" checked> Молоко 3.2% (2 пачки)</label>
+                <label class="shopping-item"><input type="checkbox" checked> Хлеб цельнозерновой</label>
+                <label class="shopping-item"><input type="checkbox"> Яйца C0 (10 шт)</label>
+                <label class="shopping-item"><input type="checkbox"> Филе куриное (1 кг)</label>
+                <label class="shopping-item"><input type="checkbox"> Сыр Твердый (200г)</label>
+                <label class="shopping-item"><input type="checkbox"> Яблоки Гала (1.5 кг)</label>
+                <label class="shopping-item"><input type="checkbox"> Кофе в зернах</label>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <input type="text" class="form-control" placeholder="Добавить новый пункт..." style="background:#1a1a1a; border-color:#333; color:#ccc;">
+            </div>
         </div>
     </div>
 
