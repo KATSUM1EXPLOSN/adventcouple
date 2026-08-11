@@ -92,6 +92,22 @@ export function listenChallengeFromDb(pairCode, partnerRole, callback) {
     if (db && pairCode) {
         db.ref(`pairs/${pairCode}/challenge/${partnerRole}`).on('value', (snapshot) => {
             callback(snapshot.val() || '');
+            
+        });
+    }
+}
+// Сохранение голосов генератора совпадений
+export function saveVotesToDb(pairCode, userRole, votesObj) {
+    if (db && pairCode) {
+        db.ref(`votes/${pairCode}/${userRole}`).set(votesObj);
+    }
+}
+
+// Получение голосов партнера для генератора совпадений
+export function fetchPartnerVotes(pairCode, partnerRole, callback) {
+    if (db && pairCode) {
+        db.ref(`votes/${pairCode}/${partnerRole}`).on('value', (snapshot) => {
+            callback(snapshot.val() || {});
         });
     }
 }
