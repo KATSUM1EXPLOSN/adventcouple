@@ -6,6 +6,8 @@ import { wheelLocations, wheelLingeries, wheelStyles, speakTaskTip, achievements
 import { initSync, saveCompletedToDb, saveFavToDb, saveVotesToDb, fetchPartnerVotes, saveStatusToDb, listenPartnerStatus, saveFeedbackToDb, listenFeedbackFromDb } from './firebase.js';
 import { checkBiometricSupport, registerBiometrics, authenticateBiometrics } from './auth.js';
 import { getCouplePoints, addCouplePoints, triggerConfetti, shareAchievement, shopItems, redeemShopItem, sendChallenge, initChallengeListener, clearPartnerChallenge } from './services/gamification.js';
+import { renderAnalyticsCharts } from './services/analytics.js';
+
 
 import { initStealthAndSecurity, toggleStealthMode, exportEncryptedData, importEncryptedData } from './services/security.js';
 import { initNotificationService, requestBrowserNotificationPermission, setNotificationsEnabled, showToastNotification, trackPartnerActivityNotifications } from './services/notifications.js';
@@ -970,9 +972,84 @@ function setupEventListeners() {
         document.getElementById('statusModal').style.display = 'none';
     };
 
-    document.getElementById('openMusicBtn').onclick = () => document.getElementById('musicModal').style.display = 'flex';
+    function renderMusicCategory(cat = 'enigma') {
+        const box = document.getElementById('musicContentBox');
+        if (!box) return;
+
+        let html = '';
+        if (cat === 'enigma') {
+            html = `
+                <div class="cheat-item">
+                    <h4>🔮 Enigma — Best Sensual & Erotic Hits (Этно-Мистика)</h4>
+                    <p style="font-size:0.8rem; margin-bottom:8px;">Легендарные эротические мистические ритмы (Sadeness, Principles of Lust, Return to Innocence).</p>
+                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/videoseries?list=PL4fGSI1pDJn69P0rU7-p-6-1-X_534-v" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <div class="cheat-item">
+                    <h4>🌌 Enigma & Deep Mystical Ambient (2 Часа)</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/tC1SknO7vQk" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            `;
+        } else if (cat === 'youtube') {
+            html = `
+                <div class="cheat-item">
+                    <h4>🔥 YouTube Sex Music — Deep Sensual Beats</h4>
+                    <p style="font-size:0.8rem; margin-bottom:8px;">Медленные басовые ритмы для полного погружения в нежность и страсть.</p>
+                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/5qap5aO4i9A" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <div class="cheat-item">
+                    <h4>🌶️ Slow RnB & Passionate Rhythm (YouTube Compilation)</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/sElE_BfQ67s" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            `;
+        } else if (cat === 'lounge') {
+            html = `
+                <div class="cheat-item">
+                    <h4>🍷 Deep Sensual Lounge & Chillout</h4>
+                    <p style="font-size:0.8rem; margin-bottom:8px;">Невесомая расслабляющая музыка для романтического массажа и вечернего вина.</p>
+                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/videoseries?list=PLr4rX_53p2R-1" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            `;
+        } else if (cat === 'spotify') {
+            html = `
+                <div class="cheat-item">
+                    <h4>🎷 Romantic & Chill (Spotify)</h4>
+                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX6V1q18M2A9L?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <div class="cheat-item">
+                    <h4>🔥 Dark Sensual & Rhythm (BDSM Spotify)</h4>
+                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX2A2938v9D4m?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            `;
+        }
+
+        box.innerHTML = html;
+    }
+
+    document.getElementById('openMusicBtn').onclick = () => {
+        renderMusicCategory('enigma');
+        document.getElementById('musicModal').style.display = 'flex';
+    };
     document.getElementById('closeMusicBtn').onclick = () => document.getElementById('musicModal').style.display = 'none';
     document.getElementById('closeMusicBtnMain').onclick = () => document.getElementById('musicModal').style.display = 'none';
+
+    const musicTabsMap = {
+        musicTabEnigma: 'enigma',
+        musicTabYoutube: 'youtube',
+        musicTabLounge: 'lounge',
+        musicTabSpotify: 'spotify'
+    };
+
+    Object.keys(musicTabsMap).forEach(tabId => {
+        const btn = document.getElementById(tabId);
+        if (btn) {
+            btn.onclick = () => {
+                document.querySelectorAll('#musicModal .cheat-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderMusicCategory(musicTabsMap[tabId]);
+            };
+        }
+    });
+
 
     // Генератор Совпадений
     document.getElementById('openGeneratorBtn').onclick = () => {

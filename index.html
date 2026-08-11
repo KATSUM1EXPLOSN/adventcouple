@@ -46,8 +46,10 @@
     
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./img/icon-192.png">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="./css/style.css">
+
 </head>
 
 <body>
@@ -540,21 +542,23 @@
     </div>
 
     <div class="modal-overlay" id="musicModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 540px;">
             <button class="close-btn" id="closeMusicBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🎵 Атмосферная Музыка</h3>
+            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🎵 Музыка Страсти & Плейлисты</h3>
             
-            <div class="cheat-item">
-                <h4>🎷 Romantic & Chill (Для классики)</h4>
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX6V1q18M2A9L?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <div class="guide-tabs-scroll" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px; border-bottom:1px solid var(--border);">
+                <button class="cheat-tab-btn active" id="musicTabEnigma">🔮 Enigma (Мистика)</button>
+                <button class="cheat-tab-btn" id="musicTabYoutube">🔥 YouTube Sex Music</button>
+                <button class="cheat-tab-btn" id="musicTabLounge">🍷 Deep Chill & Lounge</button>
+                <button class="cheat-tab-btn" id="musicTabSpotify">🎷 Spotify Playlists</button>
             </div>
-            <div class="cheat-item">
-                <h4>🔥 Dark Sensual & Rhythm (Для BDSM)</h4>
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX2A2938v9D4m?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            </div>
-            <button class="btn-primary" id="closeMusicBtnMain">Отлично 🎧</button>
+
+            <div id="musicContentBox" style="max-height: 58vh; overflow-y: auto; display:flex; flex-direction:column; gap:12px;"></div>
+
+            <button class="btn-primary" id="closeMusicBtnMain" style="margin-top:15px;">Включить и Погрузиться 🎧</button>
         </div>
     </div>
+
 
     <!-- МАСКИРОВОЧНЫЙ ЭКРАН (STEALTH / PANIC MODE) -->
     <div class="stealth-screen" id="stealthScreen">

@@ -150,9 +150,31 @@ function createToastContainer() {
     return container;
 }
 
+let audioCtx = null;
+
+function getAudioContext() {
+    try {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
+    } catch (e) {
+        return null;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.addEventListener('click', () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); });
+    window.addEventListener('touchstart', () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); });
+}
+
 function playNotificationSound() {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state !== 'running') return;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
@@ -166,6 +188,7 @@ function playNotificationSound() {
         osc.stop(ctx.currentTime + 0.25);
     } catch (e) {}
 }
+
 
 function scheduleDailyEveningReminder() {
     setInterval(() => {
