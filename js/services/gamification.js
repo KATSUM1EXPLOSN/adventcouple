@@ -68,7 +68,6 @@ export function redeemShopItem(itemId, pairCode, userRole) {
         return false;
     }
 }
-}
 export function sendChallenge(pairCode, userRole, challengePayload) {
     if (!challengePayload) return;
     sendChallengeToDb(pairCode, userRole, challengePayload);
