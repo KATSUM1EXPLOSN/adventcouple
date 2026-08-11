@@ -14,18 +14,340 @@
     <meta name="apple-mobile-web-app-title" content="Календарь">
     <meta name="theme-color" content="#0f0d13">
 
-    <!-- Firebase SDK (Compat CDN) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-    <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --bg-color: #0f0d13;
+            --card-bg: #181420;
+            --card-hover: #231c30;
+            --accent-gold: #e2b07e;
+            --accent-rose: #e67e90;
+            --accent-purple: #a374db;
+            --text-main: #f5f0fa;
+            --text-sub: #a89fbe;
+            --border: rgba(226, 176, 126, 0.2);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Montserrat', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: calc(20px + env(safe-area-inset-top)) 15px calc(50px + env(safe-area-inset-bottom)) 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        header { text-align: center; max-width: 700px; margin-bottom: 15px; width: 100%; }
+        h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
+        .month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
+
+        .sync-badge {
+            background: rgba(230, 126, 144, 0.15);
+            border: 1px solid var(--accent-rose);
+            color: var(--accent-rose);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .pwa-btn {
+            background: rgba(226, 176, 126, 0.2);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .landing-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+        }
+
+        .welcome-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px 20px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .info-box {
+            background: rgba(226, 176, 126, 0.08);
+            border: 1px solid var(--accent-gold);
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            text-align: left;
+        }
+
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            background: #0d0a12;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-gold), #c48c56);
+            border: none;
+            border-radius: 12px;
+            color: #0f0d13;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3);
+        }
+
+        .btn-faceid {
+            background: rgba(163, 116, 219, 0.25);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 18px;
+            border-radius: 14px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(163, 116, 219, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(226, 176, 126, 0.15);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .calendar-screen {
+            width: 100%;
+            max-width: 900px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .progress-bar-container { width: 100%; }
+        .progress-text { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .progress-bar { height: 8px; background: #0d0a12; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); transition: width 0.3s; }
+
+        .achievement-badge {
+            background: rgba(163, 116, 219, 0.2);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .points-badge {
+            background: rgba(226, 176, 126, 0.2);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+
+        .day-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 120px;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .day-card.completed-both { border-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
+        .day-card.completed-both::after { content: '✓✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
+
+        .day-card.completed-p1 { border-color: var(--accent-rose); }
+        .day-card.completed-p1::after { content: 'М'; position: absolute; top: 8px; right: 10px; color: var(--accent-rose); font-size: 0.75rem; font-weight: bold; }
+
+        .day-card.completed-p2 { border-color: var(--accent-purple); }
+        .day-card.completed-p2::after { content: 'Ж'; position: absolute; top: 8px; right: 10px; color: var(--accent-purple); font-size: 0.75rem; font-weight: bold; }
+
+        .fav-tag { position: absolute; top: 8px; left: 8px; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 8px; }
+        .fav-p1 { background: rgba(230, 126, 144, 0.25); color: var(--accent-rose); border: 1px solid var(--accent-rose); }
+        .fav-p2 { background: rgba(163, 116, 219, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+        .fav-both { background: rgba(226, 176, 126, 0.25); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+
+        .day-card.highlight { transform: scale(1.08); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); }
+
+        .day-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-gold); }
+        .day-category { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; margin-top: 4px; }
+        .day-role { font-size: 0.65rem; padding: 3px 8px; border-radius: 10px; margin-top: 6px; font-weight: 600; }
+
+        .role-m { background: rgba(230, 126, 144, 0.15); color: var(--accent-rose); }
+        .role-f { background: rgba(163, 116, 219, 0.15); color: var(--accent-purple); }
+        .role-both { background: rgba(226, 176, 126, 0.15); color: var(--accent-gold); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(8, 6, 10, 0.92); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--accent-gold);
+            border-radius: 20px; padding: 25px; max-width: 480px; width: 100%;
+            max-height: 85vh; overflow-y: auto; position: relative;
+        }
+
+        .close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-sub); font-size: 1.8rem; cursor: pointer; }
+        .fav-toggle-btn { position: absolute; top: 18px; right: 50px; background: none; border: none; font-size: 1.3rem; cursor: pointer; }
+        .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
+        .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .vote-options { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
+        .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
+
+        .cheat-tab-btn { flex: 1; padding: 8px; background: #0d0a12; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .cheat-tab-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 176, 126, 0.15); }
+        
+        .cheat-item { background: #120f1a; border-left: 3px solid var(--accent-gold); padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0; text-align: left; }
+        .cheat-item h4 { margin: 0 0 6px 0; color: var(--accent-gold); font-size: 0.95rem; }
+        .cheat-item p { margin: 0 0 8px 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
+        .cheat-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .cheat-link { font-size: 0.75rem; color: var(--accent-rose); text-decoration: none; font-weight: 600; }
+
+        details.anatomy-spoiler {
+            background: #0d0a12;
+            border: 1px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        details.anatomy-spoiler summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--accent-purple);
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .anatomy-content {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: var(--text-sub);
+        }
+        .anatomy-img {
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+        }
+
+        /* STEALTH MODE (МАСКИРОВКА) */
+        .stealth-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #121212; color: #e0e0e0; display: none;
+            justify-content: center; align-items: flex-start;
+            padding: calc(20px + env(safe-area-inset-top)) 15px 30px 15px;
+            z-index: 99999; overflow-y: auto;
+        }
+        .stealth-card {
+            background: #1e1e1e; border: 1px solid #333; border-radius: 16px;
+            padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .stealth-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .stealth-header h2 { font-family: sans-serif !important; font-size: 1.1rem; color: #e0e0e0; margin: 0; }
+        .shopping-list { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+        .shopping-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #ccc; cursor: pointer; }
+        .shopping-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #666; }
+    </style>
 </head>
 <body>
 
@@ -106,11 +428,8 @@
             
             <div class="dash-actions">
                 <button class="btn-secondary" id="refreshBtn" title="Обновить данные">🔄</button>
-                <button class="btn-secondary" id="openAchievementsBtn" style="border-color: var(--accent-purple); color: var(--accent-purple);">🏆 Ачивки</button>
                 <button class="btn-secondary" id="openShopBtn" style="border-color: var(--accent-gold); color: var(--accent-gold);">🛍️ Магазин</button>
                 <button class="btn-secondary" id="openChallengeBtn">💌 Вызов</button>
-                <button class="btn-secondary" id="openWheelBtn">🎰 Рулетка 3x</button>
-                <button class="btn-secondary" id="openAnalyticsBtn">📊 Аналитика</button>
                 <button class="btn-secondary" id="openCheatBtn" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Гайд</button>
                 <button class="btn-secondary" id="openLingerieBtn">👙 Белье</button>
                 <button class="btn-secondary" id="openToysBtn">🧸 Игрушки</button>
@@ -118,7 +437,7 @@
                 <button class="btn-secondary" id="openStatusBtn">💬 Статус</button>
                 <button class="btn-secondary" id="openMusicBtn">🎵 Плейлист</button>
                 <button class="btn-secondary" id="favFilterBtn">⭐</button>
-                <button class="btn-secondary" id="openSettingsBtn" title="Настройки и Бэкап">⚙️</button>
+                <button class="btn-secondary" id="resetSettingsBtn" title="Вернуться в настройки">⚙️</button>
             </div>
 
             <div class="progress-bar-container">
@@ -130,19 +449,10 @@
             </div>
         </div>
 
-        <!-- Переключатель архива месяцев -->
-        <div class="month-selector">
-            <button class="btn-secondary" id="prevMonthBtn">◄ Пред. месяц</button>
-            <span id="currentMonthLabel" style="font-weight:bold; color:var(--accent-gold); font-size:0.9rem;">Текущий месяц</span>
-            <button class="btn-secondary" id="nextMonthBtn">След. месяц ►</button>
-        </div>
-
         <div class="calendar-grid" id="grid"></div>
     </div>
 
     <!-- МОДАЛЬНЫЕ ОКНА -->
-
-    <!-- Модалка задания с дневником впечатлений -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="close-btn" id="closeTaskModalBtn">&times;</button>
@@ -154,51 +464,25 @@
             </div>
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            
-            <!-- Дневник впечатлений -->
-            <div class="feedback-section" style="margin-top:15px; text-align:left; background:rgba(0,0,0,0.2); padding:12px; border-radius:12px;">
-                <h4 style="margin:0 0 8px 0; color:var(--accent-rose); font-size:0.85rem;">📝 Дневник впечатлений пары</h4>
-                <div class="rating-stars" id="ratingStars" style="font-size:1.2rem; cursor:pointer; margin-bottom:8px;">
-                    <span data-star="1">☆</span><span data-star="2">☆</span><span data-star="3">☆</span><span data-star="4">☆</span><span data-star="5">☆</span>
-                </div>
-                <textarea class="form-control" id="feedbackInput" rows="2" placeholder="Оставьте личный отзыв о практике..." style="font-size:0.8rem;"></textarea>
-                <div id="partnerFeedbackBox" style="font-size:0.75rem; color:var(--accent-purple); margin-top:6px; font-style:italic;"></div>
-            </div>
-
-            <button class="btn-primary" id="completeBtn" style="margin-top:15px;">Отметить пройденным (+50 CP) ✓</button>
+            <button class="btn-primary" id="completeBtn" style="margin-top:20px;">Отметить пройденным (+50 CP) ✓</button>
         </div>
     </div>
 
-    <!-- Модалка 1: Ачивки и Шеринг -->
-    <div class="modal-overlay" id="achievementsModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeAchievementsBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🏆 Достижения и Награды</h3>
-            <div id="achievementsList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
-            <button class="btn-primary" id="closeAchievementsBtnMain" style="margin-top:15px;">Отлично 🔥</button>
-        </div>
-    </div>
-
-    <!-- Модалка 2: Магазин Желаний (Couple Points) -->
+    <!-- Магазин Желаний -->
     <div class="modal-overlay" id="shopModal">
         <div class="modal-content">
             <button class="close-btn" id="closeShopBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🛍️ Магазин Желаний</h3>
-            <p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">Тратьте заработанные Couple Points (CP) на исполнения желаний!</p>
+            <p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">Тратьте Couple Points (CP) на исполнения желаний!</p>
             <div id="shopList" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
         </div>
     </div>
 
-    <!-- Модалка 3: Дневные Вызовы (Дуэли) -->
+    <!-- Вызовы (Дуэли) -->
     <div class="modal-overlay" id="challengeModal">
         <div class="modal-content">
             <button class="close-btn" id="closeChallengeBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">💌 Секретный Вызов</h3>
-            <div id="incomingChallengeBox" class="cheat-item" style="display:none; border-left-color:var(--accent-rose);">
-                <h4 style="color:var(--accent-rose);">📩 У вас есть закрытый конверт!</h4>
-                <p id="incomingChallengeText" style="filter: blur(4px); transition: filter 0.3s;">Секретное задание от партнера</p>
-                <button class="btn-secondary" id="revealChallengeBtn" style="margin-top:8px;">Открыть конверт 🔓</button>
-            </div>
             <div class="form-group" style="margin-top:15px;">
                 <label>Отправить новый секретный вызов партнеру:</label>
                 <input type="text" class="form-control" id="challengeInput" placeholder="Например: Держи меня за руку весь вечер...">
@@ -207,62 +491,7 @@
         </div>
     </div>
 
-    <!-- Модалка 4: 3D-Слот Барабаны (Рулетка) -->
-    <div class="modal-overlay" id="wheelModal">
-        <div class="modal-content" style="text-align:center;">
-            <button class="close-btn" id="closeWheelBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0;">🎰 Генератор Вечера</h3>
-            <div class="slot-machine">
-                <div class="slot-reel"><div class="slot-label">Локация</div><div class="slot-value" id="slotLoc">???</div></div>
-                <div class="slot-reel"><div class="slot-label">Белье</div><div class="slot-value" id="slotLing">???</div></div>
-                <div class="slot-reel"><div class="slot-label">Игрушка / Поза</div><div class="slot-value" id="slotStyle">???</div></div>
-            </div>
-            <button class="btn-primary" id="spinSlotsBtn" style="margin-top:15px;">Крутить Барабаны! 🎲</button>
-        </div>
-    </div>
-
-    <!-- Модалка 5: Аналитика и Инфографика -->
-    <div class="modal-overlay" id="analyticsModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeAnalyticsBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📊 Аналитика Пары</h3>
-            <div class="analytics-box">
-                <h4>🗓️ Активность по дням недели</h4>
-                <canvas id="weekdayChart" width="300" height="150"></canvas>
-            </div>
-            <div class="analytics-box" style="margin-top:15px;">
-                <h4>🔥 Предпочтения Категорий</h4>
-                <canvas id="categoriesChart" width="300" height="150"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модалка 6: Настройки, Бэкап и Экспорт -->
-    <div class="modal-overlay" id="settingsModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeSettingsBtn">&times;</button>
-            <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">⚙️ Настройки и Безопасность</h3>
-            
-            <div class="cheat-item">
-                <h4>🔒 Режим «Паника» (Stealth)</h4>
-                <p>Тройной тап по экрану, клавиша Esc или кнопка 🛡️ мгновенно маскируют сайт под Список Покупок.</p>
-            </div>
-
-            <div class="cheat-item">
-                <h4>💾 Резервное копирование</h4>
-                <p>Экспортируйте прогресс в зашифрованный `.couple` файл или восстановите данные.</p>
-                <div style="display:flex; gap:8px; margin-top:8px;">
-                    <button class="btn-secondary" id="exportDataBtn">Зашифровать и Скачать</button>
-                    <button class="btn-secondary" id="importDataBtn">Импорт из файла</button>
-                    <input type="file" id="importFileInput" style="display:none;" accept=".couple,.json">
-                </div>
-            </div>
-
-            <button class="btn-primary" id="changeSettingsBtn" style="margin-top:10px;">Изменить профиль пары</button>
-        </div>
-    </div>
-
-    <!-- Другие вспомогательные модалки (PWA, Белье, Игрушки, Гайд, Статус, Музыка) -->
+    <!-- PWA -->
     <div class="modal-overlay" id="pwaModal">
         <div class="modal-content">
             <button class="close-btn" id="closePwaBtn">&times;</button>
@@ -279,6 +508,7 @@
         </div>
     </div>
 
+    <!-- Белье -->
     <div class="modal-overlay" id="lingerieModal">
         <div class="modal-content">
             <button class="close-btn" id="closeLingerieBtn">&times;</button>
@@ -288,6 +518,7 @@
         </div>
     </div>
 
+    <!-- Игрушки -->
     <div class="modal-overlay" id="toysModal">
         <div class="modal-content">
             <button class="close-btn" id="closeToysBtn">&times;</button>
@@ -297,6 +528,7 @@
         </div>
     </div>
 
+    <!-- Совпадения -->
     <div class="modal-overlay" id="generatorModal">
         <div class="modal-content">
             <button class="close-btn" id="closeGeneratorBtn">&times;</button>
@@ -307,6 +539,7 @@
         </div>
     </div>
 
+    <!-- Гайд по оральным ласкам -->
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
             <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
@@ -321,6 +554,7 @@
         </div>
     </div>
 
+    <!-- Статус -->
     <div class="modal-overlay" id="statusModal">
         <div class="modal-content">
             <button class="close-btn" id="closeStatusBtn">&times;</button>
@@ -339,6 +573,7 @@
         </div>
     </div>
 
+    <!-- Музыка -->
     <div class="modal-overlay" id="musicModal">
         <div class="modal-content">
             <button class="close-btn" id="closeMusicBtn">&times;</button>
@@ -381,7 +616,7 @@
         </div>
     </div>
 
-    <!-- Подключение JS-модулей -->
+    <!-- Главный контроллер JS -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
