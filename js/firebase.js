@@ -92,10 +92,10 @@ export function listenChallengeFromDb(pairCode, partnerRole, callback) {
     if (db && pairCode) {
         db.ref(`pairs/${pairCode}/challenge/${partnerRole}`).on('value', (snapshot) => {
             callback(snapshot.val() || '');
-            
         });
     }
 }
+
 // Сохранение голосов генератора совпадений
 export function saveVotesToDb(pairCode, userRole, votesObj) {
     if (db && pairCode) {
