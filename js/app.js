@@ -117,9 +117,18 @@ function renderGrid() {
         card.id = `card-day-${task.day}`;
         
         let statusClass = '';
-        if (hasP1 && hasP2) statusClass = 'completed-both';
-        else if (hasP1) statusClass = 'completed-p1';
-        else if (hasP2) statusClass = 'completed-p2';
+        let statusBadgeHTML = '';
+
+        if (hasP1 && hasP2) {
+            statusClass = 'completed-both';
+            statusBadgeHTML = `<div class="status-badge status-both">✓✓ Оба</div>`;
+        } else if (hasP1) {
+            statusClass = 'completed-p1';
+            statusBadgeHTML = `<div class="status-badge status-p1">✓ Он</div>`;
+        } else if (hasP2) {
+            statusClass = 'completed-p2';
+            statusBadgeHTML = `<div class="status-badge status-p2">✓ Она</div>`;
+        }
 
         card.className = `day-card ${statusClass}`;
         
@@ -130,6 +139,7 @@ function renderGrid() {
 
         card.innerHTML = `
             ${favTagHTML}
+            ${statusBadgeHTML}
             <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
             <div class="day-category">${task.isGold ? '✨ СЮРПРИЗ' : task.category}</div>
             <div class="day-role ${task.roleClass}">${task.lead.split(' ')[1]}</div>
