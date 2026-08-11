@@ -4,9 +4,22 @@ let isNotificationsEnabled = localStorage.getItem('notificationsEnabled') !== 'f
 let previousP2Completed = [];
 let previousP2Fav = [];
 
+let swRegistration = null;
+
 export function initNotificationService() {
     createToastContainer();
     scheduleDailyEveningReminder();
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => {
+                swRegistration = reg;
+                console.log('PWA Service Worker registered:', reg);
+            })
+            .catch(err => {
+                console.error('Service Worker registration failed:', err);
+            });
+    }
 }
 
 export function setNotificationsEnabled(enabled) {
@@ -18,14 +31,14 @@ export function requestBrowserNotificationPermission() {
     if ('Notification' in window) {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                showToastNotification('🔔 Уведомления активированы!', 'Вы будете получать напоминания о вечере и действиях партнера.', 'success');
+                showToastNotification('🔔 Уведомления активированы!', 'Вы будете получать системные PUSH-напоминания на главный экран телефона.', 'success');
                 setNotificationsEnabled(true);
             } else {
-                showToastNotification('⚠️ Доступ ограничен', 'Вы можете разрешить уведомления в настройках вашего браузера.', 'warning');
+                showToastNotification('⚠️ Доступ ограничен', 'Разрешите уведомления в настройках вашего браузера/телефона.', 'warning');
             }
         });
     } else {
-        alert('Браузер не поддерживает системные Push-уведомления.');
+        alert('Ваш браузер или устройство не поддерживает системные Push-уведомления.');
     }
 }
 
@@ -71,17 +84,34 @@ export function showToastNotification(title, message, type = 'info', onClickActi
         }
     }, 5000);
 
-    if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-        try {
-            new Notification(title, {
-                body: message,
-                icon: './img/icon-192.png'
+    // Системный PUSH браузера / PWA на главном экране смартфона
+    if ('Notification' in window && Notification.permission === 'granted') {
+        const notifOptions = {
+            body: message,
+            icon: './img/icon-192.png',
+            badge: './img/icon-192.png',
+            vibrate: [200, 100, 200],
+            tag: 'adventcouple-notif',
+            renotify: true,
+            data: { url: window.location.href }
+        };
+
+        if (swRegistration && typeof swRegistration.showNotification === 'function') {
+            swRegistration.showNotification(title, notifOptions).catch(() => {
+                if (document.hidden) try { new Notification(title, notifOptions); } catch (e) {}
             });
-        } catch (e) {
-            console.error('System notification error:', e);
+        } else if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(reg => {
+                reg.showNotification(title, notifOptions);
+            }).catch(() => {
+                if (document.hidden) try { new Notification(title, notifOptions); } catch (e) {}
+            });
+        } else if (document.hidden) {
+            try { new Notification(title, notifOptions); } catch (e) {}
         }
     }
 }
+
 
 export function trackPartnerActivityNotifications(p2Completed, p2Fav, p1Fav) {
     // Check for newly completed days by partner
