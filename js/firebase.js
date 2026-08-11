@@ -59,3 +59,54 @@ export function fetchPartnerVotes(pairCode, partnerRole, callback) {
         });
     }
 }
+// Сохранение баллов
+export function savePointsToDb(pairCode, userRole, points) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/points/${userRole}`).set(points);
+    }
+}
+
+// Покупка в магазине
+export function saveShopRedemptionToDb(pairCode, userRole, itemTitle) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/redemptions`).push({
+            user: userRole,
+            item: itemTitle,
+            time: new Date().toISOString()
+        });
+    }
+}
+
+// Отправка вызова (дуэли)
+export function sendChallengeToDb(pairCode, userRole, challengeText) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/challenge/${userRole}`).set(challengeText);
+    }
+}
+
+// Прослушивание вызова
+export function listenChallengeFromDb(pairCode, partnerRole, callback) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/challenge/${partnerRole}`).on('value', (snapshot) => {
+            callback(snapshot.val() || '');
+        });
+    }
+}
+
+// Дневник впечатлений
+export function saveFeedbackToDb(pairCode, selectedCategory, userRole, day, rating, feedbackText) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${userRole}`).set({
+            rating: rating,
+            text: feedbackText
+        });
+    }
+}
+
+export function listenFeedbackFromDb(pairCode, selectedCategory, partnerRole, day, callback) {
+    if (db && pairCode) {
+        db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${partnerRole}`).on('value', (snapshot) => {
+            callback(snapshot.val() || null);
+        });
+    }
+}
