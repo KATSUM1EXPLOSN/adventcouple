@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Запрет сохранения устаревшего кэша в PWA -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
     <title>Интимный Календарь</title>
 
-    <!-- PWA & iOS Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Календарь">
@@ -24,301 +22,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-color: #0f0d13;
-            --card-bg: #181420;
-            --card-hover: #231c30;
-            --accent-gold: #e2b07e;
-            --accent-rose: #e67e90;
-            --accent-purple: #a374db;
-            --text-main: #f5f0fa;
-            --text-sub: #a89fbe;
-            --border: rgba(226, 176, 126, 0.2);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Montserrat', -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: calc(20px + env(safe-area-inset-top)) 15px calc(50px + env(safe-area-inset-bottom)) 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            user-select: none;
-        }
-
-        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
-
-        header { text-align: center; max-width: 700px; margin-bottom: 15px; width: 100%; }
-        h1 { color: var(--accent-gold); font-size: 1.8rem; margin: 0 0 4px 0; }
-        .month-title { color: var(--accent-rose); font-size: 1rem; font-weight: 600; margin-bottom: 8px; text-transform: capitalize; }
-
-        .sync-badge {
-            background: rgba(230, 126, 144, 0.15);
-            border: 1px solid var(--accent-rose);
-            color: var(--accent-rose);
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            margin: 0 auto 15px auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .pwa-btn {
-            background: rgba(226, 176, 126, 0.2);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .landing-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-            margin-top: 10px;
-        }
-
-        .welcome-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 25px 20px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .info-box {
-            background: rgba(226, 176, 126, 0.08);
-            border: 1px solid var(--accent-gold);
-            border-radius: 14px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            color: var(--text-main);
-            text-align: left;
-        }
-
-        .form-group { margin-bottom: 18px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
-        .form-control {
-            width: 100%;
-            padding: 14px;
-            background: #0d0a12;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--accent-gold), #c48c56);
-            border: none;
-            border-radius: 12px;
-            color: #0f0d13;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 1.05rem;
-            box-shadow: 0 4px 15px rgba(226, 176, 126, 0.3);
-        }
-
-        .btn-faceid {
-            background: rgba(163, 116, 219, 0.25);
-            border: 1px solid var(--accent-purple);
-            color: var(--accent-purple);
-            padding: 18px;
-            border-radius: 14px;
-            width: 100%;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 0 15px rgba(163, 116, 219, 0.2);
-        }
-
-        .btn-secondary {
-            background: rgba(226, 176, 126, 0.15);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 8px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .calendar-screen {
-            width: 100%;
-            max-width: 900px;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .dashboard {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: var(--card-bg);
-            padding: 15px 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        .dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .progress-bar-container { width: 100%; }
-        .progress-text { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .progress-bar { height: 8px; background: #0d0a12; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-rose), var(--accent-gold)); transition: width 0.3s; }
-
-        .achievement-badge {
-            background: rgba(163, 116, 219, 0.2);
-            border: 1px solid var(--accent-purple);
-            color: var(--accent-purple);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
-            width: 100%;
-        }
-
-        .day-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 15px 10px;
-            text-align: center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 120px;
-            position: relative;
-            transition: transform 0.2s;
-        }
-
-        .day-card.completed-both { border-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
-        .day-card.completed-both::after { content: '✓✓'; position: absolute; top: 8px; right: 10px; color: #4caf50; font-weight: bold; }
-
-        .day-card.completed-p1 { border-color: var(--accent-rose); }
-        .day-card.completed-p1::after { content: 'М'; position: absolute; top: 8px; right: 10px; color: var(--accent-rose); font-size: 0.75rem; font-weight: bold; }
-
-        .day-card.completed-p2 { border-color: var(--accent-purple); }
-        .day-card.completed-p2::after { content: 'Ж'; position: absolute; top: 8px; right: 10px; color: var(--accent-purple); font-size: 0.75rem; font-weight: bold; }
-
-        .fav-tag { position: absolute; top: 8px; left: 8px; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 8px; }
-        .fav-p1 { background: rgba(230, 126, 144, 0.25); color: var(--accent-rose); border: 1px solid var(--accent-rose); }
-        .fav-p2 { background: rgba(163, 116, 219, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
-        .fav-both { background: rgba(226, 176, 126, 0.25); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
-
-        .day-card.highlight { transform: scale(1.08); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); }
-
-        .day-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-gold); }
-        .day-category { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; margin-top: 4px; }
-        .day-role { font-size: 0.65rem; padding: 3px 8px; border-radius: 10px; margin-top: 6px; font-weight: 600; }
-
-        .role-m { background: rgba(230, 126, 144, 0.15); color: var(--accent-rose); }
-        .role-f { background: rgba(163, 116, 219, 0.15); color: var(--accent-purple); }
-        .role-both { background: rgba(226, 176, 126, 0.15); color: var(--accent-gold); }
-
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(8, 6, 10, 0.92); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--card-bg); border: 1px solid var(--accent-gold);
-            border-radius: 20px; padding: 25px; max-width: 480px; width: 100%;
-            max-height: 85vh; overflow-y: auto; position: relative;
-        }
-
-        .close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-sub); font-size: 1.8rem; cursor: pointer; }
-        .fav-toggle-btn { position: absolute; top: 18px; right: 50px; background: none; border: none; font-size: 1.3rem; cursor: pointer; }
-        .modal-img-container { width: 100%; height: 200px; border-radius: 14px; margin: 15px 0; overflow: hidden; border: 1px solid var(--border); }
-        .modal-img-container img { width: 100%; height: 100%; object-fit: cover; }
-
-        .vote-options { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-vote { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0a12; color: #fff; cursor: pointer; font-size: 0.8rem; }
-        .btn-vote.selected { border-color: var(--accent-gold); background: rgba(226, 176, 126, 0.2); color: var(--accent-gold); font-weight: bold; }
-
-        .cheat-tab-btn { flex: 1; padding: 8px; background: #0d0a12; border: 1px solid var(--border); color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-        .cheat-tab-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 176, 126, 0.15); }
-        
-        .cheat-item { background: #120f1a; border-left: 3px solid var(--accent-gold); padding: 12px; margin-bottom: 12px; border-radius: 0 10px 10px 0; text-align: left; }
-        .cheat-item h4 { margin: 0 0 6px 0; color: var(--accent-gold); font-size: 0.95rem; }
-        .cheat-item p { margin: 0 0 8px 0; font-size: 0.85rem; line-height: 1.5; color: var(--text-main); }
-        .cheat-links { display: flex; gap: 10px; flex-wrap: wrap; }
-        .cheat-link { font-size: 0.75rem; color: var(--accent-rose); text-decoration: none; font-weight: 600; }
-
-        details.anatomy-spoiler {
-            background: #0d0a12;
-            border: 1px solid var(--accent-purple);
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        details.anatomy-spoiler summary {
-            cursor: pointer;
-            font-weight: 700;
-            color: var(--accent-purple);
-            font-size: 0.85rem;
-            outline: none;
-        }
-        .anatomy-content {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            line-height: 1.5;
-            color: var(--text-sub);
-        }
-        .anatomy-img {
-            width: 100%;
-            height: 180px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin: 8px 0;
-            border: 1px solid var(--border);
-        }
-    </style>
+    
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -327,7 +33,7 @@
         <div class="month-title" id="monthTitle"></div>
         <div class="sync-badge">
             <span id="syncBadgeText">📲 Режим синхронизации</span>
-            <button class="pwa-btn" onclick="openPwaModal()">📲 На экран</button>
+            <button class="pwa-btn" id="openPwaBtn">📲 На экран</button>
         </div>
     </header>
 
@@ -341,7 +47,7 @@
 
             <div id="biometricLockBlock" style="display: none; margin-bottom: 15px;">
                 <p style="color: var(--accent-purple); font-size: 0.85rem; font-weight: 600;">🔒 Приложение защищено биометрией</p>
-                <button class="btn-faceid" id="faceIdBtn" onclick="authenticateBiometrics()">
+                <button class="btn-faceid" id="faceIdBtn">
                     👤 Подтвердить Face ID / Touch ID
                 </button>
             </div>
@@ -378,9 +84,8 @@
                     </select>
                 </div>
 
-                <button class="btn-primary" id="enterBtn" onclick="saveSettingsAndEnter()">Войти в Календарь 🔥</button>
-                
-                <button class="btn-secondary" id="enableBiometricBtn" onclick="registerBiometrics()" style="margin-top: 12px; width: 100%; display: none;">
+                <button class="btn-primary" id="saveEnterBtn">Войти в Календарь 🔥</button>
+                <button class="btn-secondary" id="enableBiometricBtn" style="margin-top: 12px; width: 100%; display: none;">
                     🔒 Включить Face ID / Touch ID для входа
                 </button>
             </div>
@@ -393,14 +98,14 @@
             <div class="dash-top">
                 <div id="achievement" class="achievement-badge">🏆 Статус: Новички</div>
                 <div class="dash-actions">
-                    <button class="btn-secondary" onclick="forceRefreshData()" title="Обновить данные">🔄 Обновить</button>
-                    <button class="btn-secondary" onclick="openCheatSheetModal()" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
-                    <button class="btn-secondary" onclick="openLingerieModal()">👙 Белье</button>
-                    <button class="btn-secondary" onclick="openToysModal()">🧸 Игрушки</button>
-                    <button class="btn-secondary" onclick="openGeneratorModal()">🔮 Совпадения</button>
-                    <button class="btn-secondary" onclick="spinRoulette()">🎲 Рулетка</button>
-                    <button class="btn-secondary" id="favFilterBtn" onclick="toggleFavFilter()">⭐</button>
-                    <button class="btn-secondary" onclick="resetSettings()" title="Вернуться в настройки">⚙️</button>
+                    <button class="btn-secondary" id="refreshBtn" title="Обновить данные">🔄 Обновить</button>
+                    <button class="btn-secondary" id="openCheatBtn" style="border-color: var(--accent-rose); color: var(--accent-rose);">📖 Шпаргалка</button>
+                    <button class="btn-secondary" id="openLingerieBtn">👙 Белье</button>
+                    <button class="btn-secondary" id="openToysBtn">🧸 Игрушки</button>
+                    <button class="btn-secondary" id="openGeneratorBtn">🔮 Совпадения</button>
+                    <button class="btn-secondary" id="spinRouletteBtn">🎲 Рулетка</button>
+                    <button class="btn-secondary" id="favFilterBtn">⭐</button>
+                    <button class="btn-secondary" id="resetSettingsBtn" title="Вернуться в настройки">⚙️</button>
                 </div>
             </div>
             <div class="progress-bar-container">
@@ -415,36 +120,28 @@
         <div class="calendar-grid" id="grid"></div>
     </div>
 
-    <!-- Модалка PWA -->
+    <!-- Модальные окна -->
     <div class="modal-overlay" id="pwaModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closePwaModal()">&times;</button>
+            <button class="close-btn" id="closePwaBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📱 Установка на Главный Экран</h3>
             <p style="font-size:0.85rem; color:var(--text-sub); text-align:left;">Используйте веб-сайт как полноценное приложение без браузерных панелей:</p>
-            
             <div class="cheat-item">
                 <h4>🍎 Для iPhone (Safari):</h4>
-                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>
-                   2. Прокрутите вниз и выберите <b>«На экран "Домой"»</b> ➕.<br>
-                   3. Нажмите «Добавить» в правом верхнем углу.</p>
+                <p>1. Нажмите иконку <b>«Поделиться»</b> (квадрат со стрелкой вверх внизу экрана).<br>2. Прокрутите вниз и выберите <b>«На экран "Домой"»</b> ➕.<br>3. Нажмите «Добавить» в правом верхнем углу.</p>
             </div>
-
             <div class="cheat-item">
                 <h4>🤖 Для Android (Chrome):</h4>
-                <p>1. Нажмите меню <b>«Три точки»</b> в правом верхнем углу браузера.<br>
-                   2. Выберите <b>«Добавить на гл. экран»</b> или <b>«Установить приложение»</b>.<br>
-                   3. Подтвердите добавление.</p>
+                <p>1. Нажмите меню <b>«Три точки»</b> в правом верхнем углу браузера.<br>2. Выберите <b>«Добавить на гл. экран»</b> или <b>«Установить приложение»</b>.<br>3. Подтвердите добавление.</p>
             </div>
-
-            <button class="btn-primary" onclick="closePwaModal()">Понятно, спасибо! 👍</button>
+            <button class="btn-primary" id="closePwaBtnMain">Понятно, спасибо! 👍</button>
         </div>
     </div>
 
-    <!-- Модалка задания -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-            <button class="fav-toggle-btn" id="modalFavBtn" onclick="toggleCurrentFav()">☆</button>
+            <button class="close-btn" id="closeTaskModalBtn">&times;</button>
+            <button class="fav-toggle-btn" id="modalFavBtn">☆</button>
             <h3 id="modalTitle" style="color:var(--accent-gold); margin-top:0;"></h3>
             <div id="modalRole" style="font-size:0.85rem; margin-bottom:10px;"></div>
             <div class="modal-img-container">
@@ -452,839 +149,53 @@
             </div>
             <p id="modalTask" style="line-height:1.6; font-size:0.95rem;"></p>
             <div id="modalTip" style="font-style:italic; color:var(--text-sub); font-size:0.85rem; background:rgba(255,255,255,0.03); padding:10px; border-left:3px solid var(--accent-gold);"></div>
-            <button class="btn-primary" id="completeBtn" style="margin-top:20px;" onclick="toggleComplete()">Отметить пройденным ✓</button>
+            <button class="btn-primary" id="completeBtn" style="margin-top:20px;">Отметить пройденным ✓</button>
         </div>
     </div>
 
-    <!-- Модалка ГАЙД ПО БЕЛЬЮ -->
     <div class="modal-overlay" id="lingerieModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeLingerieModal()">&times;</button>
+            <button class="close-btn" id="closeLingerieBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">👙 Энциклопедия Нижнего Белья</h3>
-            
-            <div class="cheat-item">
-                <h4>1. Белье с открытым доступом (Ouvert)</h4>
-                <p><b>Для чего:</b> Секс вне дома (автомобиль, природа), быстрый секс, категории BDSM и Женское доминирование.<br><b>Плюс:</b> Не требует снимать белье во время процесса, создает интригу и постоянную готовность.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>2. Боди из сетки, кружева или экокожи</h4>
-                <p><b>Для чего:</b> Ролевые игры, доминирование и вечерние свидания.<br><b>Плюс:</b> Корректирует фигуру, визуально удлиняет силуэт, создавая властный и соблазнительный образ.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>3. Шелковый пеньюар / Халат-кимоно</h4>
-                <p><b>Для чего:</b> Нежная классика, долгое прелюдие, массажные вечера.<br><b>Плюс:</b> Невесомо скользит по коже, даря тактильный кайф при медленном раздевании.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>4. Страппинг и Кожаные Портупеи (Harness)</h4>
-                <p><b>Для чего:</b> BDSM-практики, жесткий секс и фиксация.<br><b>Плюс:</b> Надевается поверх чистого тела или обычного белья, подчёркивая изгибы и грудь.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>5. Корсеты на Косточках со Шнуровкой</h4>
-                <p><b>Для чего:</b> Романтические классические вечера и стилизованные свидания.<br><b>Плюс:</b> Формирует осиную талию, приподнимает грудь и создает эффект старинного ухаживания.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>6. Прозрачные Микро-Бикини / Чулочные пояса</h4>
-                <p><b>Для чего:</b> Горячий визуальный контакт и классический секс.<br><b>Плюс:</b> Максимально открывают тело, фокусируя взгляд партнера на эрогенных зонах.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>7. Латексные и Виниловые комплекты</h4>
-                <p><b>Для чего:</b> Глубокий BDSM, доминирование и температурные игры.<br><b>Плюс:</b> Обтягивает тело как вторая кожа, отражает свет свечей, приятный специфический запах и блеск.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>8. Мужское премиум-белье: Микрофибра и стрэпы</h4>
-                <p><b>Для Него:</b> Анатомические боксеры из микрофибры или мужские портупеи на плечи.<br><b>Плюс:</b> Подчеркивают рельеф тела и ягодицы, придавая мужчине брутальный и уверенный вид.</p>
-            </div>
-            <button class="btn-primary" onclick="closeLingerieModal()">Понятно ✨</button>
+            <div id="lingerieContent"></div>
+            <button class="btn-primary" id="closeLingerieBtnMain">Понятно ✨</button>
         </div>
     </div>
 
-    <!-- Модалка ГАЙД ПО ИГРУШКАМ -->
     <div class="modal-overlay" id="toysModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeToysModal()">&times;</button>
+            <button class="close-btn" id="closeToysBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">🧸 Энциклопедия Интимных Игрушек</h3>
-            
-            <div class="cheat-item">
-                <h4>1. Вакуумно-волновой стимулятор (Satisfyer/Womanizer)</h4>
-                <p><b>Назначение:</b> Бесконтактные ласки клитора волновыми импульсами.<br><b>Правило:</b> Использовать ТОЛЬКО с водным лубрикантом. Идеально подмешивать во время классического акта или кунилингуса.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>2. Эрекционное кольцо с вибро-отростком</h4>
-                <p><b>Назначение:</b> Усиление и продление эрекции у него + ласки клитора.<br><b>Правило:</b> Надевается на основание ствола в состоянии эрекции. Не носить непрерывно дольше 30 минут.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>3. Парный вибратор для секса (We-Vibe)</h4>
-                <p><b>Назначение:</b> Одновременная стимуляция точки G и клитора ВО ВРЕМЯ проникновения.<br><b>Правило:</b> Вводится внутрь перед актом, не мешая движениям партнера.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>4. Смарт-виброяйцо с управлением со смартфона/пультом</h4>
-                <p><b>Назначение:</b> Эдджинг в общественных местах (кафе, прогулка).<br><b>Правило:</b> Партнер незаметно переключает режимы вибрации с пульта, пока она сохраняет спокойствие.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>5. Анальные пробки (Силикон / Металл с кристаллом)</h4>
-                <p><b>Назначение:</b> Дополнительное наполнение и стимуляция простаты/мышц.<br><b>Правило:</b> Обильный силиконовый или анальный лубрикант на водной основе. Обязателен ограничитель внизу!</p>
-            </div>
-            <div class="cheat-item">
-                <h4>6. Стеклянные и металлические фаллоимитаторы</h4>
-                <p><b>Назначение:</b> Температурные игры (нагрев в теплой воде или охлаждение в леднике).<br><b>Правило:</b> Гигиеничны, совместимы абсолютно с любыми лубрикантами.</p>
-            </div>
-            <div class="cheat-item">
-                <h4>7. Мягкие BDSM-фиксаторы и кляпы</h4>
-                <p><b>Назначение:</b> Ограничение движений и голоса.<br><b>Правило:</b> Всегда оговаривайте «стоп-слово» (например, «Красный») или физический сигнал (выронить предмет из руки).</p>
-            </div>
-            <div class="cheat-item">
-                <h4>8. Смазки: Водная vs Силиконовая</h4>
-                <p><b>Правило:</b> Водная — безопасна для всех игрушек и белья, легко смывается. Силиконовая — не сохнет, идеальна для душа и анальных ласк, но портит силиконовые игрушки!</p>
-            </div>
-            <button class="btn-primary" onclick="closeToysModal()">Понятно ✨</button>
+            <div id="toysContent"></div>
+            <button class="btn-primary" id="closeToysBtnMain">Понятно ✨</button>
         </div>
     </div>
 
-    <!-- Модалка Генератора совпадений -->
     <div class="modal-overlay" id="generatorModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeGeneratorModal()">&times;</button>
+            <button class="close-btn" id="closeGeneratorBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0;">🔮 Генератор Совпадений</h3>
             <p style="font-size:0.85rem; color:var(--text-sub);">Отметьте желания анонимно. Приложение откроет только те практики, где ваши ответы совпадут!</p>
             <div id="surveyContainer" style="max-height: 50vh; overflow-y: auto;"></div>
-            <button class="btn-primary" style="margin-top:15px;" onclick="checkMatches()">Найти Совпадения ✨</button>
+            <button class="btn-primary" id="checkMatchesBtn" style="margin-top:15px;">Найти Совпадения ✨</button>
         </div>
     </div>
 
-    <!-- ВСЕ 20 ТЕХНИК ОРАЛЬНОГО СЕКСА С АНАТОМИЧЕСКИМИ СПОЙЛЕРАМИ -->
     <div class="modal-overlay" id="cheatSheetModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeCheatSheetModal()">&times;</button>
+            <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
             <h3 style="color:var(--accent-gold); margin-top:0; text-align:center;">📖 Мастер-Гайд по Оральным Ласкам</h3>
-            
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="cheat-tab-btn active" id="btnKun" onclick="switchCheatTab('kun')">🌹 Для Неё (10 техник)</button>
-                <button class="cheat-tab-btn" id="btnMin" onclick="switchCheatTab('min')">👑 Для Него (10 техник)</button>
+                <button class="cheat-tab-btn active" id="btnKun">🌹 Для Неё (10 техник)</button>
+                <button class="cheat-tab-btn" id="btnMin">👑 Для Него (10 техник)</button>
             </div>
-
-            <!-- Вкладка ДЛЯ НЕЁ -->
-            <div id="cheatKunBlock">
-                <details class="anatomy-spoiler">
-                    <summary>🗺️ Анатомическая схема клитора и вульвы (Спойлер)</summary>
-                    <div class="anatomy-content">
-                        <img class="anatomy-img" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80" alt="Анатомия Клитора">
-                        <b>Ключевые точки стимуляции:</b><br>
-                        • <b>Головка клитора:</b> Содержит >10 000 нервных окончаний.<br>
-                        • <b>Точка G:</b> Находится на передней стенке влагалища на глубине 3-5 см.
-                    </div>
-                </details>
-
-                <div class="cheat-item">
-                    <h4>1. Техника «Треугольник и Восьмерка» 📐</h4>
-                    <p>Начинайте с бедер и половых губ. Затем описывайте кончиком плоского языка плавные восьмерки вокруг клитора, сочетая с тёплым дыханием.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=cunnilingus+technique+guide" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>2. Волновое Всасывание (Kisses) 💋</h4>
-                    <p>Обхватите клитор губами, создавая легкий вакуум. Совершайте пульсирующие всасывающие движения.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=clitoral+suction+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>3. Синергия Пальцев (Комбо Точка G) ✌️</h4>
-                    <p>Совмещайте оральные ласки клитора с введением 1–2 пальцев во влагалище подушечками вверх, совершая манящие движения к себе.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=g+spot+combo+oral" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>4. Заморозка Ритма на Пике ⏱️</h4>
-                    <p>Когда она начинает изгибаться и стонать — НЕ ускоряйтесь и НЕ меняйте угол! Держите строго один и тот же темп до финиша.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=female+orgasm+rhythm+guide" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>5. Бабочка Ануса и Уздечки 🦋</h4>
-                    <p>Совершайте легкие касания кончиком языка промежности между влагалищем и анусом. Эта зона имеет единые нервные узлы с клитором.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=perineum+stimulation+women" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>6. «Алфавит» Языком 🔤</h4>
-                    <p>Мысленно выводите кончиком языка буквы алфавита по капюшону клитора.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=alphabet+oral+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>7. Растяжка капюшона (Двуручная) 🖐️</h4>
-                    <p>Двумя пальцами одной руки аккуратно натягивайте кожу выше клитора, расправляя капюшон.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=clitoral+hood+stretching" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>8. Ледяной / Горячий контраст 🧊</h4>
-                    <p>Подержите во рту кусочек льда или глоток теплого чая перед касанием клитора.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=temperature+play+oral" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>9. Боковое Скольжение (Side-to-Side) ↔️</h4>
-                    <p>Скользите широким основанием языка слева направо по клитору без прямых толчков в головку.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=side+to+side+cunnilingus" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>10. Поршневой Губной Вакуум 🌊</h4>
-                    <p>Плотно прижмите губы к малым губам вокруг клитора и совершайте мягкие втягивающие движения.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=piston+oral+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-            </div>
-
-            <!-- Вкладка ДЛЯ НЕГО -->
-            <div id="cheatMinBlock" style="display:none;">
-                <details class="anatomy-spoiler">
-                    <summary>🗺️ Анатомическая схема пениса и уздечки (Спойлер)</summary>
-                    <div class="anatomy-content">
-                        <img class="anatomy-img" src="https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80" alt="Анатомия Пениса">
-                        <b>Ключевые точки стимуляции:</b><br>
-                        • <b>Уздечка:</b> Треугольная зона снизу под головкой.<br>
-                        • <b>Промежность (Шов):</b> Зона между мошонкой и анусом.
-                    </div>
-                </details>
-
-                <div class="cheat-item">
-                    <h4>1. Техника «Твист и Взгляд» 🌀</h4>
-                    <p>Обхватите ствол рукой у основания, двигая ладонь с прокручиванием противоположно ласкам губ на головке.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=blowjob+technique+hand+rotation" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>2. Акцент на Уздечку 🎯</h4>
-                    <p>Самая чувствительная зона — уздечка под головкой. Ласкайте её плоской стороной языка быстрыми штрихами.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=frenulum+stimulation+guide" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>3. Глубокое Всасывание с Вакуумом 🌊</h4>
-                    <p>Подворачивайте губы за зубы. Создавайте комфортный вакуум щеками при движении вверх.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=deep+oral+pleasure+tips" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>4. Горячий и Холодный Контраст 🧊</h4>
-                    <p>Возьмите перед актом глоток теплого чая, а затем кусочек льда.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=ice+and+warmth+sensory+sex" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>5. Массаж Мошонки и Промежности 🤲</h4>
-                    <p>Пока одна рука и губы заняты стволом, второй рукой нежно сжимайте мошонку или делайте нажатия на промежность.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=testicle+massage+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>6. Техника «Бабочка» на Головке 🦋</h4>
-                    <p>Совершайте быструю вибрирующие касания кончиком языка вокруг венечной борозды.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=corona+glans+stimulation" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>7. Глубокий Прием (Deep Throat) 😮</h4>
-                    <p>Расслабьте горло, сожмите большой палец левой руки в кулак (подавляет рвотный рефлекс).</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=deepthroat+gag+reflex+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>8. Техника «Помпа» (Двуручная) 🪠</h4>
-                    <p>Сложите две ладони кольцом друг над другом, имитируя вакуумную помпу, с ласками головки губами сверху.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=two+hands+oral+blowjob" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>9. Дразнение У основания 🛑</h4>
-                    <p>Остановитесь на пару секунд у самого основания ствола, массируя его губами и языком.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=edging+oral+technique" target="_blank">▶️ YouTube</a></div>
-                </div>
-                <div class="cheat-item">
-                    <h4>10. Скольжение со Смазкой на Водной Основе 🧴</h4>
-                    <p>Нанесите каплю лубриканта прямо на головку для шелковистого скольжения.</p>
-                    <div class="cheat-links"><a class="cheat-link" href="https://www.youtube.com/results?search_query=lube+oral+sex+guide" target="_blank">▶️ YouTube</a></div>
-                </div>
-            </div>
-
-            <button class="btn-primary" style="margin-top:10px;" onclick="closeCheatSheetModal()">Применяем! 🔥</button>
+            <div id="cheatKunBlock"></div>
+            <div id="cheatMinBlock" style="display:none;"></div>
+            <button class="btn-primary" id="closeCheatSheetBtnMain" style="margin-top:10px;">Применяем! 🔥</button>
         </div>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCHsmF5VKef6zOmUft_pLRAHoSph4cIsUg",
-            authDomain: "adventcouple-4fd17.firebaseapp.com",
-            databaseURL: "https://adventcouple-4fd17-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "adventcouple-4fd17",
-            storageBucket: "adventcouple-4fd17.firebasestorage.app",
-            messagingSenderId: "546937107365",
-            appId: "1:546937107365:web:281b443fee202d9d28ae4c"
-        };
-        
-        let db = null;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-        } catch(e) {}
-
-        const now = new Date();
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth();
-        const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-        const monthKey = `${currentYear}_${currentMonth}`;
-
-        document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear} (${daysInCurrentMonth} дней)`;
-
-        const imgPool = [
-            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80"
-        ];
-
-        const goldCardsList = [
-            { day: 3, title: "🏎️ Автомобильный Экстрим", task: "Секс или оральные ласки на заднем сиденье вашей машины в тихом месте с запотевшими стеклами.", tip: "Совет: Подготовьте удобную подушку заранее." },
-            { day: 6, title: "🌲 Ночная Природа", task: "Быстрый страстный контакт на свежем воздухе во время вечерней прогулки в парке или лесу.", tip: "Совет: Используйте одежду с быстрым доступом." },
-            { day: 9, title: "♨️ Панорамное Джакузи / Сауна", task: "Романтический вечер в приватной сауне или джакузи с панорамным видом и бокалами напитка.", tip: "Совет: Используйте силиконовую смазку под водой." },
-            { day: 12, title: "☕ Эдджинг в Общественном Месте", task: "Мужчина ласкает партнершу под столом в кафе или она анонимно управляет виброяйцом у нее с пульта.", tip: "Совет: Удерживайте невозмутимый вид." },
-            { day: 15, title: "🏨 Отель на Час", task: "Спонтанный побег среди дня в номер отеля для быстрой разрядки без домашних забот.", tip: "Совет: Внезапность удваивает страсть." },
-            { day: 18, title: "🪞 Секс перед Зеркалом в Прихожей", task: "Контакт прямо стоя перед большим зеркалом при входе сразу по возвращении домой.", tip: "Совет: Не разувайтесь до конца." },
-            { day: 21, title: "🛁 Подводный Эксперимент", task: "Интим в горячей ванной с пеной или под струями душа при свечах.", tip: "Совет: Используйте водостойкие игрушки." },
-            { day: 24, title: "🚪 Быстрый Экспресс на Кухне", task: "Страстный спонтанный секс на кухонном столе во время приготовления ужина.", tip: "Совет: Смахните все лишнее со стола." },
-            { day: 27, title: "🌅 Утренний Нежданчик", task: "Пробуждение партнера оральными ласками до полного его/ее пробуждения.", tip: "Совет: Действуйте максимально нежно." },
-            { day: 30, title: "👑 Королевский Номер (Финал)", task: "Полная ролевая игра с переодеванием в белье и подготовленными игрушками на всю ночь.", tip: "Совет: Заранее отключите телефоны." }
-        ];
-
-        // ГЕНЕРАЦИЯ БАЗЫ 800 УНИКАЛЬНЫХ ПОЗ И ПРАКТИК (ПО 200 НА КАТЕГОРИЮ)
-        const database = {
-            classic: Array.from({length: 200}, (_, i) => ({
-                id: `c_${i+1}`,
-                title: `Классическая техника №${i+1}: ${['Миссионерская со смещением', 'Правило 20 минут поцелуев', 'Техника CAT', 'Замедленный финиш', 'Зеркальный контакт', 'Массаж бедер и шеи', 'Нежные Ложки'][i % 7]}`,
-                lead: i % 2 === 0 ? "👑 Он — Ведущий | 🌹 Она — Ведомая" : "🤝 Оба на равных",
-                task: `Уникальная нежная практика №${i+1}. Задействуйте медленное дыхание, глубокий зрительный контакт и романтические касания.`,
-                tip: `Совет: Фокусируйтесь на ощущениях и чувственности.`
-            })),
-            female_lead: Array.from({length: 200}, (_, i) => ({
-                id: `f_${i+1}`,
-                title: `Женское доминирование №${i+1}: ${['Обратная наездница', 'Запрет на финиш (Denial)', 'Управление его руками', 'Королева стола', 'Контроль дыхания', 'Приказы FemDom'][i % 6]}`,
-                lead: "👑 Она — Ведущая | 🗝️ Он — Ведомый",
-                task: `Она полностью берет контроль над процессом №${i+1}. Мужчина выполняет ее команды и сдерживает разрядку.`,
-                tip: `Совет: Наслаждайтесь полной отдачей инициативы.`
-            })),
-            kamasutra: Array.from({length: 200}, (_, i) => ({
-                id: `k_${i+1}`,
-                title: `Поза Камасутры №${i+1}: ${['Цветок Лотоса', 'Раковина (Sankha)', 'Бабочка на краю', 'Углубленный Тигр', 'Вараха у стены', 'Сплит', 'Мостик'][i % 7]}`,
-                lead: i % 3 === 0 ? "👑 Он — Ведущий | 🌹 Она — Ведомая" : "🤝 Оба на равных",
-                task: `Освойте уникальную конфигурацию тела и угол проникновения №${i+1} для стимулирования новых зон.`,
-                tip: `Совет: Используйте подушки для идеального упора.`
-            })),
-            bdsm: Array.from({length: 200}, (_, i) => ({
-                id: `b_${i+1}`,
-                title: `BDSM и Контроль №${i+1}: ${['Шелковая фиксация', 'Изоляция чувств маской', 'Легкий спанкинг', 'Дразнение и паузы', 'Запрет на звуки', 'Замок на ноги'][i % 6]}`,
-                lead: i % 2 === 0 ? "👑 Он — Ведущий | 🌹 Она — Ведомая" : "👑 Она — Ведущая | 🗝️ Он — Ведомый",
-                task: `Эксперимент с ограничением движений или чувств №${i+1}. Используйте маску, ленты и стоп-слово.`,
-                tip: `Совет: Главное в BDSM — безопасность и доверие.`
-            }))
-        };
-
-        // АЛГОРИТМ ПЕРЕМЕШИВАНИЯ БЕЗ ПОВТОРОВ (FISHER-YATES SHUFFLE С УЧЕТОМ КОДА И ДАТЫ)
-        function getTasksForMonth(category, code) {
-            let pool = [];
-            if (category === 'balanced') {
-                pool = [
-                    ...database.classic.slice(0, 50),
-                    ...database.female_lead.slice(0, 50),
-                    ...database.kamasutra.slice(0, 50),
-                    ...database.bdsm.slice(0, 50)
-                ];
-            } else {
-                pool = [...(database[category] || database.classic)];
-            }
-
-            // Псевдослучайное зерно на основе кода пары и текущего месяца/года
-            let seed = 0;
-            for (let i = 0; i < code.length; i++) seed += code.charCodeAt(i);
-            seed = seed * 31 + currentYear * 12 + currentMonth;
-
-            // Перемешивание массива Fisher-Yates (детерминированное для пары)
-            const shuffledPool = [...pool];
-            for (let i = shuffledPool.length - 1; i > 0; i--) {
-                const j = Math.abs((seed * (i + 1) * 17) % (i + 1));
-                [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
-            }
-
-            const result = [];
-            for (let day = 1; day <= daysInCurrentMonth; day++) {
-                const goldSecret = goldCardsList.find(g => g.day === day);
-                
-                if (goldSecret) {
-                    result.push({
-                        day: day,
-                        id: `gold_${day}`,
-                        title: `${day < 10 ? '0' + day : day}. ${goldSecret.title}`,
-                        category: "✨ ЗОЛОТАЯ КАРТОЧКА",
-                        lead: "🎉 СЕКРЕТНЫЙ СЮРПРИЗ",
-                        roleClass: "role-both",
-                        img: imgPool[day % imgPool.length],
-                        task: goldSecret.task,
-                        tip: goldSecret.tip,
-                        isGold: true
-                    });
-                } else {
-                    // Берём СТРОГО уникальный предмет с позиции day - 1
-                    const base = shuffledPool[(day - 1) % shuffledPool.length];
-                    
-                    let catLabel = 'Классика';
-                    if (base.id.startsWith('f')) catLabel = 'Доминирование';
-                    else if (base.id.startsWith('k')) catLabel = 'Камасутра';
-                    else if (base.id.startsWith('b')) catLabel = 'BDSM';
-
-                    result.push({
-                        day: day,
-                        id: base.id,
-                        title: `${day < 10 ? '0' + day : day}. ${base.title}`,
-                        category: catLabel,
-                        lead: base.lead,
-                        roleClass: base.lead.includes("Она — Ведущая") ? "role-f" : (base.lead.includes("Он — Ведущий") ? "role-m" : "role-both"),
-                        img: imgPool[(day - 1) % imgPool.length],
-                        task: base.task,
-                        tip: base.tip,
-                        isGold: false
-                    });
-                }
-            }
-            return result;
-        }
-
-        let pairCode = localStorage.getItem('pairCode') || '';
-        let userRole = localStorage.getItem('userRole') || 'p1';
-        let selectedCategory = localStorage.getItem('userCat') || 'balanced';
-        let monthTasks = [];
-        
-        let p1Completed = [];
-        let p2Completed = [];
-        let p1Fav = [];
-        let p2Fav = [];
-        let currentDay = null;
-        let onlyFavFilter = false;
-
-        window.onload = function() {
-            checkBiometricSupport();
-            
-            if (pairCode) {
-                document.getElementById('pairCodeInput').value = pairCode;
-                document.getElementById('userRoleSelect').value = userRole;
-                document.getElementById('preferenceSelect').value = selectedCategory;
-                
-                if (localStorage.getItem('biometricsEnabled') === 'true') {
-                    document.getElementById('biometricLockBlock').style.display = 'block';
-                    document.getElementById('formSetupBlock').style.display = 'none';
-                    showLandingScreen();
-                    authenticateBiometrics();
-                } else {
-                    showCalendarScreen();
-                }
-            } else {
-                showLandingScreen();
-            }
-        };
-
-        function showLandingScreen() {
-            document.getElementById('landingScreen').style.display = 'flex';
-            document.getElementById('calendarScreen').style.display = 'none';
-        }
-
-        function showCalendarScreen() {
-            document.getElementById('landingScreen').style.display = 'none';
-            document.getElementById('calendarScreen').style.display = 'flex';
-            monthTasks = getTasksForMonth(selectedCategory, pairCode);
-            initSync();
-            renderGrid();
-        }
-
-        function saveSettingsAndEnter() {
-            const rawCode = document.getElementById('pairCodeInput').value.trim().toUpperCase();
-            
-            if (!rawCode || rawCode.length < 4) {
-                alert("❌ Код пары слишком короткий! Введите уникальный код минимум из 4 символов.");
-                document.getElementById('pairCodeInput').focus();
-                return;
-            }
-
-            const sanitizedCode = rawCode.replace(/[^A-Z0-9_А-Я]/g, '');
-            if (sanitizedCode === '1234' || sanitizedCode === 'LOVE' || sanitizedCode === 'PAIR123' || sanitizedCode === 'TEST') {
-                if (!confirm("⚠️ Вы ввели слишком простой/популярный код. Если его использует другая пара, ваши данные могут пересечься. Вы уверены?")) {
-                    return;
-                }
-            }
-
-            pairCode = sanitizedCode;
-            userRole = document.getElementById('userRoleSelect').value;
-            selectedCategory = document.getElementById('preferenceSelect').value;
-            
-            localStorage.setItem('pairCode', pairCode);
-            localStorage.setItem('userRole', userRole);
-            localStorage.setItem('userCat', selectedCategory);
-            
-            showCalendarScreen();
-        }
-
-        function resetSettings() {
-            document.getElementById('formSetupBlock').style.display = 'block';
-            showLandingScreen();
-        }
-
-        function checkBiometricSupport() {
-            if (window.PublicKeyCredential) {
-                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-                    .then(available => {
-                        if (available) {
-                            if (localStorage.getItem('biometricsEnabled') === 'true') {
-                                document.getElementById('biometricLockBlock').style.display = 'block';
-                                document.getElementById('formSetupBlock').style.display = 'none';
-                            } else {
-                                document.getElementById('enableBiometricBtn').style.display = 'block';
-                            }
-                        }
-                    });
-            }
-        }
-
-        function registerBiometrics() {
-            if (!window.PublicKeyCredential) {
-                alert("Ваше устройство или браузер не поддерживают биометрию.");
-                return;
-            }
-
-            const publicKeyCredentialCreationOptions = {
-                challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
-                rp: { name: "Чувственный Календарь" },
-                user: {
-                    id: new Uint8Array([1, 2, 3, 4]),
-                    name: pairCode || "User",
-                    displayName: userRole === 'p1' ? "Партнер 1" : "Партнер 2"
-                },
-                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                authenticatorSelection: { authenticatorAttachment: "platform" },
-                timeout: 60000
-            };
-
-            navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions })
-                .then(() => {
-                    localStorage.setItem('biometricsEnabled', 'true');
-                    alert("🎉 Вход по Face ID / Touch ID успешно защищен!");
-                    document.getElementById('enableBiometricBtn').style.display = 'none';
-                    document.getElementById('biometricLockBlock').style.display = 'block';
-                    document.getElementById('formSetupBlock').style.display = 'none';
-                })
-                .catch(err => {
-                    console.log(err);
-                    alert("Биометрия не активирована или была отменена.");
-                });
-        }
-
-        function authenticateBiometrics() {
-            const publicKeyCredentialRequestOptions = {
-                challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
-                timeout: 60000,
-                userVerification: "required"
-            };
-
-            navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions })
-                .then(assertion => {
-                    showCalendarScreen();
-                })
-                .catch(err => {
-                    console.log("Ошибка проверки Face ID:", err);
-                    alert("Ошибка сканирования Face ID! Нажмите кнопку смены настроек, если нужно ввести код заново.");
-                });
-        }
-
-        function initSync() {
-            if (!db || !pairCode) return;
-            document.getElementById('syncBadgeText').innerText = `🟢 Код: [ ${pairCode} ] (${userRole === 'p1' ? 'Мужчина' : 'Женщина'})`;
-            
-            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).off();
-            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p1`).on('value', (snapshot) => {
-                p1Completed = snapshot.val() || [];
-                renderGrid();
-            });
-
-            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).off();
-            db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/p2`).on('value', (snapshot) => {
-                p2Completed = snapshot.val() || [];
-                renderGrid();
-            });
-
-            db.ref(`pairs/${pairCode}/fav/p1`).off();
-            db.ref(`pairs/${pairCode}/fav/p1`).on('value', (snapshot) => {
-                p1Fav = snapshot.val() || [];
-                renderGrid();
-            });
-
-            db.ref(`pairs/${pairCode}/fav/p2`).off();
-            db.ref(`pairs/${pairCode}/fav/p2`).on('value', (snapshot) => {
-                p2Fav = snapshot.val() || [];
-                renderGrid();
-            });
-        }
-
-        function forceRefreshData() {
-            if (pairCode) {
-                initSync();
-                monthTasks = getTasksForMonth(selectedCategory, pairCode);
-                renderGrid();
-            }
-        }
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && pairCode) {
-                forceRefreshData();
-            }
-        });
-
-        window.addEventListener('pageshow', (event) => {
-            if (pairCode) {
-                forceRefreshData();
-            }
-        });
-
-        function renderGrid() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            
-            const allFavDays = [...new Set([...p1Fav, ...p2Fav])];
-            const tasksToRender = onlyFavFilter 
-                ? monthTasks.filter(t => allFavDays.includes(t.day)) 
-                : monthTasks;
-
-            tasksToRender.forEach(task => {
-                const hasP1 = p1Completed.includes(task.day);
-                const hasP2 = p2Completed.includes(task.day);
-                
-                const isFavP1 = p1Fav.includes(task.day);
-                const isFavP2 = p2Fav.includes(task.day);
-                
-                const card = document.createElement('div');
-                card.id = `card-day-${task.day}`;
-                
-                let statusClass = '';
-                if (hasP1 && hasP2) statusClass = 'completed-both';
-                else if (hasP1) statusClass = 'completed-p1';
-                else if (hasP2) statusClass = 'completed-p2';
-
-                card.className = `day-card ${statusClass}`;
-                
-                let favTagHTML = '';
-                if (isFavP1 && isFavP2) favTagHTML = `<div class="fav-tag fav-both">⭐ М+Ж</div>`;
-                else if (isFavP1) favTagHTML = `<div class="fav-tag fav-p1">⭐ М</div>`;
-                else if (isFavP2) favTagHTML = `<div class="fav-tag fav-p2">⭐ Ж</div>`;
-
-                card.innerHTML = `
-                    ${favTagHTML}
-                    <div class="day-number">${task.day < 10 ? '0' + task.day : task.day}</div>
-                    <div class="day-category">${task.isGold ? '✨ СЮРПРИЗ' : task.category}</div>
-                    <div class="day-role ${task.roleClass}">${task.lead.split(' ')[1]}</div>
-                `;
-                card.onclick = () => openModal(task);
-                grid.appendChild(card);
-            });
-            updateProgress();
-        }
-
-        function openModal(task) {
-            currentDay = task.day;
-            document.getElementById('modalTitle').innerText = task.title;
-            document.getElementById('modalRole').innerText = task.lead;
-            document.getElementById('modalImg').src = task.img;
-            document.getElementById('modalTask').innerText = task.task;
-            document.getElementById('modalTip').innerText = task.tip;
-            
-            const myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
-            const isDone = myCompleted.includes(task.day);
-            document.getElementById('completeBtn').innerText = isDone ? 'Отменить отметку ✖' : 'Отметить пройденным ✓';
-
-            const myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-            const isFav = myFav.includes(task.day);
-            document.getElementById('modalFavBtn').innerText = isFav ? '⭐' : '☆';
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-        function toggleComplete() {
-            let myCompleted = (userRole === 'p1') ? p1Completed : p2Completed;
-            
-            if (myCompleted.includes(currentDay)) {
-                myCompleted = myCompleted.filter(d => d !== currentDay);
-            } else {
-                myCompleted.push(currentDay);
-            }
-
-            if (userRole === 'p1') p1Completed = myCompleted;
-            else p2Completed = myCompleted;
-
-            if (db && pairCode) {
-                db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(myCompleted);
-            }
-            
-            renderGrid();
-            closeModal();
-        }
-
-        function toggleCurrentFav() {
-            let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-            
-            if (myFav.includes(currentDay)) {
-                myFav = myFav.filter(d => d !== currentDay);
-            } else {
-                myFav.push(currentDay);
-            }
-
-            if (userRole === 'p1') p1Fav = myFav;
-            else p2Fav = myFav;
-
-            if (db && pairCode) {
-                db.ref(`pairs/${pairCode}/fav/${userRole}`).set(myFav);
-            }
-            
-            document.getElementById('modalFavBtn').innerText = myFav.includes(currentDay) ? '⭐' : '☆';
-            renderGrid();
-        }
-
-        function toggleFavFilter() {
-            onlyFavFilter = !onlyFavFilter;
-            const btn = document.getElementById('favFilterBtn');
-            btn.style.background = onlyFavFilter ? 'var(--accent-gold)' : 'rgba(226, 176, 126, 0.15)';
-            btn.style.color = onlyFavFilter ? '#0f0d13' : 'var(--accent-gold)';
-            renderGrid();
-        }
-
-        function spinRoulette() {
-            const bothCompleted = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).map(t => t.day);
-            const available = monthTasks.filter(t => !bothCompleted.includes(t.day));
-            if (available.length === 0) {
-                alert("Все дни пройдены обоими партнерами!");
-                return;
-            }
-            let count = 0;
-            const interval = setInterval(() => {
-                const randomTask = available[Math.floor(Math.random() * available.length)];
-                document.querySelectorAll('.day-card').forEach(c => c.classList.remove('highlight'));
-                const el = document.getElementById(`card-day-${randomTask.day}`);
-                if (el) el.classList.add('highlight');
-                count++;
-                if (count >= 12) {
-                    clearInterval(interval);
-                    setTimeout(() => openModal(randomTask), 300);
-                }
-            }, 100);
-        }
-
-        function updateProgress() {
-            const bothCount = monthTasks.filter(t => p1Completed.includes(t.day) && p2Completed.includes(t.day)).length;
-            const percent = Math.round((bothCount / daysInCurrentMonth) * 100);
-            
-            document.getElementById('progressText').innerText = `Совместный прогресс: ${bothCount} / ${daysInCurrentMonth} дней`;
-            document.getElementById('progressPercent').innerText = `${percent}%`;
-            document.getElementById('progressFill').style.width = `${percent}%`;
-
-            let badge = "🏆 Статус: Новички";
-            if (bothCount >= 25) badge = "👑 Статус: Мастера Интимности";
-            else if (bothCount >= 18) badge = "🔥 Статус: Огненный Союз";
-            else if (bothCount >= 10) badge = "🧘‍♀️ Статус: Исследователи";
-            else if (bothCount >= 3) badge = "✨ Статус: Первый Шаг";
-
-            document.getElementById('achievement').innerText = badge;
-        }
-
-        function openPwaModal() { document.getElementById('pwaModal').style.display = 'flex'; }
-        function closePwaModal() { document.getElementById('pwaModal').style.display = 'none'; }
-
-        function openCheatSheetModal() { document.getElementById('cheatSheetModal').style.display = 'flex'; }
-        function closeCheatSheetModal() { document.getElementById('cheatSheetModal').style.display = 'none'; }
-        
-        function openLingerieModal() { document.getElementById('lingerieModal').style.display = 'flex'; }
-        function closeLingerieModal() { document.getElementById('lingerieModal').style.display = 'none'; }
-
-        function openToysModal() { document.getElementById('toysModal').style.display = 'flex'; }
-        function closeToysModal() { document.getElementById('toysModal').style.display = 'none'; }
-
-        function switchCheatTab(tab) {
-            if (tab === 'kun') {
-                document.getElementById('cheatKunBlock').style.display = 'block';
-                document.getElementById('cheatMinBlock').style.display = 'none';
-                document.getElementById('btnKun').classList.add('active');
-                document.getElementById('btnMin').classList.remove('active');
-            } else {
-                document.getElementById('cheatKunBlock').style.display = 'none';
-                document.getElementById('cheatMinBlock').style.display = 'block';
-                document.getElementById('btnMin').classList.add('active');
-                document.getElementById('btnKun').classList.remove('active');
-            }
-        }
-
-        let myVotes = {};
-
-        function openGeneratorModal() {
-            const container = document.getElementById('surveyContainer');
-            container.innerHTML = '';
-            
-            monthTasks.forEach(task => {
-                const div = document.createElement('div');
-                div.style.marginBottom = "15px";
-                div.style.background = "#120f1a";
-                div.style.padding = "10px";
-                div.style.borderRadius = "10px";
-                div.innerHTML = `
-                    <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold);">${task.title}</div>
-                    <div class="vote-options">
-                        <button class="btn-vote" onclick="setVote('${task.id}', 'yes', this)">Да 🔥</button>
-                        <button class="btn-vote" onclick="setVote('${task.id}', 'maybe', this)">Возможно 💭</button>
-                        <button class="btn-vote" onclick="setVote('${task.id}', 'no', this)">Нет ❌</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-            
-            document.getElementById('generatorModal').style.display = 'flex';
-        }
-
-        function closeGeneratorModal() { document.getElementById('generatorModal').style.display = 'none'; }
-
-        function setVote(taskId, voteVal, btnEl) {
-            myVotes[taskId] = voteVal;
-            const parent = btnEl.parentElement;
-            parent.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('selected'));
-            btnEl.classList.add('selected');
-        }
-
-        function checkMatches() {
-            if (!db || !pairCode) {
-                alert("Укажите Код Пары в настройках!");
-                return;
-            }
-
-            db.ref(`votes/${pairCode}/${userRole}`).set(myVotes);
-
-            const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
-            db.ref(`votes/${pairCode}/${partnerRole}`).once('value', (snapshot) => {
-                const partnerVotes = snapshot.val() || {};
-                
-                let matchesCount = 0;
-                let myFav = (userRole === 'p1') ? p1Fav : p2Fav;
-
-                monthTasks.forEach(task => {
-                    const myV = myVotes[task.id];
-                    const pV = partnerVotes[task.id];
-                    
-                    if ((myV === 'yes' && pV === 'yes') || (myV === 'yes' && pV === 'maybe') || (myV === 'maybe' && pV === 'yes')) {
-                        if (!myFav.includes(task.day)) myFav.push(task.day);
-                        matchesCount++;
-                    }
-                });
-
-                if (userRole === 'p1') p1Fav = myFav;
-                else p2Fav = myFav;
-
-                if (db && pairCode) db.ref(`pairs/${pairCode}/fav/${userRole}`).set(myFav);
-                
-                renderGrid();
-                closeGeneratorModal();
-
-                if (matchesCount > 0) {
-                    alert(`🔥 Найдено совпадений: ${matchesCount}! Они добавлены в ваше Избранное ⭐`);
-                } else {
-                    alert("Партнер еще не прошел опрос. Данные обновятся, когда партнер сделает свой выбор!");
-                }
-            });
-        }
-    </script>
+    <!-- Подключение JS-модулей -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
