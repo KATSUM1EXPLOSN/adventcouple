@@ -145,14 +145,48 @@ function startSync() {
         }
     });
 
-    initChallengeListener(pairCode, partnerRole, (text) => {
-        if (text) {
-            document.getElementById('incomingChallengeBox').style.display = 'block';
-            document.getElementById('incomingChallengeText').innerText = text;
-            showToastNotification('💌 Входящий Вызов!', text, 'purple');
+    initChallengeListener(pairCode, partnerRole, (data) => {
+        const incomingBox = document.getElementById('incomingChallengeBox');
+        if (data) {
+            if (incomingBox) incomingBox.style.display = 'block';
+            const textContent = typeof data === 'string' ? data : (data.text || '💌 Секретный конверт с медиа');
+            const txtEl = document.getElementById('incomingChallengeText');
+            if (txtEl) txtEl.innerText = textContent;
+
+            const mediaArea = document.getElementById('incomingChallengeMediaArea');
+            if (mediaArea) {
+                mediaArea.innerHTML = '';
+                if (typeof data === 'object' && data !== null) {
+                    if (data.photo) {
+                        const imgEl = document.createElement('img');
+                        imgEl.src = data.photo;
+                        imgEl.style.cssText = 'max-width:100%; max-height:220px; border-radius:12px; border:2px solid var(--accent-gold); margin-top:8px;';
+                        mediaArea.appendChild(imgEl);
+                    }
+                    if (data.circle) {
+                        const circleWrap = document.createElement('div');
+                        circleWrap.className = 'telegram-circle-wrapper';
+                        circleWrap.style.margin = '10px auto';
+                        circleWrap.innerHTML = `<video class="telegram-circle-video" src="${data.circle}" controls autoplay loop playsinline></video>`;
+                        mediaArea.appendChild(circleWrap);
+                    }
+                }
+            }
+
+            const blurArea = document.getElementById('incomingChallengeBlurArea');
+            if (blurArea) blurArea.style.filter = 'blur(8px)';
+            const label = document.getElementById('selfDestructTimerLabel');
+            if (label) label.style.display = 'none';
+            const revBtn = document.getElementById('revealChallengeBtn');
+            if (revBtn) revBtn.style.display = 'block';
+
+            showToastNotification('💌 Входящий Секретный Конверт!', textContent, 'purple');
+        } else {
+            if (incomingBox) incomingBox.style.display = 'none';
         }
     });
 }
+
 
 
 function renderGrid() {
@@ -694,43 +728,8 @@ function setupEventListeners() {
         document.getElementById('challengeModal').style.display = 'none';
     };
 
-    // 4. Получение и распечатывание секретного конверта
-    initChallengeListener(pairCode, userRole === 'p1' ? 'p2' : 'p1', (data) => {
-        const incomingBox = document.getElementById('incomingChallengeBox');
-        if (data) {
-            incomingBox.style.display = 'block';
-
-            let textContent = typeof data === 'string' ? data : (data.text || '');
-            document.getElementById('incomingChallengeText').innerText = textContent;
-
-            const mediaArea = document.getElementById('incomingChallengeMediaArea');
-            mediaArea.innerHTML = '';
-
-            if (typeof data === 'object' && data !== null) {
-                if (data.photo) {
-                    const imgEl = document.createElement('img');
-                    imgEl.src = data.photo;
-                    imgEl.style.cssText = 'max-width:100%; max-height:220px; border-radius:12px; border:2px solid var(--accent-gold); margin-top:8px;';
-                    mediaArea.appendChild(imgEl);
-                }
-                if (data.circle) {
-                    const circleWrap = document.createElement('div');
-                    circleWrap.className = 'telegram-circle-wrapper';
-                    circleWrap.style.margin = '10px auto';
-                    circleWrap.innerHTML = `<video class="telegram-circle-video" src="${data.circle}" controls autoplay loop playsinline></video>`;
-                    mediaArea.appendChild(circleWrap);
-                }
-            }
-
-            document.getElementById('incomingChallengeBlurArea').style.filter = 'blur(8px)';
-            document.getElementById('selfDestructTimerLabel').style.display = 'none';
-            document.getElementById('revealChallengeBtn').style.display = 'block';
-        } else {
-            incomingBox.style.display = 'none';
-        }
-    });
-
     document.getElementById('revealChallengeBtn').onclick = () => {
+
         document.getElementById('incomingChallengeBlurArea').style.filter = 'none';
         document.getElementById('revealChallengeBtn').style.display = 'none';
 
@@ -850,6 +849,15 @@ function setupEventListeners() {
             registerBiometrics(pairCode);
         };
     }
+
+    const fallbackCodeBtn = document.getElementById('fallbackCodeBtn');
+    if (fallbackCodeBtn) {
+        fallbackCodeBtn.onclick = () => {
+            document.getElementById('biometricLockBlock').style.display = 'none';
+            document.getElementById('formSetupBlock').style.display = 'block';
+        };
+    }
+
 
 
     document.getElementById('exportDataBtn').onclick = () => exportEncryptedData(pairCode);
