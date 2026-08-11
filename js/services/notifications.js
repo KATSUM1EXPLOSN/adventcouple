@@ -14,13 +14,32 @@ export function initNotificationService() {
         navigator.serviceWorker.register('./sw.js')
             .then(reg => {
                 swRegistration = reg;
-                console.log('PWA Service Worker registered:', reg);
+                const pCode = localStorage.getItem('pairCode');
+                const uRole = localStorage.getItem('userRole') || 'p1';
+                if (pCode) {
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({ type: 'SET_PAIR_INFO', pairCode: pCode, userRole: uRole });
+                    } else if (reg.active) {
+                        reg.active.postMessage({ type: 'SET_PAIR_INFO', pairCode: pCode, userRole: uRole });
+                    }
+                }
             })
             .catch(err => {
                 console.error('Service Worker registration failed:', err);
             });
     }
 }
+
+export function updateServiceWorkerPairInfo(pairCode, userRole) {
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'SET_PAIR_INFO',
+            pairCode: pairCode,
+            userRole: userRole
+        });
+    }
+}
+
 
 export function setNotificationsEnabled(enabled) {
     isNotificationsEnabled = enabled;

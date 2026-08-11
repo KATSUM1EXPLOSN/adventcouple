@@ -10,7 +10,8 @@ import { renderAnalyticsCharts } from './services/analytics.js';
 
 
 import { initStealthAndSecurity, toggleStealthMode, exportEncryptedData, importEncryptedData } from './services/security.js';
-import { initNotificationService, requestBrowserNotificationPermission, setNotificationsEnabled, showToastNotification, trackPartnerActivityNotifications } from './services/notifications.js';
+import { initNotificationService, requestBrowserNotificationPermission, setNotificationsEnabled, showToastNotification, trackPartnerActivityNotifications, updateServiceWorkerPairInfo } from './services/notifications.js';
+
 
 
 let pairCode = localStorage.getItem('pairCode') || '';
@@ -122,6 +123,9 @@ function updatePointsDisplay() {
 function startSync() {
     const currentMKey = getActiveMonthKey();
     const partnerRole = userRole === 'p1' ? 'p2' : 'p1';
+
+    updateServiceWorkerPairInfo(pairCode, userRole);
+
 
     initSync(pairCode, selectedCategory, currentMKey, {
         onP1Completed: (val) => { p1Completed = val || []; renderGrid(); },
@@ -980,33 +984,38 @@ function setupEventListeners() {
         if (cat === 'enigma') {
             html = `
                 <div class="cheat-item">
-                    <h4>🔮 Enigma — Best Sensual & Erotic Hits (Этно-Мистика)</h4>
-                    <p style="font-size:0.8rem; margin-bottom:8px;">Легендарные эротические мистические ритмы (Sadeness, Principles of Lust, Return to Innocence).</p>
-                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/videoseries?list=PL4fGSI1pDJn69P0rU7-p-6-1-X_534-v" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                    <h4>🔮 Enigma — Sadeness (Part I) (Official Video)</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube.com/embed/4F9DxYhqmKw" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <div class="cheat-item">
-                    <h4>🌌 Enigma & Deep Mystical Ambient (2 Часа)</h4>
-                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/tC1SknO7vQk" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                    <h4>✨ Enigma — Return to Innocence</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube.com/embed/Rk_sAHh9Ui0" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="cheat-item">
+                    <h4>🌌 Enigma — Principles of Lust</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/B10x_p2jFns" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
             `;
         } else if (cat === 'youtube') {
             html = `
                 <div class="cheat-item">
-                    <h4>🔥 YouTube Sex Music — Deep Sensual Beats</h4>
-                    <p style="font-size:0.8rem; margin-bottom:8px;">Медленные басовые ритмы для полного погружения в нежность и страсть.</p>
-                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/5qap5aO4i9A" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                    <h4>🔥 Two Feet — Go Fuck Yourself (Sensual Beats)</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube.com/embed/aaVbfw4-S_0" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <div class="cheat-item">
-                    <h4>🌶️ Slow RnB & Passionate Rhythm (YouTube Compilation)</h4>
-                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/sElE_BfQ67s" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                    <h4>🎧 Sensual Bedroom Beats / Lofi & RnB (Live 24/7)</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube.com/embed/jfKfPfyJRdk" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
             `;
         } else if (cat === 'lounge') {
             html = `
                 <div class="cheat-item">
-                    <h4>🍷 Deep Sensual Lounge & Chillout</h4>
-                    <p style="font-size:0.8rem; margin-bottom:8px;">Невесомая расслабляющая музыка для романтического массажа и вечернего вина.</p>
-                    <iframe style="border-radius:12px;" src="https://www.youtube-nocookie.com/embed/videoseries?list=PLr4rX_53p2R-1" width="100%" height="210" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                    <h4>🍷 Cigarettes After Sex — Apocalypse</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube.com/embed/sElE_BfQ67s" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="cheat-item">
+                    <h4>🎷 Deep Sensual Lounge & Chillout Beats</h4>
+                    <iframe style="border-radius:12px;" src="https://www.youtube.com/embed/sF80IzxUiqs" width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
             `;
         } else if (cat === 'spotify') {
@@ -1024,6 +1033,7 @@ function setupEventListeners() {
 
         box.innerHTML = html;
     }
+
 
     document.getElementById('openMusicBtn').onclick = () => {
         renderMusicCategory('enigma');
