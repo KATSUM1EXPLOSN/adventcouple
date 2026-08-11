@@ -28,21 +28,24 @@ export function initSync(pairCode, selectedCategory, monthKey, callbacks) {
     });
 }
 
+// Исправлено: Фильтрация undefined перед отправкой
 export function saveCompletedToDb(pairCode, selectedCategory, monthKey, userRole, completedArray) {
     if (db && pairCode) {
-        db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(completedArray);
+        const cleanArray = (completedArray || []).filter(item => item !== undefined && item !== null);
+        db.ref(`pairs/${pairCode}/${selectedCategory}/${monthKey}/${userRole}`).set(cleanArray);
     }
 }
 
 export function saveFavToDb(pairCode, userRole, favArray) {
     if (db && pairCode) {
-        db.ref(`pairs/${pairCode}/fav/${userRole}`).set(favArray);
+        const cleanArray = (favArray || []).filter(item => item !== undefined && item !== null);
+        db.ref(`pairs/${pairCode}/fav/${userRole}`).set(cleanArray);
     }
 }
 
 // Статус партнера
 export function saveStatusToDb(pairCode, userRole, statusText) {
-    if (db && pairCode) {
+    if (db && pairCode && statusText !== undefined) {
         db.ref(`pairs/${pairCode}/status/${userRole}`).set(statusText);
     }
 }
@@ -57,13 +60,16 @@ export function listenPartnerStatus(pairCode, partnerRole, callback) {
 
 // Дневник впечатлений
 export function saveFeedbackToDb(pairCode, selectedCategory, day, userRole, rating, text) {
-    if (db && pairCode) {
-        db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${userRole}`).set({ rating, text });
+    if (db && pairCode && day !== undefined) {
+        db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${userRole}`).set({ 
+            rating: rating || 0, 
+            text: text || "" 
+        });
     }
 }
 
 export function listenFeedbackFromDb(pairCode, selectedCategory, day, partnerRole, callback) {
-    if (db && pairCode) {
+    if (db && pairCode && day !== undefined) {
         db.ref(`pairs/${pairCode}/${selectedCategory}/feedback/${day}/${partnerRole}`).on('value', (snapshot) => {
             callback(snapshot.val() || null);
         });
@@ -72,20 +78,24 @@ export function listenFeedbackFromDb(pairCode, selectedCategory, day, partnerRol
 
 // Баллы и магазин
 export function savePointsToDb(pairCode, userRole, points) {
-    if (db && pairCode) {
+    if (db && pairCode && points !== undefined) {
         db.ref(`pairs/${pairCode}/points/${userRole}`).set(points);
     }
 }
 
 export function saveShopRedemptionToDb(pairCode, userRole, itemTitle) {
-    if (db && pairCode) {
-        db.ref(`pairs/${pairCode}/redemptions`).push({ user: userRole, item: itemTitle, time: new Date().toISOString() });
+    if (db && pairCode && itemTitle !== undefined) {
+        db.ref(`pairs/${pairCode}/redemptions`).push({ 
+            user: userRole, 
+            item: itemTitle, 
+            time: new Date().toISOString() 
+        });
     }
 }
 
 // Дуэли / Вызовы
 export function sendChallengeToDb(pairCode, userRole, challengeText) {
-    if (db && pairCode) {
+    if (db && pairCode && challengeText !== undefined) {
         db.ref(`pairs/${pairCode}/challenge/${userRole}`).set(challengeText);
     }
 }
@@ -100,7 +110,7 @@ export function listenChallengeFromDb(pairCode, partnerRole, callback) {
 
 // Сохранение голосов генератора совпадений
 export function saveVotesToDb(pairCode, userRole, votesObj) {
-    if (db && pairCode) {
+    if (db && pairCode && votesObj !== undefined) {
         db.ref(`votes/${pairCode}/${userRole}`).set(votesObj);
     }
 }
